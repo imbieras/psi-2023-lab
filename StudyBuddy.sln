@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy", "StudyBuddy\StudyBuddy.csproj", "{7531F30B-A3F2-4CB2-9021-D408173CF665}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddyTests", "Tests\StudyBuddyTests\StudyBuddyTests.csproj", "{9E370121-292E-4ACA-B9DC-3174F726E6A4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7531F30B-A3F2-4CB2-9021-D408173CF665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7531F30B-A3F2-4CB2-9021-D408173CF665}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7531F30B-A3F2-4CB2-9021-D408173CF665}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7531F30B-A3F2-4CB2-9021-D408173CF665}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E370121-292E-4ACA-B9DC-3174F726E6A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E370121-292E-4ACA-B9DC-3174F726E6A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E370121-292E-4ACA-B9DC-3174F726E6A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E370121-292E-4ACA-B9DC-3174F726E6A4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
