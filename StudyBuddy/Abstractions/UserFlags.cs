@@ -10,4 +10,3 @@ public enum UserFlags : byte
 
     Admin = 0x64
 }
-
