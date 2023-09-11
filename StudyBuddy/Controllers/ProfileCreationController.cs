@@ -36,7 +36,7 @@ public class ProfileCreationController : Controller
                 }
 
                 var userId = _userManager.RegisterUser(name, flags, DateTime.Parse(birthdate), subject, uniqueFileName);
-
+               
                 IUser? user = _userManager.GetUserById(userId);
 
                 return View(user);

@@ -4,29 +4,28 @@
 @{
 }
 
-
+<!--Needs cosmetic tune up tho
+       - Add pictures
+       - Beautify
+       - add ability to click on profiles
+       - Add short descriptions of each person (PersonCreation problem?)
+       - Later change that each person is gathered from SQL rather than a list
+   -->
 @model List<StudyBuddy.Models.User>
 
-<h2>Hello, user profiles will be displayed here dynamically(and this message removed)</h2>
-
+<h2>Hello, user profiles will be displayed here dynamically (and this message removed)</h2>
 
 <div id="card-columns" class="col-4">
-    <!--Needs cosmetic tune up tho
-        - Add pictures
-        - Beautify
-        - add ability to click on profiles
-        - Add short descriptions of each person (PersonCreation problem?)
-        - Later change that each person is gathered from SQL rather than a list
-    -->
     @foreach (var user in Model)
     {
-        <div class="card">
-            <div id="card-rows" class="row-md-6">
-                <h2>@user.Name</h2>
-                <div class="card-body">
-                    <h5 class="card-title">@user.Subject</h5>
-
-                </div>
+        <div class="card" style="width: 18rem; margin-bottom: 20px;">
+            <div class="card-img-top" style="height: 18rem; overflow: hidden;">
+                <img src="@Url.Content("~/avatars/" + @user.AvatarFileName)" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10%; padding: 10px;">
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">@user.Name.ToUpper()</h3>
+                <h4 class="card-text">@user.Subject</h4>
+                <a href="#" class="btn btn-primary">More</a>
             </div>
         </div>
     }

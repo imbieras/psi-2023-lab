@@ -13,6 +13,7 @@ public class UserManager : IUserManager
         var userId = UserId.From(Guid.NewGuid());
         var newUser = new User(userId, username, flags, birthdate, subject, avatarFileName);
         _users.Add(newUser);
+        Console.WriteLine("Added" +_users.Count());
         return userId;
     }
 
@@ -36,11 +37,16 @@ public class UserManager : IUserManager
     }
 
    public List<User?> GetUserList() {
-        RegisterUser("lex",UserFlags.Admin,DateTime.Now,"PSI","file.jpeg"); //Test User creation (Delete later)
-        RegisterUser("lex2", UserFlags.Registered, DateTime.Today, "KA", "55138a5e97d6_final_boss.png"); //Test User creation (Delete Later)
-        RegisterUser("Tomashas Lavashas3", UserFlags.Registered, DateTime.Today, "KA", "55138a5e97d6_final_boss.png"); //Test User creation (Delete Later)
+       // RegisterUser("lex",UserFlags.Admin,DateTime.Now,"Natural science","avatar1.jpg"); //Test User creation (Delete later)
+       // RegisterUser("lex2", UserFlags.Registered, DateTime.Today, "KA", "avatar2.jpg"); //Test User creation (Delete Later)
+        // RegisterUser("Tomashas Lavashas3", UserFlags.Registered, DateTime.Today, "KA", "avatar3.jpg"); //Test User creation (Delete Later)
         return _users;
     }
+
+   public int GetListSize()
+   {
+       return _users.Count;
+   }
 
 
 }
