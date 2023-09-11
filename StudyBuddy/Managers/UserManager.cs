@@ -36,8 +36,9 @@ public class UserManager : IUserManager
     }
 
    public List<User?> GetUserList() {
-        RegisterUser("lex",UserFlags.Admin,DateTime.Now,"kik","file.jpeg"); //Test User creation (Delete later)
-        RegisterUser("lex2", UserFlags.Registered, DateTime.Today, "lolololol", "CoolFile.jpeg"); //Test User creation (Delete Later)
+        RegisterUser("lex",UserFlags.Admin,DateTime.Now,"PSI","file.jpeg"); //Test User creation (Delete later)
+        RegisterUser("lex2", UserFlags.Registered, DateTime.Today, "KA", "55138a5e97d6_final_boss.png"); //Test User creation (Delete Later)
+        RegisterUser("Tomashas Lavashas3", UserFlags.Registered, DateTime.Today, "KA", "55138a5e97d6_final_boss.png"); //Test User creation (Delete Later)
         return _users;
     }
 

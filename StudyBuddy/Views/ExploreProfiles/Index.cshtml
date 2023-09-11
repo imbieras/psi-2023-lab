@@ -5,20 +5,30 @@
 }
 
 
-@model List<StudyBuddy.Models.User> 
+@model List<StudyBuddy.Models.User>
 
 <h2>Hello, user profiles will be displayed here dynamically(and this message removed)</h2>
-<div id="card-columns" class="row">
-    <!--Needs cosmetic tune up tho, still in early stages-->
+
+
+<div id="card-columns" class="col-4">
+    <!--Needs cosmetic tune up tho
+        - Add pictures
+        - Beautify
+        - add ability to click on profiles
+        - Add short descriptions of each person (PersonCreation problem?)
+        - Later change that each person is gathered from SQL rather than a list
+    -->
     @foreach (var user in Model)
     {
-        <h2>@user.Name</h2>
-
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">@user.Subject</h5>
-                <!-- Display other user properties as needed -->
+            <div id="card-rows" class="row-md-6">
+                <h2>@user.Name</h2>
+                <div class="card-body">
+                    <h5 class="card-title">@user.Subject</h5>
+
+                </div>
             </div>
         </div>
     }
 </div>
+
