@@ -6,7 +6,7 @@ namespace StudyBuddy.Managers;
 
 public class UserManager : IUserManager
 {
-    private readonly List<User?> _users = new();
+    private static readonly List<User?> _users = new();
 
     public UserId RegisterUser(string username, UserFlags flags, DateTime birthdate, string subject, string avatarFileName)
     {
