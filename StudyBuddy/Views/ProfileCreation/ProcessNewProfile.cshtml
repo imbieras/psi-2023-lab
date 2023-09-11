@@ -7,11 +7,33 @@
 
     // Use the AddPossessiveSuffix extension method
     var possessiveName = Model.Name.AddPossessiveSuffix();
+
+    var avatarUrl = Model.Traits.AvatarPath.Contains("://")
+        ? Model.Traits.AvatarPath// It's a link
+        : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
 }
 
-<h2>@possessiveName profile</h2>
-<img src="@Url.Content("~/avatars/" + Model.AvatarFileName)" alt="Avatar" style="width: 10vw; height: 10vh; border-radius: 10%;">
-<ul>
-    <li>Birthday: @Model.Birthdate.ToShortDateString()</li>
-    <li>Favorite subject: @Model.Subject</li>
-</ul>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">@possessiveName Profile</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <img src="@avatarUrl" alt="Avatar" class="img-fluid rounded-circle" style="max-width: 150px;">
+                    </div>
+                    <ul class="list-group list-group-flush mt-4">
+                        <li class="list-group-item">
+                            <strong>Birthday:</strong> @Model.Traits.Birthdate.ToShortDateString()
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Favorite Subject:</strong> @Model.Traits.Subject
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

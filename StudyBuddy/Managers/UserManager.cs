@@ -1,37 +1,39 @@
 using StudyBuddy.Abstractions;
-using StudyBuddy.ValueObjects;
 using StudyBuddy.Models;
+using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Managers;
 
 public class UserManager : IUserManager
 {
-    private readonly List<User?> _users = new();
+    private static readonly List<User?> s_users = new();
 
-    public UserId RegisterUser(string username, UserFlags flags, DateTime birthdate, string subject, string avatarFileName)
-    {
-        var userId = UserId.From(Guid.NewGuid());
-        var newUser = new User(userId, username, flags, birthdate, subject, avatarFileName);
-        _users.Add(newUser);
-        return userId;
-    }
+    public IUser? GetUserById(UserId userId) => s_users.FirstOrDefault(u => u?.Id == userId);
 
-    public IUser? GetUserById(UserId userId)
-    {
-        return _users.FirstOrDefault(u => u?.Id == userId);
-    }
-
-    public IUser? GetUserByUsername(string username)
-    {
-        return _users.FirstOrDefault(u => u?.Name == username);
-    }
+    public IUser? GetUserByUsername(string username) => s_users.FirstOrDefault(u => u?.Name == username);
 
     public void BanUser(UserId userId)
     {
-        var user = _users.FirstOrDefault(u => u?.Id == userId);
+        User? user = s_users.FirstOrDefault(u => u?.Id == userId);
         if (user != null)
         {
             user.Flags |= UserFlags.Banned;
         }
     }
+
+    public UserId RegisterUser(string username, UserFlags flags, UserTraits traits)
+    {
+        UserId userId = UserId.From(Guid.NewGuid());
+
+        if (string.IsNullOrEmpty(traits.AvatarPath))
+        {
+            traits.AvatarPath = User.GenerateGravatarUrl(userId);
+        }
+
+        User newUser = new(userId, username, flags, traits);
+        s_users.Add(newUser);
+        return userId;
+    }
+
+    public List<IUser> GetAllUsers() => s_users.Where(u => u != null).Cast<IUser>().ToList();
 }
