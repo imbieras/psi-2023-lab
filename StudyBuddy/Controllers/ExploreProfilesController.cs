@@ -18,7 +18,7 @@ namespace StudyBuddy.Controllers
 
         public IActionResult Index()
         {
-            var userList = _userManager.GetUserList();
+            var userList = _userManager.GetUserList();//Gets user list for ExploreProfiles/Index.cshtml
 
             // Pass the list of users to the view
             return View(userList);

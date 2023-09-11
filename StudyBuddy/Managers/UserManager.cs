@@ -36,8 +36,8 @@ public class UserManager : IUserManager
     }
 
    public List<User?> GetUserList() {
-        RegisterUser("lex",UserFlags.Admin,DateTime.Now,"kik","file.txt"); //Test User creation
-        RegisterUser("lex2", UserFlags.Registered, DateTime.Today, "lolololol", "CoolFile.jpeg"); //Test User creation
+        RegisterUser("lex",UserFlags.Admin,DateTime.Now,"kik","file.jpeg"); //Test User creation (Delete later)
+        RegisterUser("lex2", UserFlags.Registered, DateTime.Today, "lolololol", "CoolFile.jpeg"); //Test User creation (Delete Later)
         return _users;
     }
 

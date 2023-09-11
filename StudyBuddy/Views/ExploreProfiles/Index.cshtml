@@ -8,10 +8,11 @@
 @model List<StudyBuddy.Models.User>
 <h2>Hello, user profiles will be displayed here dynamically(and this message removed)</h2>
 <div id="card-columns" class="row">
-
+    <!--Needs cosmetic tune up tho, still in early stages-->
     @foreach (var user in Model)
     {
         <h2>@user.Name</h2>
+
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">@user.Subject</h5>
