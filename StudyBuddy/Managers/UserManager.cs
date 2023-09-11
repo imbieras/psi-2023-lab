@@ -34,4 +34,12 @@ public class UserManager : IUserManager
             user.Flags |= UserFlags.Banned;
         }
     }
+
+   public List<User?> GetUserList() {
+        RegisterUser("lex",UserFlags.Admin,DateTime.Now,"kik","file.txt"); //Test User creation
+        RegisterUser("lex2", UserFlags.Registered, DateTime.Today, "lolololol", "CoolFile.jpeg"); //Test User creation
+        return _users;
+    }
+
+
 }

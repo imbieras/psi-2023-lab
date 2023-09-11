@@ -5,14 +5,18 @@
 }
 
 
+@model List<StudyBuddy.Models.User>
+<h2>Hello, user profiles will be displayed here dynamically(and this message removed)</h2>
 <div id="card-columns" class="row">
-    @foreach (var user in Model.UserModel)
+
+    @foreach (var user in Model)
     {
-      @*   <div class="card col-md-3">
-            <img src="@product.Image" class="card-img-top" style="background-image:url('@product.Image');" alt="Card Image">
+        <h2>@user.Name</h2>
+        <div class="card">
             <div class="card-body">
-                <h5 class="card-title">@product.Title</h5>
+                <h5 class="card-title">@user.Subject</h5>
+                <!-- Display other user properties as needed -->
             </div>
-        </div> *@
+        </div>
     }
 </div>

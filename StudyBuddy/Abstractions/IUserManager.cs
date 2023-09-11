@@ -1,3 +1,4 @@
+using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Abstractions;
@@ -11,4 +12,6 @@ public interface IUserManager
     IUser? GetUserByUsername(string username);
 
     void BanUser(UserId userId);
+
+    public List<User?> GetUserList();
 }
