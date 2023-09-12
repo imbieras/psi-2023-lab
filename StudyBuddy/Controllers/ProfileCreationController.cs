@@ -15,7 +15,7 @@ public class ProfileCreationController : Controller
     public IActionResult Index() => View();
 
     [HttpPost]
-    public async Task<IActionResult> ProcessNewProfile(string name, string birthdate, string subject, IFormFile? avatar)
+    public async Task<IActionResult> DisplayNewProfile(string name, string birthdate, string subject, IFormFile? avatar)
     {
         const UserFlags flags = UserFlags.Registered;
 
