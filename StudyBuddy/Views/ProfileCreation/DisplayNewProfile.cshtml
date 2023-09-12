@@ -1,0 +1,37 @@
+@using StudyBuddy.Extensions
+@model StudyBuddy.Abstractions.IUser
+
+@{
+    // Use the AddPossessiveSuffix extension method
+    var possessiveName = Model.Name.AddPossessiveSuffix();
+
+    var avatarUrl = Model.Traits.AvatarPath.Contains("://")
+        ? Model.Traits.AvatarPath// It's a link
+        : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
+
+    ViewBag.Title = possessiveName + " profile page";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">@possessiveName Profile</h2>
+                </div>
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="avatar-container" style="background-image: url('@avatarUrl');"></div>
+                    <ul class="list-group list-group-flush mt-4">
+                        <li class="list-group-item">
+                            <strong>Birthday:</strong> @Model.Traits.Birthdate.ToShortDateString()
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Favorite Subject:</strong> @Model.Traits.Subject
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

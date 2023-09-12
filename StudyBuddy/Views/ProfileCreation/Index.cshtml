@@ -1,0 +1,40 @@
+@{
+    ViewBag.Title = "Profile creation";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <h2>Profile Creation Page</h2>
+    <form method="post" action="ProfileCreation/DisplayNewProfile" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="birthdate" class="form-label">Birth Date:</label>
+            <input type="date" class="form-control" id="birthdate" name="birthdate" required>
+        </div>
+        <div class="mb-3">
+            <label for="subject" class="form-label">Main Subject:</label>
+            <select class="form-select" id="subject" name="subject" required>
+                <option>Natural Sciences</option>
+                <option>Health Sciences</option>
+                <option>Engineering & Technology</option>
+                <option>Social Sciences</option>
+                <option>Humanities</option>
+                <option>Business & Management</option>
+                <option>Arts & Design</option>
+                <option>Mathematical Sciences</option>
+                <option>Bio Sciences</option>
+                <option>Law & Legal Studies</option>
+                <option>Education</option>
+                <option>Agriculture & Forestry</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="avatar" class="form-label">Profile Picture:</label>
+            <input type="file" class="form-control" id="avatar" name="avatar" accept="image/png, image/jpeg">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>

@@ -1,9 +1,22 @@
-var builder = WebApplication.CreateBuilder(args);
+using StudyBuddy.Abstractions;
+using StudyBuddy.Managers;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+IMvcBuilder mvcBuilder = builder.Services.AddRazorPages();
+
+if (builder.Environment.IsDevelopment())
+{
+    mvcBuilder.AddRazorRuntimeCompilation();
+}
+
+// Register your IUserManager and its implementation here
+builder.Services.AddScoped<IUserManager, UserManager>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -21,7 +34,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-name: "default",
-pattern: "{controller=Home}/{action=Index}/{id?}");
+"default",
+"{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
