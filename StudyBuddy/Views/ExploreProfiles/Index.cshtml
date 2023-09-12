@@ -7,14 +7,14 @@
 
 @foreach (var user in Model)
 {
-   // var possessiveName = user.Name.AddPossessiveSuffix();
+    //var possessiveName = user.Name.AddPossessiveSuffix();
 
     var avatarUrl = user.Traits.AvatarPath.Contains("://")
         ? user.Traits.AvatarPath// It's a link
         : Url.Content("~/avatars/" + user.Traits.AvatarPath);
 
-   // ViewBag.Title = possessiveName + " profile page";
-    //Layout = "_Layout";
+    //ViewBag.Title = possessiveName + " profile page";
+    Layout = "_Layout";
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
