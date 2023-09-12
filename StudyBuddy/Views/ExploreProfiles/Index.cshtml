@@ -1,4 +1,11 @@
-﻿@model List<StudyBuddy.Abstractions.IUser>
+﻿@using StudyBuddy.Extensions;
+@model List<StudyBuddy.Abstractions.IUser>
+
+@{
+    ViewBag.Title = "Explore page";
+    Layout = "_Layout";
+}
+
 
 @if (ViewBag.ErrorMessage != null)
 {
@@ -7,20 +14,20 @@
 
 @foreach (var user in Model)
 {
-    //var possessiveName = user.Name.AddPossessiveSuffix();
+    var possessiveName = user.Name.AddPossessiveSuffix();
 
     var avatarUrl = user.Traits.AvatarPath.Contains("://")
         ? user.Traits.AvatarPath// It's a link
         : Url.Content("~/avatars/" + user.Traits.AvatarPath);
 
-    //ViewBag.Title = possessiveName + " profile page";
-    Layout = "_Layout";
+    ViewBag.Title = possessiveName + " profile page";
+
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="mb-0">@user.Name Profile</h2>
+                    <h2 class="mb-0">@possessiveName Profile</h2>
                 </div>
                 <div class="card-body d-flex flex-column align-items-center">
                     <div class="avatar-container" style="background-image: url('@avatarUrl');"></div>
