@@ -25,9 +25,9 @@ namespace StudyBuddy.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception and handle it gracefully
+                // Log the exception
                 ViewBag.ErrorMessage = "An error occurred while retrieving user profiles.";
-                return View(new List<User>()); // Provide an empty list or handle the error as needed
+                return View(new List<User>()); // Provide an empty list
             }
         }
 
