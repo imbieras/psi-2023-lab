@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\StudyBuddy\StudyBuddy.csproj" />
+        <ProjectReference Include="..\..\StudyBuddy\StudyBuddy.csproj"/>
     </ItemGroup>
 
 </Project>

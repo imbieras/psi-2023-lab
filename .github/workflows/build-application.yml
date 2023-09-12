@@ -30,4 +30,4 @@ jobs:
         run: dotnet build -c Release --no-restore ./StudyBuddy/
 
       - name: Test StudyBuddy
-        run: dotnet test ./Tests/StudyBuddyTests/
+        run: dotnet test ./Tests/StudyBuddy.Tests/
