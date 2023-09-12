@@ -1,9 +1,9 @@
 using StudyBuddy.Abstractions;
 using StudyBuddy.Managers;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-var mvcBuilder = builder.Services.AddRazorPages();
+IMvcBuilder mvcBuilder = builder.Services.AddRazorPages();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -16,7 +16,7 @@ builder.Services.AddScoped<IUserManager, UserManager>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -34,15 +34,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-name: "default",
-pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// Check if the "avatars" folder exists, and create it if it doesn't
-string webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-string avatarsFolder = Path.Combine(webRootPath, "avatars");
-if (!Directory.Exists(avatarsFolder))
-{
-    Directory.CreateDirectory(avatarsFolder);
-}
+"default",
+"{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

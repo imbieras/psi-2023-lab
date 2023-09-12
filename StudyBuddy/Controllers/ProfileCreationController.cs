@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Models;
+using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Controllers;
 
@@ -7,55 +9,55 @@ public class ProfileCreationController : Controller
 {
     private readonly IUserManager _userManager;
 
-    public ProfileCreationController(IUserManager userManager)
-    {
-        _userManager = userManager;
-    }
+    public ProfileCreationController(IUserManager userManager) => _userManager = userManager;
 
     // GET
-    public IActionResult Index()
-    {
-        return View();
-    }
+    public IActionResult Index() => View();
 
     [HttpPost]
-    public async Task<IActionResult> ProcessNewProfile(string name, string birthdate, string subject, IFormFile? avatar)
+    public async Task<IActionResult> DisplayNewProfile(string name, string birthdate, string subject, IFormFile? avatar)
     {
         const UserFlags flags = UserFlags.Registered;
 
-        if (avatar is { Length: > 0 })
+        try
         {
-            try
-            {
-                string uniqueFileName = Guid.NewGuid() + "_" + avatar.FileName;
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\avatars", uniqueFileName);
+            string avatarPath = string.Empty;
 
-                await using (var fileStream = new FileStream(filePath, FileMode.Create))
+            if (avatar is { Length: > 0 })
+            {
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
+
+                // Check if the "avatars" folder exists, and create it if it doesn't
+                if (!Directory.Exists(uploadsFolder))
                 {
-                    await avatar.CopyToAsync(fileStream);
+                    Directory.CreateDirectory(uploadsFolder);
                 }
 
-                var userId = _userManager.RegisterUser(name, flags, DateTime.Parse(birthdate), subject, uniqueFileName);
-               
-                IUser? user = _userManager.GetUserById(userId);
+                string uniqueFileName = Guid.NewGuid() + "_" + avatar.FileName;
 
-                return View(user);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                await using FileStream fileStream = new(filePath, FileMode.Create);
+                await avatar.CopyToAsync(fileStream);
+
+                avatarPath = uniqueFileName;
             }
-            catch (Exception ex)
-            {
-                return BadRequest("Error uploading file: " + ex.Message);
-            }
+
+            UserTraits traits = new(
+            DateTime.Parse(birthdate),
+            subject,
+            avatarPath
+            );
+
+            UserId userId = _userManager.RegisterUser(name, flags, traits);
+
+            IUser? user = _userManager.GetUserById(userId);
+
+            return View(user);
         }
-
-        if (!DateTime.TryParse(birthdate, out DateTime parsedBirthdate))
+        catch (Exception ex)
         {
-            return BadRequest("Invalid birthdate format");
+            return BadRequest("Error uploading file: " + ex.Message);
         }
-
-        var userIdWithoutAvatar = _userManager.RegisterUser(name, flags, parsedBirthdate, subject, string.Empty);
-
-        IUser? userWithoutAvatar = _userManager.GetUserById(userIdWithoutAvatar);
-
-        return View(userWithoutAvatar);
     }
 }

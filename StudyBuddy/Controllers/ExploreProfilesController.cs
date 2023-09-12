@@ -18,10 +18,17 @@ namespace StudyBuddy.Controllers
 
         public IActionResult Index()
         {
-            List<User?> userList = _userManager.GetUserList();//Gets user list for ExploreProfiles/Index.cshtml
-
-            // Pass the list of users to the view
-            return View(userList);
+            try
+            {
+                List<IUser> userList = _userManager.GetAllUsers();
+                return View(userList);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and handle it gracefully
+                ViewBag.ErrorMessage = "An error occurred while retrieving user profiles.";
+                return View(new List<User>()); // Provide an empty list or handle the error as needed
+            }
         }
 
     }

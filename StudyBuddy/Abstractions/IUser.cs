@@ -1,3 +1,4 @@
+using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Abstractions;
@@ -10,9 +11,5 @@ public interface IUser
 
     UserFlags Flags { get; }
 
-    DateTime Birthdate { get; }
-
-    string Subject { get; }
-
-    string AvatarFileName { get; set; }
+    UserTraits Traits { get; set; }
 }
