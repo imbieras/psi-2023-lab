@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Managers;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
