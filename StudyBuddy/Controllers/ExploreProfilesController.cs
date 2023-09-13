@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Managers;
 using StudyBuddy.Models;
+using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Controllers
 {
@@ -27,9 +28,30 @@ namespace StudyBuddy.Controllers
             {
                 // Log the exception
                 ViewBag.ErrorMessage = "An error occurred while retrieving user profiles.";
-                return View(new List<User>()); // Provide an empty list
+                return View(new List<IUser>()); // Provide an empty list
             }
         }
 
+        public IActionResult Profile(string id)
+        {
+
+            UserId parseUserId= (UserId)Guid.Parse(id);
+
+            IUser? user = _userManager.GetUserById(parseUserId);
+
+            if (user != null)
+            {
+                return View("Index", new List<IUser?>() {user});
+            }
+            else
+            {
+                ErrorViewModel errorModel = new ErrorViewModel
+                {
+                    ErrorMessage = "User not found.",
+                };
+                return View("Error", errorModel);
+            }
+
+        }
     }
 }
