@@ -10,7 +10,7 @@ if (builder.Environment.IsDevelopment())
     mvcBuilder.AddRazorRuntimeCompilation();
 }
 
-// Register your IUserManager and its implementation here
+// Registering <IUserManager> with its implementation for DI
 builder.Services.AddScoped<IUserManager, UserManager>();
 
 // Add services to the container.
