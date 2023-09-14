@@ -39,14 +39,12 @@ public class ProfileController : Controller
         {
             return View("DisplayProfiles", new List<IUser?>() {user});
         }
-        else
+
+        ErrorViewModel errorModel = new()
         {
-            ErrorViewModel errorModel = new ErrorViewModel
-            {
-                ErrorMessage = "User not found.",
-            };
-            return View("Error", errorModel);
-        }
+            ErrorMessage = "User not found."
+        };
+        return View("Error", errorModel);
 
     }
 
@@ -89,7 +87,9 @@ public class ProfileController : Controller
 
             _userManager.RegisterUser(name, flags, traits);
 
-            return View("CreateProfile");
+            TempData["SuccessMessage"] = "Profile created successfully";
+
+            return RedirectToAction("CreateProfile");
         }
         catch (Exception ex)
         {
