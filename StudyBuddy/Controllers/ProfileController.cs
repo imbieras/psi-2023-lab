@@ -11,14 +11,20 @@ public class ProfileController : Controller
 
     public ProfileController(IUserManager userManager)
     {
+
         _userManager = userManager;
+        _userManager.LoadUsersFromCsv("lol.csv");
+
     }
 
     public IActionResult DisplayProfiles()
     {
         try
         {
+           
             List<IUser> userList = _userManager.GetAllUsers();
+        //    _userManager.WriteUsersToCsv("lol.csv");
+
             return View(userList);
         }
         catch (Exception ex)
@@ -31,13 +37,13 @@ public class ProfileController : Controller
 
     public IActionResult UserId(string id)
     {
-        UserId parseUserId= (UserId)Guid.Parse(id);
+        UserId parseUserId = (UserId)Guid.Parse(id);
 
         IUser? user = _userManager.GetUserById(parseUserId);
 
         if (user != null)
         {
-            return View("DisplayProfiles", new List<IUser?>() {user});
+            return View("DisplayProfiles", new List<IUser?>() { user });
         }
 
         ErrorViewModel errorModel = new()
