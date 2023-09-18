@@ -43,33 +43,6 @@ public class UserManager : IUserManager
 
     public List<IUser> GetAllUsers() => s_users.Where(u => u != null).Cast<IUser>().ToList();
 
-    public void WriteUsersToCsv(string filePath)
-    {
-        // Filter out null users and select necessary user information with traits
-        var usersToExport = s_users.Where(u => u != null)
-                                   .Select(u => new
-                                   {
-                                       Id = u.Id.ToString(),
-                                       Username = u.Name,
-                                       Flags = u.Flags.ToString(),
-                                       Birthdate = u.Traits.Birthdate.ToString("yyyy-MM-dd"),
-                                       Subject = u.Traits.Subject,
-                                       AvatarPath = u.Traits.AvatarPath
-                                   });
-
-        // Create a CSV content string
-        StringBuilder csvContent = new StringBuilder();
-        csvContent.AppendLine("Id;Username;Flags;Birthdate;Subject;AvatarPath");
-
-        foreach (var user in usersToExport)
-        {
-            csvContent.AppendLine($"{user.Id};{user.Username};{user.Flags};{user.Birthdate};{user.Subject};{user.AvatarPath}");
-        }
-
-        // Write the CSV content to the specified file
-        File.WriteAllText(filePath, csvContent.ToString());
-    }
-
 
     public void LoadUsersFromCsv(string filePath)
     {
@@ -96,6 +69,13 @@ public class UserManager : IUserManager
                 if (fields.Length >= 5) // Make sure there are at least 6 fields
                 {
                     var userId = UserId.From(Guid.Parse(fields[0]));
+
+                    // Check if a user with the same ID already exists
+                    if (s_users.Any(u => u?.Id == userId))
+                    {
+                        continue; // Skip this user if ID is already in the list
+                    }
+
                     var username = fields[1];
                     var flags = UserFlags.Registered;
 

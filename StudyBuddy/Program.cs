@@ -13,10 +13,13 @@ if (builder.Environment.IsDevelopment())
 // Registering <IUserManager> with its implementation for DI
 builder.Services.AddScoped<IUserManager, UserManager>();
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+
 WebApplication app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

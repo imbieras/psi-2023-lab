@@ -9,21 +9,19 @@ public class ProfileController : Controller
 {
     private readonly IUserManager _userManager; // Inject IUserManager
 
+
     public ProfileController(IUserManager userManager)
     {
-
         _userManager = userManager;
-        _userManager.LoadUsersFromCsv("lol.csv");
-
+        _userManager.LoadUsersFromCsv("test.csv");
     }
 
     public IActionResult DisplayProfiles()
     {
         try
         {
-           
+
             List<IUser> userList = _userManager.GetAllUsers();
-        //    _userManager.WriteUsersToCsv("lol.csv");
 
             return View(userList);
         }
