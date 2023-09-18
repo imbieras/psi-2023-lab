@@ -1,8 +1,27 @@
-﻿@{
+﻿@using StudyBuddy.Abstractions
+@inject IUserManager UserManager
+@inject IUserService UserService
+
+@{
     ViewData["Title"] = "Home Page";
+    var userId = UserService.GetCurrentUserId();
+    var user = UserManager.GetUserById(userId);
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>It seems you are new here! <a href="/ProfileCreation">Create a profile!</a></p>
+    @if (user != null)
+    {
+        <h1 class="display-4">Welcome, @user.Name!</h1>
+        <p>What would you like to do today?</p>
+        <br/>
+        <a class="btn btn-outline-primary" asp-area="" asp-controller="Profile" asp-action="DisplayProfiles">Explore</a>
+        <a class="btn btn-outline-primary" asp-area="" asp-controller="Profile" asp-action="CreateProfile">Create a profile</a>
+    }
+    else
+    {
+        <h1 class="display-4">Welcome</h1>
+        <p>
+            It seems you are new here! <a asp-area="" asp-controller="Profile" asp-action="CreateProfile">Create a profile!</a>
+        </p>
+    }
 </div>

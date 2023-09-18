@@ -10,4 +10,7 @@ public interface IUserManager
     IUser? GetUserByUsername(string username);
     void BanUser(UserId userId);
     List<IUser> GetAllUsers();
+    void MatchUsers(UserId currentUser, UserId otherUser);
+    public bool IsMatched(UserId currentUser, UserId otherUser);
+    List<IMatch> GetMatchHistory(UserId userId);
 }

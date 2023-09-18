@@ -1,5 +1,7 @@
 using StudyBuddy.Abstractions;
 using StudyBuddy.Managers;
+using StudyBuddy.Middlewares;
+using StudyBuddy.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,12 @@ if (builder.Environment.IsDevelopment())
 // Registering <IUserManager> with its implementation for DI
 builder.Services.AddScoped<IUserManager, UserManager>();
 
+// Registering <IUserService> with its implementation for DI
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Registering <AuthenticationMiddleware> with its implementation for DI
+builder.Services.AddHttpContextAccessor();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -25,6 +33,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Add middleware to the HTTP request pipeline.
+app.UseMiddleware<AuthenticationMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

@@ -1,0 +1,21 @@
+@model string?
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "_Layout";
+}
+
+<div class="container d-flex align-items-center justify-content-center vh-100">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title text-center">Login</h2>
+            <form method="post" asp-controller="Profile" asp-action="Login">
+                <div class="mb-3">
+                    <label for="userId" class="form-label">User ID</label>
+                    <input type="text" class="form-control" id="userId" name="userId" value="@Model">
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">Log In</button>
+            </form>
+        </div>
+    </div>
+</div>

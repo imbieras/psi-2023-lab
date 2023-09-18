@@ -17,7 +17,7 @@
     var possessiveName = user.Name.AddPossessiveSuffix();
 
     var avatarUrl = user.Traits.AvatarPath.Contains("://")
-        ? user.Traits.AvatarPath // It's a link
+        ? user.Traits.AvatarPath// It's a link
         : Url.Content("~/avatars/" + user.Traits.AvatarPath);
 
     ViewBag.Title = possessiveName + " profile page";

@@ -7,11 +7,13 @@ namespace StudyBuddy.Controllers;
 
 public class ProfileController : Controller
 {
-    private readonly IUserManager _userManager; // Inject IUserManager
+    private readonly IUserManager _userManager;
+    private readonly IUserService _userService;
 
-    public ProfileController(IUserManager userManager)
+    public ProfileController(IUserManager userManager, IUserService userService)
     {
         _userManager = userManager;
+        _userService = userService;
     }
 
     public IActionResult DisplayProfiles()
@@ -25,25 +27,22 @@ public class ProfileController : Controller
         {
             // Log the exception
             ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
-            return View(new List<IUser>()); // Provide an empty list
+            return View(new List<IUser>());// Provide an empty list
         }
     }
 
     public IActionResult UserId(string id)
     {
-        UserId parseUserId= (UserId)Guid.Parse(id);
+        UserId parseUserId = (UserId)Guid.Parse(id);
 
         IUser? user = _userManager.GetUserById(parseUserId);
 
         if (user != null)
         {
-            return View("DisplayProfiles", new List<IUser?>() {user});
+            return View("DisplayProfiles", new List<IUser?>() { user });
         }
 
-        ErrorViewModel errorModel = new()
-        {
-            ErrorMessage = "User not found."
-        };
+        ErrorViewModel errorModel = new() { ErrorMessage = "User not found." };
         return View("Error", errorModel);
 
     }
@@ -93,8 +92,51 @@ public class ProfileController : Controller
         }
         catch (Exception ex)
         {
-            ErrorViewModel errorModel = new ErrorViewModel { ErrorMessage = "Error uploading file: " + ex.Message, };
+            ErrorViewModel errorModel = new() { ErrorMessage = "Error uploading file: " + ex.Message };
             return View("Error", errorModel);
         }
+    }
+
+    public IActionResult Login(string? userId)
+    {
+        IUser? authenticatedUser = _userManager.GetUserById(_userService.GetCurrentUserId());
+        if (authenticatedUser != null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return View(userId);
+        }
+
+        if (!Guid.TryParse(userId, out Guid userIdGuid))
+        {
+            TempData["ErrorMessage"] = "Invalid user ID format";
+            return RedirectToAction("Login");
+        }
+
+        UserId parseUserId = ValueObjects.UserId.From(userIdGuid);
+
+        IUser? user = _userManager.GetUserById(parseUserId);
+
+        if (user == null)
+        {
+            TempData["ErrorMessage"] = "No such user found";
+            return RedirectToAction("Login");
+        }
+
+        CookieOptions cookieOptions = new()
+        {
+            Expires = DateTime.Now.AddHours(1),
+            HttpOnly = true,
+            IsEssential = true,
+            SameSite = SameSiteMode.Strict,
+            Secure = true
+        };
+
+        Response.Cookies.Append("UserId", userId, cookieOptions);
+
+        return RedirectToAction("Index", "Home");
     }
 }
