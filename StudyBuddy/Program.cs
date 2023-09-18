@@ -13,6 +13,10 @@ if (builder.Environment.IsDevelopment())
 // Registering <IUserManager> with its implementation for DI
 builder.Services.AddScoped<IUserManager, UserManager>();
 
+var userManager = builder.Services.BuildServiceProvider().GetService<IUserManager>();
+
+if (userManager != null)
+    userManager.LoadUsersFromCsv("test.csv");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

@@ -1,11 +1,8 @@
-using System.Diagnostics;
-using System.Formats.Asn1;
 using System.Globalization;
-using System.Text;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace StudyBuddy.Managers;
 
@@ -55,7 +52,6 @@ public class UserManager : IUserManager
 
         try
         {
-            // Read all lines from the CSV file
             var csvLines = File.ReadAllLines(filePath);
 
             // Skip the header row
@@ -66,7 +62,7 @@ public class UserManager : IUserManager
             {
                 var fields = line.Split(';');
 
-                if (fields.Length >= 5) // Make sure there are at least 6 fields
+                if (fields.Length >= 6) // Make sure there are at least 6 fields
                 {
                     var userId = UserId.From(Guid.Parse(fields[0]));
 

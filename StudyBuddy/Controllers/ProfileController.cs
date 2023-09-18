@@ -13,7 +13,6 @@ public class ProfileController : Controller
     public ProfileController(IUserManager userManager)
     {
         _userManager = userManager;
-        _userManager.LoadUsersFromCsv("test.csv");
     }
 
     public IActionResult DisplayProfiles()
@@ -33,23 +32,25 @@ public class ProfileController : Controller
         }
     }
 
-    public IActionResult UserId(string id)
+    public IActionResult UserProfile(string id)
     {
-        UserId parseUserId = (UserId)Guid.Parse(id);
-
-        IUser? user = _userManager.GetUserById(parseUserId);
-
-        if (user != null)
+        if (Guid.TryParse(id, out Guid parsedGuid))
         {
-            return View("DisplayProfiles", new List<IUser?>() { user });
+            UserId parseUserId = UserId.From(parsedGuid);
+
+            IUser? user = _userManager.GetUserById(parseUserId);
+
+            if (user != null)
+            {
+                return View("DisplayProfiles", new List<IUser?>() { user });
+            }
         }
 
         ErrorViewModel errorModel = new()
         {
-            ErrorMessage = "User not found."
+            ErrorMessage = "User not found or invalid ID."
         };
         return View("Error", errorModel);
-
     }
 
     public IActionResult CreateProfile() => View();
