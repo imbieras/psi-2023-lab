@@ -7,19 +7,19 @@
 <h2>Profile Creation Page</h2>
 <form method="post" action="SaveProfile" enctype="multipart/form-data">
 <div class="mb-3">
-    <label for="name" class="form-label">Name: <span class="text-danger">*</span></label>
+    <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
     <input type="text" class="form-control" id="name" name="name" required>
 </div>
 <div class="mb-3">
-    <label for="avatar" class="form-label">Profile Picture:</label>
+    <label for="avatar" class="form-label">Profile Picture</label>
     <input type="file" class="form-control" id="avatar" name="avatar" accept="image/png, image/jpeg">
 </div>
 <div class="mb-3">
-    <label for="birthdate" class="form-label">Birth Date: <span class="text-danger">*</span></label>
+    <label for="birthdate" class="form-label">Birth Date <span class="text-danger">*</span></label>
     <input type="date" class="form-control" id="birthdate" name="birthdate" required>
 </div>
 <div class="mb-3">
-    <label for="subject" class="form-label">Main Subject: <span class="text-danger">*</span></label>
+    <label for="subject" class="form-label">Main Subject <span class="text-danger">*</span></label>
     <select class="form-select" id="subject" name="subject" required>
         <option>Natural Sciences</option>
         <option>Health Sciences</option>
@@ -36,7 +36,7 @@
     </select>
 </div>
 <div class="mb-3">
-    <label class="form-label">Hobbies or Interests:</label>
+    <label class="form-label">Hobbies or Interests</label>
     <div class="btn-group-toggle" role="group">
         <label for="reading" class="btn btn-secondary mr-2 mb-2">
             <input type="checkbox" id="reading" name="hobbies[]" value="Reading">Reading
@@ -160,7 +160,7 @@
     </div>
 </div>
 <div class="mb-3">
-    <label for="markdownButtons" class="form-label">Insert Markdown Elements:</label>
+    <label for="markdownButtons" class="form-label">Insert Markdown Elements</label>
     <div class="btn-mb-3" id="markdownButtons">
         <div class="btn-group mr-2 mb-2">
             <button type="button" class="btn btn-outline-secondary" onclick="insertText('# Heading 1')">
@@ -223,11 +223,11 @@
     </div>
 </div>
 <div class="mb-3">
-    <label for="markdownContent" class="form-label">Markdown Content:</label>
+    <label for="markdownContent" class="form-label">Markdown Content</label>
     <textarea class="form-control" id="markdownContent" name="markdownContent" rows="6"></textarea>
 </div>
 <div class="mb-3">
-    <label for="htmlPreview" class="form-label">HTML Preview:</label>
+    <label for="htmlPreview" class="form-label">HTML Previewg</label>
     <div class="form-control" id="htmlPreview"></div>
 </div>
 <button type="submit" class="btn btn-primary">Submit</button>
