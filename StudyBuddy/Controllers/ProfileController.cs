@@ -3,6 +3,7 @@ using StudyBuddy.Abstractions;
 using StudyBuddy.Managers;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
+using Markdig;
 
 namespace StudyBuddy.Controllers;
 
@@ -10,7 +11,6 @@ public class ProfileController : Controller
 {
     private readonly IUserManager _userManager; // Inject IUserManager
     private readonly FileManager _fileManager;
-
 
     public ProfileController(IUserManager userManager, FileManager filemanager)
     {
@@ -32,7 +32,7 @@ public class ProfileController : Controller
         {
             // Log the exception
             ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
-            return View(new List<IUser>()); // Provide an empty list
+            return View(new List<IUser>());// Provide an empty list
         }
     }
 
@@ -60,7 +60,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar)
+    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -88,11 +88,21 @@ public class ProfileController : Controller
                 avatarPath = uniqueFileName;
             }
 
-            UserTraits traits = new(
-            DateTime.Parse(birthdate),
-            subject,
-            avatarPath
-            );
+            string htmlContent = string.Empty;
+            if (markdownContent != null)
+            {
+                // Convert Markdown to HTML
+                htmlContent = Markdown.ToHtml(markdownContent);
+            }
+
+            UserTraits traits = new()
+            {
+                Birthdate = DateTime.Parse(birthdate),
+                Subject = subject,
+                AvatarPath = avatarPath,
+                Description = htmlContent,
+                Hobbies = hobbies
+            };
 
             _userManager.RegisterUser(name, flags, traits);
 
