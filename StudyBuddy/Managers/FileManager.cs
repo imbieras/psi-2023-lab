@@ -11,6 +11,7 @@ namespace StudyBuddy.Managers
     {
         private readonly IUserManager _userManager;
         static bool loaded = false;
+        private const string CsvDelimiter = ";";
         public FileManager(IUserManager userManager)
         {
             _userManager = userManager;
@@ -37,7 +38,7 @@ namespace StudyBuddy.Managers
                 using (var reader = new StreamReader(filePath))
                 using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    Delimiter = ";", // Set the delimiter to ';'
+                    Delimiter = CsvDelimiter, // Set the delimiter to ';'
                 }))
                 {
                     var records = csv.GetRecords<UserCsvRecord>().ToList();
@@ -77,17 +78,12 @@ namespace StudyBuddy.Managers
 
     public class UserCsvRecord
     {
-        public Guid Id { get; set; }
-
-        public string Username { get; set; }
-
-        public string Flags { get; set; }
-
+        public Guid Id { get; set; } = Guid.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Flags { get; set; } = string.Empty;
         public DateTime Birthdate { get; set; }
-
-        public string Subject { get; set; }
-
-        public string AvatarPath { get; set; }
+        public string Subject { get; set; } = string.Empty;
+        public string AvatarPath { get; set; } = string.Empty;
     }
 
 
