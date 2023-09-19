@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
+using Markdig;
 
 namespace StudyBuddy.Controllers;
 
@@ -51,7 +52,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar)
+    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string markdownContent, List<string> hobbies)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -79,11 +80,17 @@ public class ProfileController : Controller
                 avatarPath = uniqueFileName;
             }
 
-            UserTraits traits = new(
-            DateTime.Parse(birthdate),
-            subject,
-            avatarPath
-            );
+            // Convert Markdown to HTML
+            string htmlContent = Markdown.ToHtml(markdownContent);
+
+            UserTraits traits = new()
+            {
+                Birthdate = DateTime.Parse(birthdate),
+                Subject = subject,
+                AvatarPath = avatarPath,
+                Description = htmlContent,
+                Hobbies = hobbies
+            };
 
             _userManager.RegisterUser(name, flags, traits);
 
