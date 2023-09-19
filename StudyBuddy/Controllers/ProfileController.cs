@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Managers;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
@@ -8,11 +9,14 @@ namespace StudyBuddy.Controllers;
 public class ProfileController : Controller
 {
     private readonly IUserManager _userManager; // Inject IUserManager
+    private readonly FileManager _fileManager;
 
 
-    public ProfileController(IUserManager userManager)
+    public ProfileController(IUserManager userManager, FileManager filemanager)
     {
         _userManager = userManager;
+        _fileManager = filemanager;
+
     }
 
     public IActionResult DisplayProfiles()

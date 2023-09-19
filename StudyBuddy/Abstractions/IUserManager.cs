@@ -10,5 +10,4 @@ public interface IUserManager
     IUser? GetUserByUsername(string username);
     void BanUser(UserId userId);
     List<IUser> GetAllUsers();
-    void LoadUsersFromCsv(string filePath);
 }

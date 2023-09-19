@@ -10,7 +10,6 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.10" />
         <PackageReference Include="Vogen" Version="3.0.21" />
     </ItemGroup>
-
     <ItemGroup>
         <Folder Include="wwwroot\avatars\" />
     </ItemGroup>
