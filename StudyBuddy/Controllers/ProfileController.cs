@@ -2,12 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
+using Markdig;
 
 namespace StudyBuddy.Controllers;
 
 public class ProfileController : Controller
 {
-    private readonly IUserManager _userManager; // Inject IUserManager
+    private readonly IUserManager _userManager;// Inject IUserManager
 
     public ProfileController(IUserManager userManager)
     {
@@ -25,25 +26,22 @@ public class ProfileController : Controller
         {
             // Log the exception
             ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
-            return View(new List<IUser>()); // Provide an empty list
+            return View(new List<IUser>());// Provide an empty list
         }
     }
 
     public IActionResult UserId(string id)
     {
-        UserId parseUserId= (UserId)Guid.Parse(id);
+        UserId parseUserId = (UserId)Guid.Parse(id);
 
         IUser? user = _userManager.GetUserById(parseUserId);
 
         if (user != null)
         {
-            return View("DisplayProfiles", new List<IUser?>() {user});
+            return View("DisplayProfiles", new List<IUser?>() { user });
         }
 
-        ErrorViewModel errorModel = new()
-        {
-            ErrorMessage = "User not found."
-        };
+        ErrorViewModel errorModel = new() { ErrorMessage = "User not found." };
         return View("Error", errorModel);
 
     }
@@ -51,7 +49,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar)
+    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -79,11 +77,21 @@ public class ProfileController : Controller
                 avatarPath = uniqueFileName;
             }
 
-            UserTraits traits = new(
-            DateTime.Parse(birthdate),
-            subject,
-            avatarPath
-            );
+            string htmlContent = string.Empty;
+            if (markdownContent != null)
+            {
+                // Convert Markdown to HTML
+                htmlContent = Markdown.ToHtml(markdownContent);
+            }
+
+            UserTraits traits = new()
+            {
+                Birthdate = DateTime.Parse(birthdate),
+                Subject = subject,
+                AvatarPath = avatarPath,
+                Description = htmlContent,
+                Hobbies = hobbies
+            };
 
             _userManager.RegisterUser(name, flags, traits);
 

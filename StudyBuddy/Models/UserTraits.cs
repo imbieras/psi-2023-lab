@@ -8,10 +8,16 @@ public struct UserTraits
 
     public string AvatarPath { get; set; }
 
-    public UserTraits(DateTime birthdate, string subject, string avatarPath)
+    public string Description { get; set; }
+
+    public List<string> Hobbies { get; set; }
+
+    public UserTraits(DateTime birthdate, string subject, string avatarPath, string description, List<string> hobbies)
     {
         Birthdate = birthdate;
         Subject = subject;
         AvatarPath = avatarPath;
+        Description = description;
+        Hobbies = hobbies;
     }
 }
