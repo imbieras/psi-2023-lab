@@ -1,8 +1,8 @@
-Id;Username;Flags;Birthdate;Subject;AvatarPath
-dafc0f22-fa04-4a4b-9990-9c1d8777f24d;Test1 Test1;Registered;2023-09-14;Arts & Design;https://img.freepik.com/premium-photo/male-werewolf-with-head-wolf-dark-foggy-forest-generative-ai-illustration_118086-7239.jpg
-a7b29f0f-4a91-4213-9a97-f2cfe08d607e;Test2 Test2;Registered;2023-09-05;Natural Sciences;https://cdnb.artstation.com/p/assets/images/images/063/783/949/large/antonio-j-manzanedo-werewolf-manzanedo-3.jpg?1686332788
-db7469f9-fa90-424b-8e97-24a9027c441d;Test3 Test3;Registered;2023-08-28;Law & Legal Studies;https://cdn.images.express.co.uk/img/dynamic/80/590x/Werewolf-1056224.jpg?r=1544355660150
-b8e15cc5-6797-4af0-a8f9-dbb5ec46d80c;Test4 Test4;Registered;2023-08-28;Natural Sciences;https://img.freepik.com/premium-photo/male-werewolf-with-head-wolf-dark-foggy-forest-generative-ai-illustration_118086-7239.jpg
-cf5db5b3-f479-4456-8838-5265e004d262;Test5 Test5;Registered;2023-09-16;Natural Sciences;https://t4.ftcdn.net/jpg/05/66/60/71/360_F_566607127_ejZQciZ1BKLfK0VbZ3FMKWCPF6eZFK9U.jpg
-cf5db5b3-f479-4456-8838-5265e004d263;Test6 Test6;Registered;2023-09-15;Natural Sciences;https://t4.ftcdn.net/jpg/05/66/60/71/360_F_566607127_ejZQciZ1BKLfK0VbZ3FMKWCPF6eZFK9U.jpg
-cf5db5b3-f479-4456-8838-5265e004d264;Test7 Test7;Registered;1883-09-14;Natural Sciences;https://www.gravatar.com/avatar/cf5db5b3-f479-4456-8838-5265e004d260?d=identicon
+Id;Username;Flags;Birthdate;Subject;AvatarPath;Description;Hobbies
+dafc0f22-fa04-4a4b-9990-9c1d8777f24d;Test1 Test1;Registered;2023-09-14;Arts & Design;https://img.freepik.com/premium-photo/male-werewolf-with-head-wolf-dark-foggy-forest-generative-ai-illustration_118086-7239.jpg;"Hello hehe";"Photography"
+a7b29f0f-4a91-4213-9a97-f2cfe08d607e;Test2 Test2;Registered;2023-09-05;Natural Sciences;https://cdnb.artstation.com/p/assets/images/images/063/783/949/large/antonio-j-manzanedo-werewolf-manzanedo-3.jpg?1686332788;"aaaaaa";"Gardening, Cooking"
+db7469f9-fa90-424b-8e97-24a9027c441d;Test3 Test3;Registered;2023-08-28;Law & Legal Studies;https://cdn.images.express.co.uk/img/dynamic/80/590x/Werewolf-1056224.jpg?r=1544355660150;"fskjdnfksjdnf";"Dancing, Cooking"
+b8e15cc5-6797-4af0-a8f9-dbb5ec46d80c;Test4 Test4;Registered;2023-08-28;Natural Sciences;https://img.freepik.com/premium-photo/male-werewolf-with-head-wolf-dark-foggy-forest-generative-ai-illustration_118086-7239.jpg;"mfldsjnfksj";"Cooking"
+cf5db5b3-f479-4456-8838-5265e004d262;Test5 Test5;Registered;2023-09-16;Natural Sciences;https://t4.ftcdn.net/jpg/05/66/60/71/360_F_566607127_ejZQciZ1BKLfK0VbZ3FMKWCPF6eZFK9U.jpg;"fjndskfjdn";"Binge-watching"
+cf5db5b3-f479-4456-8838-5265e004d263;Test6 Test6;Registered;2023-09-15;Natural Sciences;https://t4.ftcdn.net/jpg/05/66/60/71/360_F_566607127_ejZQciZ1BKLfK0VbZ3FMKWCPF6eZFK9U.jpg;"fskjdnfsd";"Baking, Dancing"
+cf5db5b3-f479-4456-8838-5265e004d264;Test7 Test7;Registered;1883-09-14;Natural Sciences;https://www.gravatar.com/avatar/cf5db5b3-f479-4456-8838-5265e004d260?d=identicon;"kfjsdnf";"Auto mechanics, Baking"

@@ -116,4 +116,10 @@ public class ProfileController : Controller
             return View("Error", errorModel);
         }
     }
+
+    public IActionResult ProfileLoader()
+    {
+        _fileManager.LoadUsersFromCsv("test.csv");
+        return View();
+    }
 }
