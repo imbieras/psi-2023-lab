@@ -1,43 +1,69 @@
 ﻿@using StudyBuddy.Generator
+@model StudyBuddy.Abstractions.IUser
 @{
+
     ViewData["Title"] = "Home Page";
     About.NameGenerator();
     About.SurnameGenerator();
-    About.AgeGenerator();
     About.SubjectGenerator();
 
+    DateTime randomDate = About.DateGenerator();
+    string date = randomDate.ToString("yyyy-MM-dd");
 }
 
 <style>
-h1 {
-  text-align: center;
-}
+    h1 {
+        text-align: center;
+    }
+    .rounded-image {
+        border-radius: 50%;
+    }
 </style>
 
 <h1>Potential Buddy</h1>
 
 <form method="post" action="Home" enctype="application/x-www-form-urlencoded">
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="mb-0">@About.NameGenerator() @About.SurnameGenerator()' Profile</h2>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">@About.NameGenerator() @About.SurnameGenerator() Profile</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <div class="avatar-container">
+                            <img src="@GetRandomImageUrl()" class="rounded-image"/>
+                        </div>
+                        <ul class="list-group list-group-flush mt-4">
+                            <li class="list-group-item">
+                                <strong>Birthdate:</strong> @date
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Favorite Subject:</strong> @About.SubjectGenerator()
+                            </li>
+                        </ul>
+                    </div>
+                    <button type="submit" class="btn btn-primary">New Profile</button>
                 </div>
-                <div class="card-body d-flex flex-column align-items-center">
-                    <div class="avatar-container"></div>
-                    <ul class="list-group list-group-flush mt-4">
-                        <li class="list-group-item">
-                            <strong>Age:</strong> @About.AgeGenerator()
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Favorite Subject:</strong> @About.SubjectGenerator()
-                        </li>
-                    </ul>
-                </div>
-                <button type="submit" class="btn btn-primary">New Profile</button>
             </div>
         </div>
     </div>
-</div>
 </form>
+
+@functions {
+    // Function to get a random image URL from the array
+    public string GetRandomImageUrl()
+    {
+        string[] imageUrls = {
+            "https://www.gravatar.com/avatar/default?s=150",
+            "https://www.gravatar.com/avatar/default?s=150&r=pg&d=monsterid",
+            "https://www.gravatar.com/avatar/default?s=150&r=pg&d=retro",
+            "https://www.gravatar.com/avatar/default?s=150&r=pg&d=wavatar",
+            "https://www.gravatar.com/avatar/default?s=150&r=pg&d=robohash"
+        };
+
+        Random random = new Random();
+        int randomIndex = random.Next(imageUrls.Length);
+        return imageUrls[randomIndex];
+    }
+}

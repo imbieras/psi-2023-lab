@@ -1,39 +1,46 @@
 using System.Runtime.CompilerServices;
-
+using StudyBuddy.Extensions;
 namespace StudyBuddy.Generator;
 
 public static class About
 {
+    private static Random random = new Random();    
     public static string NameGenerator()
     {
-        Random r = new Random();
         string[] words = {"Liam", "Tom", "Noah", "James", "William", "Lucas",
         "Olivia", "Emma", "Charlotte", "Sophia", "Mia", "Evelyn"};
-        return words[r.Next(0, words.Length)];
+        return words[random.Next(0, words.Length)];
     }
     public static string SurnameGenerator()
     {
-        Random r = new Random();
-        string[] words = {"Smith", "Johnson", "williams", "Brown", "Jones",
+
+        string[] words = {"Smith", "Johnson", "Williams", "Brown", "Jones",
         "Miller", "Lopez", "Martinez", "Rodriguez", "Gonzales"};
-        return words[r.Next(0, words.Length)];
+
+        int randomIndex = random.Next(0, words.Length);
+        string randomSurname = words[randomIndex];
+        string surnameWithPossessive = randomSurname.AddPossessiveSuffix();
+
+        return surnameWithPossessive;
     }
 
-    public static int AgeGenerator()
+    public static DateTime DateGenerator()
     {
-        Random rnd = new Random();
-        return rnd.Next(18, 99);
-      //DateTime datetime = DateTime.Now;
-      //return DateOnly.FromDateTime(DateTime.Now);
+        
+        int year = random.Next(1950, DateTime.Now.Year + 1); // Random year between 1900 and current year
+        int month = random.Next(1, 13); // Random month between 1 and 12
+        int day = random.Next(1, DateTime.DaysInMonth(year, month) + 1);
+        DateTime randomDateTime = new DateTime(year, month, day);
+
+        return randomDateTime;
     }
 
     public static string SubjectGenerator()
     {
-        Random r = new Random();
         string[] words = {"Natural Sciences", "Health Sciences", "Engineering & Technology",
         "Social Sciences", "Humanities", "Business & Management", "Arts & Design",
         "Mathematical Sciences", "Bio Sciences", "Law & Legal Studies", "Agriculture & Forestry"};
-        return words[r.Next(0, words.Length)];
+        return words[random.Next(0, words.Length)];
     }
   
     
