@@ -3,95 +3,87 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
-using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Managers
+namespace StudyBuddy.Managers;
+
+public class FileManager
 {
-    public class FileManager
+    private readonly IUserManager _userManager;
+    private const string CsvDelimiter = ";";
+
+    public FileManager(IUserManager userManager)
     {
-        private readonly IUserManager _userManager;
-        private readonly bool _loaded;
-        private const string CsvDelimiter = ";";
-
-        public FileManager(IUserManager userManager)
-        {
-            _userManager = userManager;
-
-            if (_loaded)
-            {
-                LoadUsersFromCsv("test.csv");
-                _loaded = true;
-            }
-        }
-
-        public void LoadUsersFromCsv(string filePath)
-        {
-            if (!File.Exists(filePath))
-            {
-                Console.WriteLine("The specified CSV file does not exist.");
-                return;
-            }
-
-            try
-            {
-                using var reader = new StreamReader(filePath);
-                using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    Delimiter = CsvDelimiter,
-                    PrepareHeaderForMatch = args => args.Header.ToLower()
-                });
-                var records = csv.GetRecords<UserCsvRecord>().ToList();
-
-                foreach (var record in records)
-                {
-                    var userId = UserId.From(record.Id);
-                    if (_userManager.GetUserById(userId) != null)
-                    {
-                        continue;
-                    }
-
-                    string username = record.Username;
-                    var flags = Enum.TryParse(record.Flags, out UserFlags parsedFlags) ? parsedFlags : UserFlags.Registered;
-                    var birthdate = record.Birthdate;
-                    string subject = record.Subject;
-                    string avatarPath = record.AvatarPath;
-                    string description = record.Description;
-                    var hobbies = new List<string>(record.Hobbies.Split(','));
-
-                    var traits = new UserTraits(birthdate, subject, avatarPath, description, hobbies);
-
-                    _userManager.RegisterUser(username, flags, traits);
-                }
-
-                Console.WriteLine($"Loaded {records.Count} users from the CSV file.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error loading users from CSV file: {ex.Message}");
-            }
-        }
+        _userManager = userManager;
     }
 
-    public class UserCsvRecord
+    public void LoadUsersFromCsv(string filePath)
     {
-        public UserCsvRecord(Guid id, string username, string flags, string subject, string avatarPath, string description, string hobbies)
+        if (!File.Exists(filePath))
         {
-            Id = id;
-            Username = username;
-            Flags = flags;
-            Subject = subject;
-            AvatarPath = avatarPath;
-            Description = description;
-            Hobbies = hobbies;
+            Console.WriteLine("The specified CSV file does not exist.");
+            return;
         }
 
-        public Guid Id { get; set; }
-        public string Username { get; set; }
-        public string Flags { get; set; }
-        public DateTime Birthdate { get; set; }
-        public string Subject { get; set; }
-        public string AvatarPath { get; set; }
-        public string Description { get; set; }
-        public string Hobbies { get; set; }
+        try
+        {
+            using var reader = new StreamReader(filePath);
+            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Delimiter = CsvDelimiter,
+                PrepareHeaderForMatch = args => args.Header.ToLower()
+            });
+
+            var records = csv.GetRecords<UserCsvRecord>().ToList();
+
+            foreach (var record in records)
+            {
+                string username = record.Username;
+                var flags = Enum.TryParse(record.Flags, out UserFlags parsedFlags) ? parsedFlags : UserFlags.Registered;
+                DateTime birthdate = record.Birthdate;
+                string subject = record.Subject;
+                string avatarPath = record.AvatarPath;
+                string description = record.Description;
+                var hobbies = new List<string>(record.Hobbies.Split(','));
+
+                UserTraits traits = new()
+                {
+                    Birthdate = birthdate,
+                    Subject = subject,
+                    AvatarPath = avatarPath,
+                    Description = description,
+                    Hobbies = hobbies
+                };
+
+                _userManager.RegisterUser(username, flags, traits);
+            }
+
+            Console.WriteLine($"Loaded {records.Count} users from the CSV file.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading users from CSV file: {ex.Message}");
+        }
     }
+}
+
+public class UserCsvRecord
+{
+    public UserCsvRecord(string username, string flags, string subject, string avatarPath, string description, string hobbies, DateTime birthdate)
+    {
+        Username = username;
+        Flags = flags;
+        Subject = subject;
+        AvatarPath = avatarPath;
+        Description = description;
+        Hobbies = hobbies;
+        Birthdate = birthdate;
+    }
+
+    public string Username { get; set; }
+    public string Flags { get; set; }
+    public DateTime Birthdate { get; set; }
+    public string Subject { get; set; }
+    public string AvatarPath { get; set; }
+    public string Description { get; set; }
+    public string Hobbies { get; set; }
 }

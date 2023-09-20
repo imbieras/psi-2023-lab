@@ -10,9 +10,9 @@ if (builder.Environment.IsDevelopment())
     mvcBuilder.AddRazorRuntimeCompilation();
 }
 
-// Registering <IUserManager> with its implementation for DI
-builder.Services.AddScoped<IUserManager, UserManager>();
-builder.Services.AddScoped<FileManager>();
+// Registering implementations for DI
+builder.Services.AddSingleton<IUserManager, UserManager>();
+builder.Services.AddSingleton<FileManager>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -38,5 +38,9 @@ app.UseAuthorization();
 app.MapControllerRoute(
 "default",
 "{controller=Home}/{action=Index}/{id?}");
+
+// Retrieve the FileManager singleton and execute LoadUsersFromCsv
+var fileManager = app.Services.GetRequiredService<FileManager>();
+fileManager.LoadUsersFromCsv("test.csv");
 
 app.Run();
