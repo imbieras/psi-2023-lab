@@ -79,11 +79,11 @@ public class UserCsvRecord
         Birthdate = birthdate;
     }
 
-    public string Username { get; set; }
-    public string Flags { get; set; }
-    public DateTime Birthdate { get; set; }
-    public string Subject { get; set; }
-    public string AvatarPath { get; set; }
-    public string Description { get; set; }
-    public string Hobbies { get; set; }
+    public string Username { get; }
+    public string Flags { get; }
+    public DateTime Birthdate { get; }
+    public string Subject { get; }
+    public string AvatarPath { get; }
+    public string Description { get; }
+    public string Hobbies { get; }
 }
