@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Managers;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 using Markdig;
@@ -8,18 +9,23 @@ namespace StudyBuddy.Controllers;
 
 public class ProfileController : Controller
 {
-    private readonly IUserManager _userManager;// Inject IUserManager
+    private readonly IUserManager _userManager; // Inject IUserManager
+    private readonly FileManager _fileManager;
 
-    public ProfileController(IUserManager userManager)
+    public ProfileController(IUserManager userManager, FileManager filemanager)
     {
         _userManager = userManager;
+        _fileManager = filemanager;
+
     }
 
     public IActionResult DisplayProfiles()
     {
         try
         {
+
             List<IUser> userList = _userManager.GetAllUsers();
+
             return View(userList);
         }
         catch (Exception ex)
@@ -30,20 +36,25 @@ public class ProfileController : Controller
         }
     }
 
-    public IActionResult UserId(string id)
+    public IActionResult UserProfile(string id)
     {
-        UserId parseUserId = (UserId)Guid.Parse(id);
-
-        IUser? user = _userManager.GetUserById(parseUserId);
-
-        if (user != null)
+        if (Guid.TryParse(id, out Guid parsedGuid))
         {
-            return View("DisplayProfiles", new List<IUser?>() { user });
+            UserId parseUserId = UserId.From(parsedGuid);
+
+            IUser? user = _userManager.GetUserById(parseUserId);
+
+            if (user != null)
+            {
+                return View("DisplayProfiles", new List<IUser?>() { user });
+            }
         }
 
-        ErrorViewModel errorModel = new() { ErrorMessage = "User not found." };
+        ErrorViewModel errorModel = new()
+        {
+            ErrorMessage = "User not found or invalid ID."
+        };
         return View("Error", errorModel);
-
     }
 
     public IActionResult CreateProfile() => View();
