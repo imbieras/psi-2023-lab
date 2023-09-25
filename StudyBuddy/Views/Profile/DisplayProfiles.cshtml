@@ -41,7 +41,9 @@
                         <li class="list-group-item">
                             <strong>UID:</strong> @user.Id.ToString()
                         </li>
-                       
+                        <li class="list-group-item">
+                            <a href="@Url.Action("UserProfile", "Profile", new { id = user.Id })" class="btn btn-primary mt-3">View Profile</a>
+                        </li>
                     </ul>
                 </div>
             </div>

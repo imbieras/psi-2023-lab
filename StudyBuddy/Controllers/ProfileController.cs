@@ -23,7 +23,6 @@ public class ProfileController : Controller
     {
         try
         {
-
             List<IUser> userList = _userManager.GetAllUsers();
 
             return View(userList);
@@ -46,7 +45,7 @@ public class ProfileController : Controller
 
             if (user != null)
             {
-                return View("DisplayProfiles", new List<IUser?>() { user });
+                return View("ViewFullProfile",  user );
             }
         }
 
