@@ -116,4 +116,32 @@ public class ProfileController : Controller
             return View("Error", errorModel);
         }
     }
+
+
+
+    public IActionResult RandomProfile()
+    {
+        List<IUser> userList = _userManager.GetAllUsers();
+
+        // Check if there are any users to display
+        if (userList.Count == 0)
+        {
+            ViewBag.ErrorMessage = "No user profiles available.";
+            return View("Error");
+        }
+
+        // Shuffle the list of users
+        Random random = new Random();
+        userList = userList.OrderBy(x => random.Next()).ToList();
+
+        // Get the first user (randomly shuffled)
+        IUser randomUser = userList[0];
+
+        // Remove the displayed user from the list
+        userList.RemoveAt(0);
+
+        return View("RandomProfile", randomUser);
+    }
+
+
 }

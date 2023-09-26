@@ -39,8 +39,4 @@ public class UserManager : IUserManager
     }
 
     public List<IUser> GetAllUsers() => s_users.Where(u => u != null).Cast<IUser>().ToList();
-
-
-
-
 }

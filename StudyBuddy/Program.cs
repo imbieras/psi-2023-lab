@@ -39,6 +39,7 @@ app.MapControllerRoute(
 "default",
 "{controller=Home}/{action=Index}/{id?}");
 
+
 // Retrieve the FileManager singleton and execute LoadUsersFromCsv
 var fileManager = app.Services.GetRequiredService<FileManager>();
 fileManager.LoadUsersFromCsv("test.csv");

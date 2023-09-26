@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Random Profile";
+    Layout = "_Layout";
+}
+
+@model StudyBuddy.Abstractions.IUser
+
+<div class="text-center">
+    <h1 class="display-4">User Profile</h1>
+
+    @if (Model != null)
+    {
+        var avatarUrl = Model.Traits.AvatarPath.Contains("://")
+        ? Model.Traits.AvatarPath
+        : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">@Model.Name</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <div class="avatar-container" style="background-image: url('@avatarUrl');"></div>
+                        <ul class="list-group list-group-flush mt-4">
+                            <li class="list-group-item">
+                                <strong>Birthday:</strong> @Model.Traits.Birthdate.ToShortDateString()
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Favorite Subject:</strong> @Model.Traits.Subject
+                            </li>
+                            <li class="list-group-item">
+                                <strong>UID:</strong> @Model.Id.ToString()
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>It seems like there are no more users left :(</p>
+    }
+</div>
