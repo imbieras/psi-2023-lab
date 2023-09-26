@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
+using Markdig;
 
 namespace StudyBuddy.Controllers;
 
@@ -20,7 +21,9 @@ public class ProfileController : Controller
     {
         try
         {
+
             List<IUser> userList = _userManager.GetAllUsers();
+
             return View(userList);
         }
         catch (Exception ex)
@@ -31,26 +34,28 @@ public class ProfileController : Controller
         }
     }
 
-    public IActionResult UserId(string id)
+    public IActionResult UserProfile(string id)
     {
-        UserId parseUserId = (UserId)Guid.Parse(id);
-
-        IUser? user = _userManager.GetUserById(parseUserId);
-
-        if (user != null)
+        if (Guid.TryParse(id, out Guid parsedGuid))
         {
-            return View("DisplayProfiles", new List<IUser?>() { user });
+            UserId parseUserId = UserId.From(parsedGuid);
+
+            IUser? user = _userManager.GetUserById(parseUserId);
+
+            if (user != null)
+            {
+                return View("DisplayProfiles", new List<IUser?>() { user });
+            }
         }
 
-        ErrorViewModel errorModel = new() { ErrorMessage = "User not found." };
+        ErrorViewModel errorModel = new() { ErrorMessage = "User not found or invalid ID." };
         return View("Error", errorModel);
-
     }
 
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar)
+    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -78,11 +83,21 @@ public class ProfileController : Controller
                 avatarPath = uniqueFileName;
             }
 
-            UserTraits traits = new(
-            DateTime.Parse(birthdate),
-            subject,
-            avatarPath
-            );
+            string htmlContent = string.Empty;
+            if (markdownContent != null)
+            {
+                // Convert Markdown to HTML
+                htmlContent = Markdown.ToHtml(markdownContent);
+            }
+
+            UserTraits traits = new()
+            {
+                Birthdate = DateTime.Parse(birthdate),
+                Subject = subject,
+                AvatarPath = avatarPath,
+                Description = htmlContent,
+                Hobbies = hobbies
+            };
 
             _userManager.RegisterUser(name, flags, traits);
 
@@ -116,7 +131,7 @@ public class ProfileController : Controller
             return RedirectToAction("Login");
         }
 
-        UserId parseUserId = ValueObjects.UserId.From(userIdGuid);
+        UserId parseUserId = UserId.From(userIdGuid);
 
         IUser? user = _userManager.GetUserById(parseUserId);
 
@@ -139,4 +154,5 @@ public class ProfileController : Controller
 
         return RedirectToAction("Index", "Home");
     }
+
 }
