@@ -4,7 +4,13 @@
 
 @{
     var userId = UserService.GetCurrentUserId();
-    var user = UserManager.GetUserById(userId);
+    var currentUserId = UserService.GetCurrentUserId();
+    IUser? user = null;
+
+    if (currentUserId != null)
+    {
+        user = UserManager.GetUserById(currentUserId.Value);
+    }
 }
 
 <ul class="navbar-nav ml-auto">

@@ -21,8 +21,17 @@ public class ProfileController : Controller
     {
         try
         {
+            // Get the current user's ID from UserService if not null, otherwise use a default value
+
+            UserId? currentUserId = _userService.GetCurrentUserId();
 
             List<IUser> userList = _userManager.GetAllUsers();
+
+            // Pass the current user's ID to the view
+            if (currentUserId != null)
+            {
+                ViewBag.CurrentUserId = currentUserId;
+            }
 
             return View(userList);
         }
@@ -114,8 +123,9 @@ public class ProfileController : Controller
 
     public IActionResult Login(string? userId)
     {
-        IUser? authenticatedUser = _userManager.GetUserById(_userService.GetCurrentUserId());
-        if (authenticatedUser != null)
+        UserId? currentUserId = _userService.GetCurrentUserId();
+
+        if (currentUserId != null && _userManager.GetUserById(currentUserId.Value) != null)
         {
             return RedirectToAction("Index", "Home");
         }
@@ -155,4 +165,30 @@ public class ProfileController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    [HttpPost]
+    public IActionResult MatchUsers(string currentUser, string otherUser)
+    {
+        try
+        {
+            // Convert user IDs to the appropriate type (e.g., Guid)
+            UserId currentUserId = UserId.From(Guid.Parse(currentUser));
+            UserId otherUserId = UserId.From(Guid.Parse(otherUser));
+
+            // Call UserManager.MatchUsers with the user IDs
+            _userManager.MatchUsers(currentUserId, otherUserId);
+
+            if (_userManager.IsMatched(currentUserId, otherUserId))
+            {
+                TempData["SuccessMessage"] = "Users matched successfully";
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            TempData["ErrorMessage"] = "An error occurred while matching users. " + ex.Message;
+        }
+
+        // Redirect back to the explore page
+        return RedirectToAction("DisplayProfiles");
+    }
 }

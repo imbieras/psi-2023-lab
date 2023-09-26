@@ -4,6 +4,6 @@ namespace StudyBuddy.Abstractions;
 
 public interface IUserService
 {
-    UserId GetCurrentUserId();
+    UserId? GetCurrentUserId();
     void SetCurrentUser(UserId userId);
 }
