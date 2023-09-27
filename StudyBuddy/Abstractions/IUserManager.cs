@@ -10,4 +10,6 @@ public interface IUserManager
     IUser? GetUserByUsername(string username);
     void BanUser(UserId userId);
     List<IUser> GetAllUsers();
+
+    IUser GetRandomUser();
 }
