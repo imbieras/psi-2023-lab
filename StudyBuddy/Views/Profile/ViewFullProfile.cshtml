@@ -38,7 +38,11 @@
                         <strong>UID:</strong> @Model.Id.ToString()
                     </li>
                     <li class="list-group-item">
-                        <strong>Hobbies:</strong> @string.Join(", ", Model.Traits.Hobbies)
+                        <strong>Hobbies:</strong>
+                        @foreach (var hobby in Model.Traits.Hobbies)
+                        {
+                            <span class="badge bg-secondary">@hobby</span>
+                        }
                     </li>
                 </ul>
             </div>
