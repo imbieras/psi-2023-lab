@@ -3,7 +3,6 @@
 @inject IUserService UserService
 
 @{
-    var userId = UserService.GetCurrentUserId();
     var currentUserId = UserService.GetCurrentUserId();
     IUser? user = null;
 
@@ -18,6 +17,7 @@
         @if (user != null)
         {
             <a class="nav-link text-dark">Logged in as: <b>@user.Name</b></a>
+
         }
         else
         {
@@ -25,3 +25,9 @@
         }
     </li>
 </ul>
+@if (user != null)
+{
+    <form class="d-flex" method="post" asp-controller="Profile" asp-action="Logout">
+        <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+}

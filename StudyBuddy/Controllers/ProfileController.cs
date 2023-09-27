@@ -191,4 +191,12 @@ public class ProfileController : Controller
         // Redirect back to the explore page
         return RedirectToAction("DisplayProfiles");
     }
+
+    [HttpPost]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("UserId");
+
+        return RedirectToAction("Index", "Home");
+    }
 }

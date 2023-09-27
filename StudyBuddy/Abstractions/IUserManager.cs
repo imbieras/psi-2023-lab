@@ -11,6 +11,7 @@ public interface IUserManager
     void BanUser(UserId userId);
     List<IUser> GetAllUsers();
     void MatchUsers(UserId currentUser, UserId otherUser);
-    public bool IsMatched(UserId currentUser, UserId otherUser);
+    bool IsRequestedMatch(UserId currentUser, UserId otherUser);
+    bool IsMatched(UserId currentUser, UserId otherUser);
     List<IMatch> GetMatchHistory(UserId userId);
 }

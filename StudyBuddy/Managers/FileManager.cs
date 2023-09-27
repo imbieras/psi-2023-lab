@@ -23,8 +23,8 @@ public class FileManager
 
         try
         {
-            using StreamReader reader = new StreamReader(filePath);
-            using CsvReader csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower() });
+            using StreamReader reader = new(filePath);
+            using CsvReader csv = new(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower() });
 
             List<UserCsvRecord> records = csv.GetRecords<UserCsvRecord>().ToList();
 
@@ -36,7 +36,7 @@ public class FileManager
                 string subject = record.Subject;
                 string avatarPath = record.AvatarPath;
                 string description = record.Description;
-                List<string> hobbies = new List<string>(record.Hobbies.Split(','));
+                List<string> hobbies = new(record.Hobbies.Split(','));
 
                 UserTraits traits = new()
                 {
