@@ -1,7 +1,7 @@
 ﻿@model List<StudyBuddy.Abstractions.IUser>
 @using StudyBuddy.Extensions;
 @using StudyBuddy.Abstractions
-@inject IUserManager UserManager
+@inject IMatchingManager MatchingManager
 
 @{
     ViewBag.Title = "Explore page";
@@ -29,8 +29,8 @@
 
         if (ViewBag.CurrentUserId != null)
         {
-            isRequestedMatch = UserManager.IsRequestedMatch(ViewBag.CurrentUserId, user.Id);
-            isMatched = UserManager.IsMatched(ViewBag.CurrentUserId, user.Id);
+            isRequestedMatch = MatchingManager.IsRequestedMatch(ViewBag.CurrentUserId, user.Id);
+            isMatched = MatchingManager.IsMatched(ViewBag.CurrentUserId, user.Id);
         }
 
         <div class="row justify-content-center mt-4">

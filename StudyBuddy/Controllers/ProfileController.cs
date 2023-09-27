@@ -9,11 +9,13 @@ namespace StudyBuddy.Controllers;
 public class ProfileController : Controller
 {
     private readonly IUserManager _userManager;
+    private readonly IMatchingManager _matchingManager;
     private readonly IUserService _userService;
 
-    public ProfileController(IUserManager userManager, IUserService userService)
+    public ProfileController(IUserManager userManager, IMatchingManager matchingManager, IUserService userService)
     {
         _userManager = userManager;
+        _matchingManager = matchingManager;
         _userService = userService;
     }
 
@@ -175,9 +177,9 @@ public class ProfileController : Controller
             UserId otherUserId = UserId.From(Guid.Parse(otherUser));
 
             // Call UserManager.MatchUsers with the user IDs
-            _userManager.MatchUsers(currentUserId, otherUserId);
+            _matchingManager.MatchUsers(currentUserId, otherUserId);
 
-            if (_userManager.IsMatched(currentUserId, otherUserId))
+            if (_matchingManager.IsMatched(currentUserId, otherUserId))
             {
                 TempData["SuccessMessage"] = "Users matched successfully";
             }

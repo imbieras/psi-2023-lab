@@ -14,6 +14,7 @@ if (builder.Environment.IsDevelopment())
 
 // Registering implementations for DI
 builder.Services.AddSingleton<IUserManager, UserManager>();
+builder.Services.AddSingleton<IMatchingManager, MatchingManager>();
 builder.Services.AddSingleton<FileManager>();
 builder.Services.AddScoped<IUserService, UserService>();
 
