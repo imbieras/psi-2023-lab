@@ -2,15 +2,11 @@ using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
-
 namespace StudyBuddy.Managers;
 
 public class UserManager : IUserManager
 {
     private static readonly List<User?> s_users = new();
-    private readonly Dictionary<UserId, List<UserId>?> _matches = new();
-    private readonly List<IMatch> _matchHistory = new();
-    private readonly Dictionary<UserId, List<UserId>?> _matchRequests = new();
 
     public IUser? GetUserById(UserId userId) => s_users.FirstOrDefault(u => u?.Id == userId);
 

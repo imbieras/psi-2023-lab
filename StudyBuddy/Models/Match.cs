@@ -1,9 +1,8 @@
-using StudyBuddy.Abstractions;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Models;
 
-public class Match : IMatch
+public class Match
 {
     public UserId User1Id { get; init; }
 

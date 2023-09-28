@@ -7,7 +7,7 @@ namespace StudyBuddy.Managers;
 public class MatchingManager : IMatchingManager
 {
     private readonly Dictionary<UserId, List<UserId>?> _matches = new();
-    private readonly List<IMatch> _matchHistory = new();
+    private readonly List<Match> _matchHistory = new();
     private readonly Dictionary<UserId, List<UserId>?> _matchRequests = new();
 
     public void MatchUsers(UserId currentUser, UserId otherUser)
@@ -46,7 +46,7 @@ public class MatchingManager : IMatchingManager
         return false;
     }
 
-    public List<IMatch> GetMatchHistory(UserId userId) =>
+    public List<Match> GetMatchHistory(UserId userId) =>
         _matchHistory.Where(match => match.User1Id == userId || match.User2Id == userId).ToList();
 
     private void AddMatch(UserId userId, UserId matchUserId)
@@ -92,7 +92,7 @@ public class MatchingManager : IMatchingManager
 
     private void AddMatchToHistory(UserId userId1, UserId userId2)
     {
-        var match = new Match { User1Id = userId1, User2Id = userId2, MatchDate = DateTime.Now };
+        Match match = new Match { User1Id = userId1, User2Id = userId2, MatchDate = DateTime.Now };
         _matchHistory.Add(match);
     }
 }
