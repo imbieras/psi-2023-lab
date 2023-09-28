@@ -11,10 +11,7 @@ public class FileManager
     private readonly IUserManager _userManager;
     private const string CsvDelimiter = ";";
 
-    public FileManager(IUserManager userManager)
-    {
-        _userManager = userManager;
-    }
+    public FileManager(IUserManager userManager) => _userManager = userManager;
 
     public void LoadUsersFromCsv(string filePath)
     {
@@ -26,24 +23,20 @@ public class FileManager
 
         try
         {
-            using var reader = new StreamReader(filePath);
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                Delimiter = CsvDelimiter,
-                PrepareHeaderForMatch = args => args.Header.ToLower()
-            });
+            using StreamReader reader = new(filePath);
+            using CsvReader csv = new(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower() });
 
-            var records = csv.GetRecords<UserCsvRecord>().ToList();
+            List<UserCsvRecord> records = csv.GetRecords<UserCsvRecord>().ToList();
 
-            foreach (var record in records)
+            foreach (UserCsvRecord? record in records)
             {
                 string username = record.Username;
-                var flags = Enum.TryParse(record.Flags, out UserFlags parsedFlags) ? parsedFlags : UserFlags.Registered;
+                UserFlags flags = Enum.TryParse(record.Flags, out UserFlags parsedFlags) ? parsedFlags : UserFlags.Registered;
                 DateTime birthdate = record.Birthdate;
                 string subject = record.Subject;
                 string avatarPath = record.AvatarPath;
                 string description = record.Description;
-                var hobbies = new List<string>(record.Hobbies.Split(','));
+                List<string> hobbies = new(record.Hobbies.Split(','));
 
                 UserTraits traits = new()
                 {
@@ -80,10 +73,16 @@ public class UserCsvRecord
     }
 
     public string Username { get; }
+
     public string Flags { get; }
+
     public DateTime Birthdate { get; }
+
     public string Subject { get; }
+
     public string AvatarPath { get; }
+
     public string Description { get; }
+
     public string Hobbies { get; }
 }
