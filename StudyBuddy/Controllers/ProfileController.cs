@@ -127,10 +127,22 @@ public class ProfileController : Controller
 
     public IActionResult RandomProfile()
     {
-        IUser randomUser = _userManager.GetRandomUser();
+        UserId? userId = _userService.GetCurrentUserId();
 
-        return View("RandomProfile", randomUser);
+        if (userId != null)
+        {
 
+            IUser currentUser = _userManager.GetUserById(((UserId)userId)); //problematic area
+
+            IUser randomUser = _userManager.GetRandomUser((User)currentUser); //This definitely needs tweaking badly
+
+            return View("RandomProfile", randomUser);
+        }
+        else
+        {
+
+            return View("Login");
+        }
 
     }
 

@@ -39,21 +39,28 @@ public class UserManager : IUserManager
     public List<IUser> GetAllUsers() => s_users.Where(u => u != null).Cast<IUser>().ToList();
 
 
-    public IUser? GetRandomUser()
+    public IUser? GetRandomUser(User user)
     {
         Random random = new Random();
         int currentIndex;
-        if (User.usedIndexes.Count == s_users.Count())
+
+        // Check if 'user' is not null and 'usedIndexes' is not null before accessing 'Count'
+        if (user != null && user.usedIndexes != null && user.usedIndexes.Count.Equals(s_users.Count()))
             return null;
 
         do
         {
             currentIndex = random.Next(0, s_users.Count);
         }
-        while (User.usedIndexes.Contains(currentIndex));
+        while (user != null && user.usedIndexes != null && user.usedIndexes.Contains(currentIndex));
 
-        User.usedIndexes.Add(currentIndex);
+        // Check if 'currentIndex' is a valid index in 's_users' before accessing it
+        if (currentIndex >= 0 && currentIndex < s_users.Count)
+        {
+            user.usedIndexes.Add(currentIndex);
+            return s_users[currentIndex];
+        }
 
-        return s_users[currentIndex];
+        return null;
     }
 }

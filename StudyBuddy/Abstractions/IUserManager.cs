@@ -11,5 +11,5 @@ public interface IUserManager
     void BanUser(UserId userId);
     List<IUser> GetAllUsers();
 
-    IUser GetRandomUser();
+    IUser? GetRandomUser(User user);
 }

@@ -12,8 +12,10 @@ public class User : IUser
         Name = name;
         Flags = flags;
         Traits = traits;
+
+        usedIndexes = new List<int>();
     }
-    public static List<int> usedIndexes = new List<int>();
+    public List<int> usedIndexes { get; private set; }
 
     public UserId Id { get; }
 
