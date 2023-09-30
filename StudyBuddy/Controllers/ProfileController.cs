@@ -185,17 +185,17 @@ public class ProfileController : Controller
                     {
                         IUser? previousUser = _userManager.GetPreviousRandomProfile(user);
 
-                        return View("PreviousProfile", previousUser);
+                        return View("RandomProfile", previousUser);
                     }
                     else
                     {
-                        // case where currentUser is not of type User
+                        
                         return View("Error");
                     }
                 }
                 else
                 {
-                    // case where currentUser is null
+                   
                     return View("Error");
                 }
             }

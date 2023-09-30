@@ -44,20 +44,19 @@ public class UserManager : IUserManager
         Random random = new Random();
         int currentIndex;
 
-        // Check if 'user' is not null and 'usedIndexes' is not null before accessing 'Count'
-        if (user != null && user.usedIndexes != null && user.usedIndexes.Count.Equals(s_users.Count()))
+        if (user == null || user.usedIndexes == null || user.usedIndexes.Count == s_users.Count())
             return null;
 
         do
         {
             currentIndex = random.Next(0, s_users.Count);
         }
-        while (user != null && user.usedIndexes != null && user.usedIndexes.Contains(currentIndex));
+        while (user.usedIndexes.Contains(currentIndex));
 
-        // Check if 'currentIndex' is a valid index in 's_users' before accessing it
+        user.usedIndexes.Add(currentIndex);
+
         if (currentIndex >= 0 && currentIndex < s_users.Count)
         {
-            user.usedIndexes.Add(currentIndex);
             return s_users[currentIndex];
         }
 
@@ -66,12 +65,23 @@ public class UserManager : IUserManager
 
     public IUser? GetPreviousRandomProfile(User user)
     {
+        if (user.usedIndexes.Count >= 2)
+        {
+            int previousIndex = user.usedIndexes[user.usedIndexes.Count - 2];
+            if (previousIndex >= 0 && previousIndex < s_users.Count)
+            {
+                return s_users[previousIndex];
+            }
+        }
+        else if (user.usedIndexes.Count == 1)
+        {
+            int lastIndex = user.usedIndexes.Last();
+            if (lastIndex >= 0 && lastIndex < s_users.Count)
+            {
+                return s_users[lastIndex];
+            }
+        }
 
-        if (user.usedIndexes.Count - 2 >= 0)
-            return s_users[user.usedIndexes[user.usedIndexes.Count - 2]];
-        else
-            return s_users[user.usedIndexes.Last()];
-
+        return null;
     }
-
 }
