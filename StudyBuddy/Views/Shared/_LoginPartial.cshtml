@@ -1,0 +1,33 @@
+@using StudyBuddy.Abstractions
+@inject IUserManager UserManager
+@inject IUserService UserService
+
+@{
+    var currentUserId = UserService.GetCurrentUserId();
+    IUser? user = null;
+
+    if (currentUserId != null)
+    {
+        user = UserManager.GetUserById(currentUserId.Value);
+    }
+}
+
+<ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+        @if (user != null)
+        {
+            <a class="nav-link text-dark">Logged in as: <b>@user.Name</b></a>
+
+        }
+        else
+        {
+            <a class="nav-link text-dark" asp-area="" asp-controller="Profile" asp-action="Login">Login</a>
+        }
+    </li>
+</ul>
+@if (user != null)
+{
+    <form class="d-flex" method="post" asp-controller="Profile" asp-action="Logout">
+        <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+}
