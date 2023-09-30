@@ -9,7 +9,6 @@ namespace StudyBuddy.Managers;
 public class UserManager : IUserManager
 {
     private static readonly List<User?> s_users = new();
-    public static List<int> usedIndexes = new List<int>();
 
     public IUser? GetUserById(UserId userId) => s_users.FirstOrDefault(u => u?.Id == userId);
 
@@ -46,16 +45,16 @@ public class UserManager : IUserManager
     {
         Random random = new Random();
         int currentIndex;
-        if (usedIndexes.Count == s_users.Count())
+        if (User.usedIndexes.Count == s_users.Count())
             return null;
 
         do
         {
             currentIndex = random.Next(0, s_users.Count);
         }
-        while (usedIndexes.Contains(currentIndex));
+        while (User.usedIndexes.Contains(currentIndex));
 
-        usedIndexes.Add(currentIndex);
+        User.usedIndexes.Add(currentIndex);
 
         return s_users[currentIndex];
     }

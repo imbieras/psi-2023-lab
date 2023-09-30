@@ -13,6 +13,7 @@ public class User : IUser
         Flags = flags;
         Traits = traits;
     }
+    public static List<int> usedIndexes = new List<int>();
 
     public UserId Id { get; }
 
