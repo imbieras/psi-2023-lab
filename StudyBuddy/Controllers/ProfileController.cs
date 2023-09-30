@@ -3,6 +3,7 @@ using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 using Markdig;
+using System.Collections.Specialized;
 
 namespace StudyBuddy.Controllers;
 
@@ -131,20 +132,89 @@ public class ProfileController : Controller
 
         if (userId != null)
         {
+            if (userId is UserId actualUserId)
+            {
+                IUser? currentUser = _userManager.GetUserById(actualUserId);
 
-            IUser currentUser = _userManager.GetUserById(((UserId)userId)); //problematic area
+                if (currentUser != null)
+                {
+                    if (currentUser is User user)
+                    {
+                        IUser? randomUser = _userManager.GetRandomUser(user);
 
-            IUser randomUser = _userManager.GetRandomUser((User)currentUser); //This definitely needs tweaking badly
-
-            return View("RandomProfile", randomUser);
+                        return View("RandomProfile", randomUser);
+                    }
+                    else
+                    {
+                        // case where currentUser is not of type User
+                        return View("Error");
+                    }
+                }
+                else
+                {
+                    // case where currentUser is null
+                    return View("Error");
+                }
+            }
+            else
+            {
+                // case where userId cannot be cast to UserId
+                return View("Error");
+            }
         }
         else
         {
+            // case where userId is null
+            return View("Login");
+        }
+    }
 
+    public IActionResult PreviousProfile()
+    {
+        UserId? userId = _userService.GetCurrentUserId();
+
+        if (userId != null)
+        {
+            if (userId is UserId actualUserId)
+            {
+                IUser? currentUser = _userManager.GetUserById(actualUserId);
+
+                if (currentUser != null)
+                {
+                    if (currentUser is User user)
+                    {
+                        IUser? previousUser = _userManager.GetPreviousRandomProfile(user);
+
+                        return View("PreviousProfile", previousUser);
+                    }
+                    else
+                    {
+                        // case where currentUser is not of type User
+                        return View("Error");
+                    }
+                }
+                else
+                {
+                    // case where currentUser is null
+                    return View("Error");
+                }
+            }
+            else
+            {
+                // case where userId cannot be cast to UserId
+                return View("Error");
+            }
+        }
+        else
+        {
+            // case where userId is null
             return View("Login");
         }
 
+
+
     }
+
 
 
     public IActionResult Login(string? userId)

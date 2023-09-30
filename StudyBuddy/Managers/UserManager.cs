@@ -63,4 +63,15 @@ public class UserManager : IUserManager
 
         return null;
     }
+
+    public IUser? GetPreviousRandomProfile(User user)
+    {
+
+        if (user.usedIndexes.Count - 2 >= 0)
+            return s_users[user.usedIndexes[user.usedIndexes.Count - 2]];
+        else
+            return s_users[user.usedIndexes.Last()];
+
+    }
+
 }

@@ -15,7 +15,7 @@ public class User : IUser
 
         usedIndexes = new List<int>();
     }
-    public List<int> usedIndexes { get; private set; }
+    public List<int> usedIndexes { get; set; }
 
     public UserId Id { get; }
 
