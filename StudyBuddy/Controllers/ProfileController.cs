@@ -128,91 +128,44 @@ public class ProfileController : Controller
 
     public IActionResult RandomProfile()
     {
-        UserId? userId = _userService.GetCurrentUserId();
-
-        if (userId != null)
+        string? userId = _userService.GetCurrentUserId().ToString();
+        if (Guid.TryParse(userId, out Guid userIdGuid))
         {
-            if (userId is UserId actualUserId)
-            {
-                IUser? currentUser = _userManager.GetUserById(actualUserId);
+            UserId parseUserId = UserId.From(userIdGuid);
 
-                if (currentUser != null)
-                {
-                    if (currentUser is User user)
-                    {
-                        IUser? randomUser = _userManager.GetRandomUser(user);
+            IUser? currentUser = _userManager.GetUserById(parseUserId);
 
-                        return View("RandomProfile", randomUser);
-                    }
-                    else
-                    {
-                        // case where currentUser is not of type User
-                        return View("Error");
-                    }
-                }
-                else
-                {
-                    // case where currentUser is null
-                    return View("Error");
-                }
-            }
-            else
-            {
-                // case where userId cannot be cast to UserId
-                return View("Error");
-            }
+            IUser? randomUser = _userManager.GetRandomUser(currentUser);
+
+            return View("RandomProfile", randomUser);
+
         }
         else
         {
-            // case where userId is null
-            return View("Login");
+            View("Error");
         }
+        return View("Login");
     }
 
     public IActionResult PreviousProfile()
     {
-        UserId? userId = _userService.GetCurrentUserId();
-
-        if (userId != null)
+        string? userId = _userService.GetCurrentUserId().ToString();
+        if (Guid.TryParse(userId, out Guid userIdGuid))
         {
-            if (userId is UserId actualUserId)
-            {
-                IUser? currentUser = _userManager.GetUserById(actualUserId);
+            UserId parseUserId = UserId.From(userIdGuid);
 
-                if (currentUser != null)
-                {
-                    if (currentUser is User user)
-                    {
-                        IUser? previousUser = _userManager.GetPreviousRandomProfile(user);
+            IUser? currentUser = _userManager.GetUserById(parseUserId);
 
-                        return View("RandomProfile", previousUser);
-                    }
-                    else
-                    {
-                        
-                        return View("Error");
-                    }
-                }
-                else
-                {
-                   
-                    return View("Error");
-                }
-            }
-            else
-            {
-                // case where userId cannot be cast to UserId
-                return View("Error");
-            }
+            IUser? previousUser = _userManager.GetPreviousRandomProfile(currentUser);
+
+            return View("RandomProfile", previousUser);
+
         }
         else
         {
-            // case where userId is null
-            return View("Login");
+            View("Error");
         }
-
-
-
+        return View("Login");
     }
 
 

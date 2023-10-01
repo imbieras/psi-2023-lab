@@ -39,7 +39,7 @@ public class UserManager : IUserManager
     public List<IUser> GetAllUsers() => s_users.Where(u => u != null).Cast<IUser>().ToList();
 
 
-    public IUser? GetRandomUser(User user)
+    public IUser? GetRandomUser(IUser user)
     {
         Random random = new Random();
         int currentIndex;
@@ -63,7 +63,7 @@ public class UserManager : IUserManager
         return null;
     }
 
-    public IUser? GetPreviousRandomProfile(User user)
+    public IUser? GetPreviousRandomProfile(IUser user)
     {
         if (user.usedIndexes.Count >= 2)
         {
