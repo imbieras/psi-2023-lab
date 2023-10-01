@@ -12,4 +12,5 @@ public interface IUserManager
     List<IUser> GetAllUsers();
     IUser? GetRandomUser(IUser user);
     IUser? GetPreviousRandomProfile(IUser user);
+    public IUser? GetCurrentRandomUser(IUser user);
 }

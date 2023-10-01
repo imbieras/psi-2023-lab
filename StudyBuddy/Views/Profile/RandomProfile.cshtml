@@ -4,7 +4,6 @@
 }
 
 @model StudyBuddy.Abstractions.IUser
-
 @using StudyBuddy.Extensions;
 @using StudyBuddy.Abstractions
 @inject IMatchingManager MatchingManager
@@ -23,7 +22,6 @@
 
         if (ViewBag.CurrentUserId != null)
         {
-            Console.WriteLine("YEEEY");
             isRequestedMatch = MatchingManager.IsRequestedMatch(ViewBag.CurrentUserId, Model.Id);
             isMatched = MatchingManager.IsMatched(ViewBag.CurrentUserId, Model.Id);
         }
@@ -54,23 +52,27 @@
 
         <div class="text-center mt-4">
             <!-- Button to view the previous profile -->
-            <a href="@Url.Action("PreviousProfile", "Profile")" class="btn btn-secondary">Go back!</a>
+            @if (!TempData.ContainsKey("HideGoBackButton") || (bool)TempData["HideGoBackButton"] == false)
+            {
+                <a href="@Url.Action("PreviousProfile", "Profile")" class="btn btn-secondary">Go back!</a>
+            }
             <!-- Button to view the new random profile -->
             <a href="@Url.Action("RandomProfile", "Profile")" class="btn btn-primary">Get New Profile</a>
         </div>
 
         @if (ViewBag.CurrentUserId != null && !isMatched && !isRequestedMatch)
         {
-            <form method="post" asp-controller="Profile" asp-action="MatchUsers">
+            <form method="post" asp-controller="Profile" asp-action="MatchUsers"
+                  asp-route-redirectAction="CurrentRandomUserProfile">
                 <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId" />
                 <input type="hidden" name="otherUser" value="@Model.Id" />
-                <button type="submit" class="btn btn-success btn-lg mt-2 w-100">Match</button>
+                <button id="matchButton" type="submit" class="btn btn-success btn-lg mt-2 w-100">Match</button>
             </form>
         }
-        @if (isRequestedMatch)
+        else if (isRequestedMatch)
         {
-            <div class="alert alert-info mt-2 mb-0">
-                Match request sent.
+            <div class="alert alert-success mt-2 mb-0">
+                Match request sent
             </div>
         }
         else if (isMatched)
@@ -79,14 +81,11 @@
                 Matched with this user.
             </div>
         }
-
-
-
     }
     else
     {
         <p>It seems like there are no more users left :(</p>
+        <a href="@Url.Action("PreviousProfile", "Profile")" class="btn btn-secondary">Go back!</a>
     }
 </div>
-
 

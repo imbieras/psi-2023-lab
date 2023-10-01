@@ -124,12 +124,24 @@ public class ProfileController : Controller
         }
     }
 
+    public IActionResult CurrentRandomUserProfile()
+    {
+        UserId? currentUserId = _userService.GetCurrentUserId();
+        if (Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        {
+            UserId parseUserId = UserId.From(userIdGuid);
 
+            IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+            IUser? currentRandomUser = _userManager.GetCurrentRandomUser(currentUser);
+
+            return View("RandomProfile", currentRandomUser);
+        }
+        return View("Error");
+    }
 
     public IActionResult RandomProfile()
     {
-
-
         // Pass the current user's ID to the view
         UserId? currentUserId = _userService.GetCurrentUserId();
 
@@ -151,10 +163,22 @@ public class ProfileController : Controller
                 return View("Login");
             }
 
-            IUser? randomUser = _userManager.GetRandomUser(currentUser);
+            IUser? randomUser = null;
+            int counter = 0;
+
+            // Keep generating random users until an unmatched and unrequested user is found
+            while (randomUser == null || (_matchingManager.IsMatched(currentUser.Id, randomUser.Id) && _matchingManager.IsRequestedMatch(currentUser.Id, randomUser.Id)))
+            {
+                randomUser = _userManager.GetRandomUser(currentUser);
+
+                counter++;
+                if (counter > _userManager.GetAllUsers().Count())
+                    break;
+            }
+            TempData.Remove("HideGoBackButton");
+
 
             return View("RandomProfile", randomUser);
-
         }
         else
         {
@@ -185,6 +209,8 @@ public class ProfileController : Controller
             }
 
             IUser? previousUser = _userManager.GetPreviousRandomProfile(currentUser);
+
+            TempData["HideGoBackButton"] = true;
 
             return View("RandomProfile", previousUser);
 
@@ -244,8 +270,9 @@ public class ProfileController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+
     [HttpPost]
-    public IActionResult MatchUsers(string currentUser, string otherUser)
+    public IActionResult MatchUsers(string currentUser, string otherUser, string redirectAction)
     {
         try
         {
@@ -255,6 +282,12 @@ public class ProfileController : Controller
 
             // Call UserManager.MatchUsers with the user IDs
             _matchingManager.MatchUsers(currentUserId, otherUserId);
+
+            if (_matchingManager.IsRequestedMatch(currentUserId, otherUserId))
+            {
+                // Store a "Match request sent" message in TempData
+                TempData["MatchRequestSentMessage"] = "Match request sent.";
+            }
 
             if (_matchingManager.IsMatched(currentUserId, otherUserId))
             {
@@ -267,8 +300,23 @@ public class ProfileController : Controller
             TempData["ErrorMessage"] = "An error occurred while matching users. " + ex.Message;
         }
 
-        // Redirect back to the explore page
-         return RedirectToAction("RandomProfile");
+        if (redirectAction == "RandomProfile")
+        {
+            return RedirectToAction("RandomProfile");
+        }
+        else if (redirectAction == "DisplayProfiles")
+        {
+            return RedirectToAction("DisplayProfiles");
+        }
+        else if (redirectAction == "CurrentRandomUserProfile")
+        {
+            return RedirectToAction("CurrentRandomUserProfile");
+        }
+
+        else
+        {
+            return RedirectToAction("Index");
+        }
     }
 
     [HttpPost]

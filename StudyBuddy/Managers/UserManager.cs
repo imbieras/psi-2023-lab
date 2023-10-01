@@ -42,22 +42,28 @@ public class UserManager : IUserManager
     public IUser? GetRandomUser(IUser user)
     {
         Random random = new Random();
-        int currentIndex;
+        int maxTries = s_users.Count() - user.UsedIndexes.Count;
 
-        if (user == null || user.usedIndexes == null || user.usedIndexes.Count == s_users.Count())
+        if (user == null || user.UsedIndexes == null || user.UsedIndexes.Count == s_users.Count())
             return null;
 
-        do
+        for (int i = 0; i < maxTries; i++)
         {
-            currentIndex = random.Next(0, s_users.Count);
-        }
-        while (user.usedIndexes.Contains(currentIndex));
+            int currentIndex;
 
-        user.usedIndexes.Add(currentIndex);
+            do
+            {
+                currentIndex = random.Next(0, s_users.Count);
+            }
+            while (user.UsedIndexes.Contains(currentIndex));
 
-        if (currentIndex >= 0 && currentIndex < s_users.Count)
-        {
-            return s_users[currentIndex];
+
+            if (s_users[currentIndex].Id != user.Id)
+            {
+                user.UsedIndexes.Add(currentIndex);
+
+                return s_users[currentIndex];
+            }
         }
 
         return null;
@@ -65,17 +71,18 @@ public class UserManager : IUserManager
 
     public IUser? GetPreviousRandomProfile(IUser user)
     {
-        if (user.usedIndexes.Count >= 2)
+        if (user.UsedIndexes.Count >= 2)
         {
-            int previousIndex = user.usedIndexes[user.usedIndexes.Count - 2];
+            int previousIndex = user.UsedIndexes[user.UsedIndexes.Count - 2];
+
             if (previousIndex >= 0 && previousIndex < s_users.Count)
             {
                 return s_users[previousIndex];
             }
         }
-        else if (user.usedIndexes.Count == 1)
+        else if (user.UsedIndexes.Count == 1)
         {
-            int lastIndex = user.usedIndexes.Last();
+            int lastIndex = user.UsedIndexes.Last();
             if (lastIndex >= 0 && lastIndex < s_users.Count)
             {
                 return s_users[lastIndex];
@@ -83,5 +90,10 @@ public class UserManager : IUserManager
         }
 
         return null;
+    }
+
+    public IUser? GetCurrentRandomUser(IUser user)
+    {
+        return s_users[user.UsedIndexes.Last()];
     }
 }

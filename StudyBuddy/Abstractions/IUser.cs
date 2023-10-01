@@ -11,7 +11,7 @@ public interface IUser
 
     UserFlags Flags { get; }
 
-    List<int> usedIndexes { get; set; }
+    List<int> UsedIndexes { get; set; }
 
     UserTraits Traits { get; set; }
 }

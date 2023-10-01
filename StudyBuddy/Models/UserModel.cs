@@ -13,9 +13,9 @@ public class User : IUser
         Flags = flags;
         Traits = traits;
 
-        usedIndexes = new List<int>();
+        UsedIndexes = new List<int>();
     }
-    public List<int> usedIndexes { get; set; }
+    public List<int> UsedIndexes { get; set; }
 
     public UserId Id { get; }
 
