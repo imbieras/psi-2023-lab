@@ -128,12 +128,28 @@ public class ProfileController : Controller
 
     public IActionResult RandomProfile()
     {
-        string? userId = _userService.GetCurrentUserId().ToString();
-        if (Guid.TryParse(userId, out Guid userIdGuid))
+
+
+        // Pass the current user's ID to the view
+        UserId? currentUserId = _userService.GetCurrentUserId();
+
+        if (currentUserId != null)
+        {
+            ViewBag.CurrentUserId = currentUserId;
+        }
+
+
+        if (Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
         {
             UserId parseUserId = UserId.From(userIdGuid);
 
             IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+
+            if (currentUser == null)
+            {
+                return View("Login");
+            }
 
             IUser? randomUser = _userManager.GetRandomUser(currentUser);
 
@@ -149,12 +165,24 @@ public class ProfileController : Controller
 
     public IActionResult PreviousProfile()
     {
-        string? userId = _userService.GetCurrentUserId().ToString();
-        if (Guid.TryParse(userId, out Guid userIdGuid))
+        // Pass the current user's ID to the view
+        UserId? currentUserId = _userService.GetCurrentUserId();
+
+        if (currentUserId != null)
+        {
+            ViewBag.CurrentUserId = currentUserId;
+        }
+
+        if (Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
         {
             UserId parseUserId = UserId.From(userIdGuid);
 
             IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+            if (currentUser == null)
+            {
+                return View("Login");
+            }
 
             IUser? previousUser = _userManager.GetPreviousRandomProfile(currentUser);
 
@@ -165,6 +193,8 @@ public class ProfileController : Controller
         {
             View("Error");
         }
+
+
         return View("Login");
     }
 
@@ -238,7 +268,7 @@ public class ProfileController : Controller
         }
 
         // Redirect back to the explore page
-        return RedirectToAction("DisplayProfiles");
+         return RedirectToAction("RandomProfile");
     }
 
     [HttpPost]
