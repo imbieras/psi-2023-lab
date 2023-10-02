@@ -64,7 +64,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies)
+    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies, string? longitude, string? latitude)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -99,6 +99,10 @@ public class ProfileController : Controller
                 htmlContent = Markdown.ToHtml(markdownContent);
             }
 
+            Coordinates? location = null;
+            if (double.TryParse(longitude, out double parsedLongitude) && double.TryParse(latitude, out double parsedLatitude))
+                location = Coordinates.From((parsedLongitude, parsedLatitude));
+
             UserTraits traits = new()
             {
                 Birthdate = DateTime.Parse(birthdate),
@@ -107,6 +111,9 @@ public class ProfileController : Controller
                 Description = htmlContent,
                 Hobbies = hobbies
             };
+
+            if (location != null)
+                traits.Location = location.Value;
 
             _userManager.RegisterUser(name, flags, traits);
 
