@@ -1,11 +1,12 @@
-﻿@using StudyBuddy.Extensions;
 @model List<StudyBuddy.Abstractions.IUser>
+@using StudyBuddy.Extensions;
+@using StudyBuddy.Abstractions
+@inject IMatchingManager MatchingManager
 
 @{
     ViewBag.Title = "Explore page";
     Layout = "_Layout";
 }
-
 
 @if (ViewBag.ErrorMessage != null)
 {
@@ -14,39 +15,70 @@
 
 @foreach (var user in Model)
 {
-    var possessiveName = user.Name.AddPossessiveSuffix();
+    // Exclude the current user and check if someone is logged in
+    if (user.Id != ViewBag.CurrentUserId)
+    {
+        var possessiveName = user.Name.AddPossessiveSuffix();
 
-    var avatarUrl = user.Traits.AvatarPath.Contains("://")
-        ? user.Traits.AvatarPath // It's a link
-        : Url.Content("~/avatars/" + user.Traits.AvatarPath);
+        var avatarUrl = user.Traits.AvatarPath.Contains("://")
+            ? user.Traits.AvatarPath// It's a link
+            : Url.Content("~/avatars/" + user.Traits.AvatarPath);
 
-    ViewBag.Title = possessiveName + " profile page";
+        var isRequestedMatch = false;
+        var isMatched = false;
 
+        if (ViewBag.CurrentUserId != null)
+        {
+            isRequestedMatch = MatchingManager.IsRequestedMatch(ViewBag.CurrentUserId, user.Id);
+            isMatched = MatchingManager.IsMatched(ViewBag.CurrentUserId, user.Id);
+        }
 
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="mb-0">@possessiveName Profile</h2>
-                </div>
-                <div class="card-body d-flex flex-column align-items-center">
-                    <div class="avatar-container" style="background-image: url('@avatarUrl');"></div>
-                    <ul class="list-group list-group-flush mt-4">
-                        <li class="list-group-item">
-                            <strong>Birthday:</strong> @user.Traits.Birthdate.ToShortDateString()
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Favorite Subject:</strong> @user.Traits.Subject
-                        </li>
-                        <li class="list-group-item">
-                            <strong>UID:</strong> @user.Id.ToString()
-                        </li>
-                        <li class="list-group-item">
-                            <a href="@Url.Action("UserProfile", "Profile", new { id = user.Id })" class="btn btn-primary mt-3">View Profile</a>
-                        </li>
-                    </ul>
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">@possessiveName Profile</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <div class="avatar-container" style="background-image: url('@avatarUrl');"></div>
+                            <ul class="list-group list-group-flush mt-4">
+                            <li class="list-group-item">
+                                <strong>Birthday:</strong> @user.Traits.Birthdate.ToShortDateString()
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Favorite Subject:</strong> @user.Traits.Subject
+                            </li>
+                            <li class="list-group-item">
+                                <strong>UID:</strong> @user.Id.ToString()
+                            </li>
+                            <li class="list-group-item">
+                                <a href="@Url.Action("UserProfile", "Profile", new { id = user.Id })" class="btn btn-primary mt-3">View Profile</a>
+                            </li>
+                        </ul>
+                    </div>
+                    @* Only show the match button if someone is logged in and there is no match between them *@
+                    @if (ViewBag.CurrentUserId != null && !isMatched && !isRequestedMatch)
+                    {
+                        <form method="post" asp-controller="Profile" asp-action="MatchUsers">
+                            <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId"/>
+                            <input type="hidden" name="otherUser" value="@user.Id"/>
+                            <button type="submit" class="btn btn-success btn-lg mt-2 w-100">Match</button>
+                        </form>
+                    }
+                    @if (isRequestedMatch)
+                    {
+                        <div class="alert alert-info mt-2 mb-0">
+                            Match request sent.
+                        </div>
+                    }
+                    else if (isMatched)
+                    {
+                        <div class="alert alert-success mt-2 mb-0">
+                            Matched with this user.
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-    </div>
+    }
 }

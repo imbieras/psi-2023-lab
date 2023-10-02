@@ -1,8 +1,6 @@
-using System.Globalization;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
-
 
 namespace StudyBuddy.Managers;
 
@@ -39,8 +37,4 @@ public class UserManager : IUserManager
     }
 
     public List<IUser> GetAllUsers() => s_users.Where(u => u != null).Cast<IUser>().ToList();
-
-
-
-
 }
