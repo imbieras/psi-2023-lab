@@ -23,8 +23,6 @@ public class ProfileController : Controller
     {
         try
         {
-            // Get the current user's ID from UserService if not null, otherwise use a default value
-
             UserId? currentUserId = _userService.GetCurrentUserId();
 
             List<IUser> userList = _userManager.GetAllUsers();
@@ -55,7 +53,7 @@ public class ProfileController : Controller
 
             if (user != null)
             {
-                return View("DisplayProfiles", new List<IUser?>() { user });
+                return View("ViewFullProfile",  user );
             }
         }
 
