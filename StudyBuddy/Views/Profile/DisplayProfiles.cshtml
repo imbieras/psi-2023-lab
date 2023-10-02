@@ -14,36 +14,38 @@
 }
 
 @*Filter*@
-<form method="get" asp-controller="Profile" asp-action="DisplayProfiles">
-    <div class="form-row">
-        <div class="col-md-1">
+<form method="get" asp-controller="Profile" asp-action="DisplayProfiles" class="form-row container">
+    <div class="d-flex">
+        <div class="col-md-3">
             <label for="startYear">Start Year:</label>
-            <input type="number" class="form-control" id="startYear" name="startYear" />
+            <input type="number" class="form-control" id="startYear" name="startYear" min="1900" max="@DateTime.Now.Year" />
         </div>
-        <div class="col-md-1">
+        <div class="col-md-3" style="margin-left: 10px;">
             <label for="endYear">End Year:</label>
-            <input type="number" class="form-control" id="endYear" name="endYear" />
-        </div>
-        <div class="col-md-1 mr-2">
-            <label for="subject">Subject:</label>
-            <select class="form-select" id="subject" name="subject">
-                <option value="">All</option>
-                <option value="Natural Sciences">Natural Sciences</option>
-                <option value="Health Sciences">Health Sciences</option>
-                <option value="Engineering & Technology">Engineering & Technology</option>
-                <option value="Social Sciences">Social Sciences</option>
-                <option value="Humanities">Humanities</option>
-                <option value="Business & Management">Business & Management</option>
-                <option value="Arts & Design">Arts & Design</option>
-                <option value="Mathematical Sciences">Mathematical Sciences</option>
-                <option value="Bio Sciences">Bio Sciences</option>
-                <option value="Law & Legal Studies">Law & Legal Studies</option>
-                <option value="Education">Education</option>
-                <option value="Agriculture & Forestry">Agriculture & Forestry</option>
-            </select>
+            <input type="number" class="form-control" id="endYear" name="endYear" min="1900" max="@DateTime.Now.Year" />
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-3">Apply Filter</button>
+    <div class="col-md-3">
+        <label for="subject">Subject:</label>
+        <select class="form-select" id="subject" name="subject">
+            <option value="">All</option>
+            <option value="Natural Sciences">Natural Sciences</option>
+            <option value="Health Sciences">Health Sciences</option>
+            <option value="Engineering & Technology">Engineering & Technology</option>
+            <option value="Social Sciences">Social Sciences</option>
+            <option value="Humanities">Humanities</option>
+            <option value="Business & Management">Business & Management</option>
+            <option value="Arts & Design">Arts & Design</option>
+            <option value="Mathematical Sciences">Mathematical Sciences</option>
+            <option value="Bio Sciences">Bio Sciences</option>
+            <option value="Law & Legal Studies">Law & Legal Studies</option>
+            <option value="Education">Education</option>
+            <option value="Agriculture & Forestry">Agriculture & Forestry</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary mt-3">Apply Filters</button>
+    </div>
 </form>
 
 

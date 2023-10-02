@@ -22,7 +22,7 @@ public class ProfileController : Controller
         _filterService = filterService;
     }
 
-    public IActionResult DisplayProfiles()
+    public IActionResult DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
     {
         try
         {
@@ -37,24 +37,27 @@ public class ProfileController : Controller
                 ViewBag.CurrentUserId = currentUserId;
             }
 
-            // Get filter parameters from query string
-            string startYear = HttpContext.Request.Query["startYear"];
-            string endYear = HttpContext.Request.Query["endYear"];
-            string subject = HttpContext.Request.Query["subject"];
-
-            // Use the service to filter users
-            if (!string.IsNullOrEmpty(startYear) && !string.IsNullOrEmpty(endYear))
+            /* Year filter */
+            if (filterModel.StartYear == 0)
             {
-                // Convert startYear and endYear to integers and filter users
-                if (int.TryParse(startYear, out int startYearValue) && int.TryParse(endYear, out int endYearValue))
-                {
-                    userList = _filterService.FilterByBirthYear(startYearValue, endYearValue, userList);
-                }
+                filterModel.StartYear = 1900;
             }
 
-            if (!string.IsNullOrEmpty(subject))
+            if (filterModel.EndYear == 0)
             {
-                userList = _filterService.FilterBySubject(subject, userList);
+                filterModel.EndYear = DateTime.Now.Year;
+            }
+
+            if (filterModel.StartYear != 0 && filterModel.EndYear != 0)
+            {
+                userList = _filterService.FilterByBirthYear(filterModel.StartYear, filterModel.EndYear, userList);
+            }
+
+            /* Subject filter */
+            if (!string.IsNullOrEmpty(filterModel.Subject))
+            {
+                // Input is assumed to be safe since it's coming from the model property
+                userList = _filterService.FilterBySubject(filterModel.Subject, userList);
             }
 
             return View(userList);
