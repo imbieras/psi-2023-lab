@@ -4,6 +4,7 @@ using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 using Markdig;
 using System.Collections.Specialized;
+using System.Transactions;
 
 namespace StudyBuddy.Controllers;
 
@@ -35,7 +36,9 @@ public class ProfileController : Controller
             if (currentUserId != null)
             {
                 ViewBag.CurrentUserId = currentUserId;
+
             }
+
 
             /* Year filter */
             if (filterModel.StartYear == 0)
@@ -182,6 +185,8 @@ public class ProfileController : Controller
 
             IUser? currentUser = _userManager.GetUserById(parseUserId);
 
+            ViewBag.ViewedFirstProfile = _userManager.IsUsedIndexesEmpty(currentUser);//For 'Go back!' button
+
 
             if (currentUser == null)
             {
@@ -202,7 +207,6 @@ public class ProfileController : Controller
             }
             TempData.Remove("HideGoBackButton");
 
-
             return View("RandomProfile", randomUser);
         }
         else
@@ -210,6 +214,12 @@ public class ProfileController : Controller
             View("Error");
         }
         return View("Login");
+    }
+
+    public IActionResult SetViewedFirstProfile()
+    {
+        ViewBag.ViewedFirstProfile = true;
+        return RedirectToAction("RandomProfile");
     }
 
     public IActionResult PreviousProfile()

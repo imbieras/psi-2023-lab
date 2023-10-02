@@ -58,7 +58,7 @@ public class UserManager : IUserManager
             while (user.UsedIndexes.Contains(currentIndex));
 
 
-            if (s_users[currentIndex].Id != user.Id)
+            if (s_users[currentIndex].Id != user.Id )
             {
                 user.UsedIndexes.Add(currentIndex);
 
@@ -96,4 +96,10 @@ public class UserManager : IUserManager
     {
         return s_users[user.UsedIndexes.Last()];
     }
+
+    public bool IsUsedIndexesEmpty(IUser user)
+    {
+        return (user.UsedIndexes.Count > 0) ? true : false;
+    }
+
 }

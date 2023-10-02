@@ -13,4 +13,5 @@ public interface IUserManager
     IUser? GetRandomUser(IUser user);
     IUser? GetPreviousRandomProfile(IUser user);
     public IUser? GetCurrentRandomUser(IUser user);
+    public bool IsUsedIndexesEmpty(IUser user);
 }
