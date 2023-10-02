@@ -44,7 +44,8 @@ public class FileManager
                     Subject = subject,
                     AvatarPath = avatarPath,
                     Description = description,
-                    Hobbies = hobbies
+                    Hobbies = hobbies,
+                    Location = "N/A"
                 };
 
                 _userManager.RegisterUser(username, flags, traits);

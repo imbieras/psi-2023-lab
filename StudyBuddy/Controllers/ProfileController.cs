@@ -66,7 +66,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies)
+    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies, string location)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -107,7 +107,8 @@ public class ProfileController : Controller
                 Subject = subject,
                 AvatarPath = avatarPath,
                 Description = htmlContent,
-                Hobbies = hobbies
+                Hobbies = hobbies,
+                Location = string.IsNullOrEmpty(location) ? "N/A" : location
             };
 
             _userManager.RegisterUser(name, flags, traits);

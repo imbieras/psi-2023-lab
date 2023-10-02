@@ -44,6 +44,7 @@
                         <ul class="list-group list-group-flush mt-4">
                             <li class="list-group-item">
                                 <strong>Birthday:</strong> @user.Traits.Birthdate.ToShortDateString()
+                                <strong>Location:</strong> @(string.IsNullOrEmpty(user.Traits.Location) ? "N/A" : user.Traits.Location)
                             </li>
                             <li class="list-group-item">
                                 <strong>Favorite Subject:</strong> @user.Traits.Subject
