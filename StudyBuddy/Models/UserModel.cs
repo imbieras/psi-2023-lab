@@ -30,7 +30,7 @@ public class User : IUser, IEquatable<User>
     {
         if (other == null) return false;
 
-        return this.Id == other.Id;
+        return Id == other.Id;
     }
 
     public override bool Equals(object? obj)
