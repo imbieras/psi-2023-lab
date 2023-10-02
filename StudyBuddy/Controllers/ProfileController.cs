@@ -12,12 +12,14 @@ public class ProfileController : Controller
     private readonly IUserManager _userManager;
     private readonly IMatchingManager _matchingManager;
     private readonly IUserService _userService;
+    private readonly UserProfileFilterService _filterService;
 
-    public ProfileController(IUserManager userManager, IMatchingManager matchingManager, IUserService userService)
+    public ProfileController(IUserManager userManager, IMatchingManager matchingManager, IUserService userService, UserProfileFilterService filterService)
     {
         _userManager = userManager;
         _matchingManager = matchingManager;
         _userService = userService;
+        _filterService = filterService;
     }
 
     public IActionResult DisplayProfiles()
@@ -25,7 +27,6 @@ public class ProfileController : Controller
         try
         {
             // Get the current user's ID from UserService if not null, otherwise use a default value
-
             UserId? currentUserId = _userService.GetCurrentUserId();
 
             List<IUser> userList = _userManager.GetAllUsers();
@@ -36,15 +37,36 @@ public class ProfileController : Controller
                 ViewBag.CurrentUserId = currentUserId;
             }
 
+            // Get filter parameters from query string
+            string startYear = HttpContext.Request.Query["startYear"];
+            string endYear = HttpContext.Request.Query["endYear"];
+            string subject = HttpContext.Request.Query["subject"];
+
+            // Use the service to filter users
+            if (!string.IsNullOrEmpty(startYear) && !string.IsNullOrEmpty(endYear))
+            {
+                // Convert startYear and endYear to integers and filter users
+                if (int.TryParse(startYear, out int startYearValue) && int.TryParse(endYear, out int endYearValue))
+                {
+                    userList = _filterService.FilterByBirthYear(startYearValue, endYearValue, userList);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(subject))
+            {
+                userList = _filterService.FilterBySubject(subject, userList);
+            }
+
             return View(userList);
         }
         catch (Exception ex)
         {
             // Log the exception
             ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
-            return View(new List<IUser>());// Provide an empty list
+            return View(new List<IUser>()); // Provide an empty list
         }
     }
+
 
     public IActionResult UserProfile(string id)
     {

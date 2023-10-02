@@ -13,6 +13,41 @@
     <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
 }
 
+@*Filter*@
+<form method="get" asp-controller="Profile" asp-action="DisplayProfiles">
+    <div class="form-row">
+        <div class="col-md-1">
+            <label for="startYear">Start Year:</label>
+            <input type="number" class="form-control" id="startYear" name="startYear" />
+        </div>
+        <div class="col-md-1">
+            <label for="endYear">End Year:</label>
+            <input type="number" class="form-control" id="endYear" name="endYear" />
+        </div>
+        <div class="col-md-1 mr-2">
+            <label for="subject">Subject:</label>
+            <select class="form-select" id="subject" name="subject">
+                <option value="">All</option>
+                <option value="Natural Sciences">Natural Sciences</option>
+                <option value="Health Sciences">Health Sciences</option>
+                <option value="Engineering & Technology">Engineering & Technology</option>
+                <option value="Social Sciences">Social Sciences</option>
+                <option value="Humanities">Humanities</option>
+                <option value="Business & Management">Business & Management</option>
+                <option value="Arts & Design">Arts & Design</option>
+                <option value="Mathematical Sciences">Mathematical Sciences</option>
+                <option value="Bio Sciences">Bio Sciences</option>
+                <option value="Law & Legal Studies">Law & Legal Studies</option>
+                <option value="Education">Education</option>
+                <option value="Agriculture & Forestry">Agriculture & Forestry</option>
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Apply Filter</button>
+</form>
+
+
+
 @foreach (var user in Model)
 {
     // Exclude the current user and check if someone is logged in
