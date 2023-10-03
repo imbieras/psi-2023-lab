@@ -1,0 +1,91 @@
+﻿@model StudyBuddy.Abstractions.IUser?
+@using StudyBuddy.Abstractions
+@inject IMatchingManager MatchingManager
+
+@{
+    ViewBag.Title = "Random Profile";
+    Layout = "_Layout";
+}
+
+<div class="text-center">
+    <h1 class="display-4">User Profile</h1>
+
+    @if (Model != null)
+    {
+        var avatarUrl = Model.Traits.AvatarPath.Contains("://")
+            ? Model.Traits.AvatarPath
+            : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
+
+        var isRequestedMatch = false;
+        var isMatched = false;
+
+        if (ViewBag.CurrentUserId != null)
+        {
+            isRequestedMatch = MatchingManager.IsRequestedMatch(ViewBag.CurrentUserId, Model.Id);
+            isMatched = MatchingManager.IsMatched(ViewBag.CurrentUserId, Model.Id);
+        }
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">@Model.Name</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <div class="avatar-container" style="background-image: url('@avatarUrl');"></div>
+                        <ul class="list-group list-group-flush mt-4">
+                            <li class="list-group-item">
+                                <strong>Birthday:</strong> @Model.Traits.Birthdate.ToShortDateString()
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Favorite Subject:</strong> @Model.Traits.Subject
+                            </li>
+                            <li class="list-group-item">
+                                <strong>UID:</strong> @Model.Id.ToString()
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <!-- Button to view the previous profile -->
+            @if (!TempData.ContainsKey("HideGoBackButton") && ViewBag.ViewedFirstProfile == true)
+            {
+                <a href="@Url.Action("PreviousProfile", "Profile")" class="btn btn-secondary">Go back!</a>
+            }
+
+            <!-- Button to view the new random profile -->
+            <a href="@Url.Action("RandomProfile", "Profile")" class="btn btn-primary">Get New Profile</a>
+
+        </div>
+
+        @if (ViewBag.CurrentUserId != null && !isMatched && !isRequestedMatch)
+        {
+            <form method="post" asp-controller="Profile" asp-action="MatchUsers"
+                  asp-route-redirectAction="CurrentRandomUserProfile">
+                <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId"/>
+                <input type="hidden" name="otherUser" value="@Model.Id"/>
+                <button id="matchButton" type="submit" class="btn btn-success btn-lg mt-2 w-100">Match</button>
+            </form>
+        }
+        else if (isRequestedMatch)
+        {
+            <div class="alert alert-success mt-2 mb-0">
+                Match request sent
+            </div>
+        }
+        else if (isMatched)
+        {
+            <div class="alert alert-success mt-2 mb-0">
+                Matched with this user.
+            </div>
+        }
+    }
+    else
+    {
+        <p>It seems like there are no more users left :(</p>
+        <a href="@Url.Action("PreviousProfile", "Profile")" class="btn btn-secondary">Go back!</a>
+    }
+</div>

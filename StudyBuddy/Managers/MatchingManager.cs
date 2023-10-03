@@ -92,7 +92,7 @@ public class MatchingManager : IMatchingManager
 
     private void AddMatchToHistory(UserId userId1, UserId userId2)
     {
-        Match match = new Match { User1Id = userId1, User2Id = userId2, MatchDate = DateTime.Now };
+        Match match = new() { User1Id = userId1, User2Id = userId2, MatchDate = DateTime.Now };
         _matchHistory.Add(match);
     }
 }

@@ -3,6 +3,7 @@ using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 using Markdig;
+using StudyBuddy.Services;
 
 namespace StudyBuddy.Controllers;
 
@@ -19,10 +20,11 @@ public class ProfileController : Controller
         _userService = userService;
     }
 
-    public IActionResult DisplayProfiles()
+    public IActionResult DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
     {
         try
         {
+            // Get the current user's ID from UserService if not null, otherwise use a default value
             UserId? currentUserId = _userService.GetCurrentUserId();
 
             List<IUser> userList = _userManager.GetAllUsers();
@@ -31,6 +33,30 @@ public class ProfileController : Controller
             if (currentUserId != null)
             {
                 ViewBag.CurrentUserId = currentUserId;
+            }
+
+
+            /* Year filter */
+            if (filterModel.StartYear == 0)
+            {
+                filterModel.StartYear = 1900;
+            }
+
+            if (filterModel.EndYear == 0)
+            {
+                filterModel.EndYear = DateTime.Now.Year;
+            }
+
+            if (filterModel.StartYear != 0 && filterModel.EndYear != 0)
+            {
+                userList = UserProfileFilterService.FilterByBirthYear(filterModel.StartYear, filterModel.EndYear, userList);
+            }
+
+            /* Subject filter */
+            if (!string.IsNullOrEmpty(filterModel.Subject))
+            {
+                // Input is assumed to be safe since it's coming from the model property
+                userList = UserProfileFilterService.FilterBySubject(filterModel.Subject, userList);
             }
 
             return View(userList);
@@ -43,6 +69,7 @@ public class ProfileController : Controller
         }
     }
 
+
     public IActionResult UserProfile(string id)
     {
         if (Guid.TryParse(id, out Guid parsedGuid))
@@ -53,7 +80,7 @@ public class ProfileController : Controller
 
             if (user != null)
             {
-                return View("ViewFullProfile",  user );
+                return View("ViewFullProfile", user);
             }
         }
 
@@ -101,7 +128,9 @@ public class ProfileController : Controller
 
             Coordinates? location = null;
             if (double.TryParse(longitude, out double parsedLongitude) && double.TryParse(latitude, out double parsedLatitude))
+            {
                 location = Coordinates.From((parsedLongitude, parsedLatitude));
+            }
 
             UserTraits traits = new()
             {
@@ -113,7 +142,9 @@ public class ProfileController : Controller
             };
 
             if (location != null)
+            {
                 traits.Location = location.Value;
+            }
 
             _userManager.RegisterUser(name, flags, traits);
 
@@ -126,6 +157,112 @@ public class ProfileController : Controller
             ErrorViewModel errorModel = new() { ErrorMessage = "Error uploading file: " + ex.Message };
             return View("Error", errorModel);
         }
+    }
+
+    public IActionResult CurrentRandomUserProfile()
+    {
+        UserId? currentUserId = _userService.GetCurrentUserId();
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        {
+            return View("Login");
+        }
+
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+        if (currentUser == null)
+        {
+            return View("Login");
+        }
+
+        IUser? currentRandomUser = _userManager.GetCurrentRandomUser(currentUser);
+
+        return View("RandomProfile", currentRandomUser);
+    }
+
+    public IActionResult RandomProfile()
+    {
+        // Pass the current user's ID to the view
+        UserId? currentUserId = _userService.GetCurrentUserId();
+
+        if (currentUserId != null)
+        {
+            ViewBag.CurrentUserId = currentUserId;
+        }
+
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        {
+            return View("Login");
+        }
+
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+        ViewBag.ViewedFirstProfile = currentUser != null && _userManager.IsUsedIndexesEmpty(currentUser);// For 'Go back!' button
+
+        if (currentUser == null)
+        {
+            return View("Login");
+        }
+
+        IUser? randomUser = null;
+        int counter = 0;
+
+        // Keep generating random users until an unmatched and unrequested user is found
+        while (randomUser == null || (_matchingManager.IsMatched(currentUser.Id, randomUser.Id) && _matchingManager.IsRequestedMatch(currentUser.Id, randomUser.Id)))
+        {
+            randomUser = _userManager.GetRandomUser(currentUser);
+
+            counter++;
+            if (counter > _userManager.GetAllUsers().Count)
+            {
+                break;
+            }
+        }
+
+        TempData.Remove("HideGoBackButton");
+
+        return View("RandomProfile", randomUser);
+
+    }
+
+    public IActionResult SetViewedFirstProfile()
+    {
+        ViewBag.ViewedFirstProfile = true;
+        return RedirectToAction("RandomProfile");
+    }
+
+    public IActionResult PreviousProfile()
+    {
+        // Pass the current user's ID to the view
+        UserId? currentUserId = _userService.GetCurrentUserId();
+
+        if (currentUserId != null)
+        {
+            ViewBag.CurrentUserId = currentUserId;
+        }
+
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        {
+            return View("Login");
+        }
+
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+        if (currentUser == null)
+        {
+            return View("Login");
+        }
+
+        IUser? previousUser = _userManager.GetPreviousRandomProfile(currentUser);
+
+        TempData["HideGoBackButton"] = true;
+
+        return View("RandomProfile", previousUser);
     }
 
     public IActionResult Login(string? userId)
@@ -173,7 +310,7 @@ public class ProfileController : Controller
     }
 
     [HttpPost]
-    public IActionResult MatchUsers(string currentUser, string otherUser)
+    public IActionResult MatchUsers(string currentUser, string otherUser, string redirectAction)
     {
         try
         {
@@ -183,6 +320,12 @@ public class ProfileController : Controller
 
             // Call UserManager.MatchUsers with the user IDs
             _matchingManager.MatchUsers(currentUserId, otherUserId);
+
+            if (_matchingManager.IsRequestedMatch(currentUserId, otherUserId))
+            {
+                // Store a "Match request sent" message in TempData
+                TempData["MatchRequestSentMessage"] = "Match request sent.";
+            }
 
             if (_matchingManager.IsMatched(currentUserId, otherUserId))
             {
@@ -195,8 +338,13 @@ public class ProfileController : Controller
             TempData["ErrorMessage"] = "An error occurred while matching users. " + ex.Message;
         }
 
-        // Redirect back to the explore page
-        return RedirectToAction("DisplayProfiles");
+        return redirectAction switch
+        {
+            "RandomProfile" => RedirectToAction("RandomProfile"),
+            "DisplayProfiles" => RedirectToAction("DisplayProfiles"),
+            "CurrentRandomUserProfile" => RedirectToAction("CurrentRandomUserProfile"),
+            _ => RedirectToAction("Index", "Home")
+        };
     }
 
     [HttpPost]

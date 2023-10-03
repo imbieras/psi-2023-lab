@@ -17,6 +17,7 @@ builder.Services.AddSingleton<IUserManager, UserManager>();
 builder.Services.AddSingleton<IMatchingManager, MatchingManager>();
 builder.Services.AddSingleton<FileManager>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<UserProfileFilterService>();
 
 // Registering <AuthenticationMiddleware> with its implementation for DI
 builder.Services.AddHttpContextAccessor();
@@ -47,6 +48,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
 "default",
 "{controller=Home}/{action=Index}/{id?}");
+
 
 // Retrieve the FileManager singleton and execute LoadUsersFromCsv
 FileManager fileManager = app.Services.GetRequiredService<FileManager>();
