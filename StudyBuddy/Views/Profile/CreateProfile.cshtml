@@ -227,8 +227,13 @@
     <textarea class="form-control" id="markdownContent" name="markdownContent" rows="6"></textarea>
 </div>
 <div class="mb-3">
-    <label for="htmlPreview" class="form-label">HTML Previewg</label>
+    <label for="htmlPreview" class="form-label">HTML Preview</label>
     <div class="form-control" id="htmlPreview"></div>
+</div>
+<div class="mb-3">
+    <input type="hidden" id="latitude" name="latitude">
+    <input type="hidden" id="longitude" name="longitude">
+    <button type="button" class="btn btn-secondary" onclick="getLocation()">Add Location</button>
 </div>
 <button type="submit" class="btn btn-primary">Submit</button>
 </form>
@@ -256,5 +261,33 @@
         textarea.selectionEnd = start + text.length;
         textarea.focus();
         updateHtmlPreview();
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        document.getElementById("latitude").value = position.coords.latitude;
+        document.getElementById("longitude").value = position.coords.longitude;
+        alert('Location added successfully!');
+    }
+
+    function showError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+        }
     }
 </script>
