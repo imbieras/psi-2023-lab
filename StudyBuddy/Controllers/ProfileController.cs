@@ -3,8 +3,7 @@ using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 using Markdig;
-using System.Collections.Specialized;
-using System.Transactions;
+using StudyBuddy.Services;
 
 namespace StudyBuddy.Controllers;
 
@@ -13,13 +12,12 @@ public class ProfileController : Controller
     private readonly IUserManager _userManager;
     private readonly IMatchingManager _matchingManager;
     private readonly IUserService _userService;
-    private readonly UserProfileFilterService _filterService;
 
-    public ProfileController(IUserManager userManager, IMatchingManager matchingManager, IUserService userService, UserProfileFilterService filterService)
+    public ProfileController(IUserManager userManager, IMatchingManager matchingManager, IUserService userService)
+    {
         _userManager = userManager;
         _matchingManager = matchingManager;
         _userService = userService;
-        _filterService = filterService;
     }
 
     public IActionResult DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
@@ -51,14 +49,14 @@ public class ProfileController : Controller
 
             if (filterModel.StartYear != 0 && filterModel.EndYear != 0)
             {
-                userList = _filterService.FilterByBirthYear(filterModel.StartYear, filterModel.EndYear, userList);
+                userList = UserProfileFilterService.FilterByBirthYear(filterModel.StartYear, filterModel.EndYear, userList);
             }
 
             /* Subject filter */
             if (!string.IsNullOrEmpty(filterModel.Subject))
             {
                 // Input is assumed to be safe since it's coming from the model property
-                userList = _filterService.FilterBySubject(filterModel.Subject, userList);
+                userList = UserProfileFilterService.FilterBySubject(filterModel.Subject, userList);
             }
 
             return View(userList);
@@ -67,7 +65,7 @@ public class ProfileController : Controller
         {
             // Log the exception
             ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
-            return View(new List<IUser>()); // Provide an empty list
+            return View(new List<IUser>());// Provide an empty list
         }
     }
 
@@ -82,7 +80,7 @@ public class ProfileController : Controller
 
             if (user != null)
             {
-                return View("ViewFullProfile",  user );
+                return View("ViewFullProfile", user);
             }
         }
 
@@ -130,7 +128,9 @@ public class ProfileController : Controller
 
             Coordinates? location = null;
             if (double.TryParse(longitude, out double parsedLongitude) && double.TryParse(latitude, out double parsedLatitude))
+            {
                 location = Coordinates.From((parsedLongitude, parsedLatitude));
+            }
 
             UserTraits traits = new()
             {
@@ -142,7 +142,9 @@ public class ProfileController : Controller
             };
 
             if (location != null)
+            {
                 traits.Location = location.Value;
+            }
 
             _userManager.RegisterUser(name, flags, traits);
 
@@ -160,17 +162,23 @@ public class ProfileController : Controller
     public IActionResult CurrentRandomUserProfile()
     {
         UserId? currentUserId = _userService.GetCurrentUserId();
-        if (Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
         {
-            UserId parseUserId = UserId.From(userIdGuid);
-
-            IUser? currentUser = _userManager.GetUserById(parseUserId);
-
-            IUser? currentRandomUser = _userManager.GetCurrentRandomUser(currentUser);
-
-            return View("RandomProfile", currentRandomUser);
+            return View("Login");
         }
-        return View("Error");
+
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+        if (currentUser == null)
+        {
+            return View("Login");
+        }
+
+        IUser? currentRandomUser = _userManager.GetCurrentRandomUser(currentUser);
+
+        return View("RandomProfile", currentRandomUser);
     }
 
     public IActionResult RandomProfile()
@@ -183,42 +191,41 @@ public class ProfileController : Controller
             ViewBag.CurrentUserId = currentUserId;
         }
 
-
-        if (Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
         {
-            UserId parseUserId = UserId.From(userIdGuid);
-
-            IUser? currentUser = _userManager.GetUserById(parseUserId);
-
-            ViewBag.ViewedFirstProfile = _userManager.IsUsedIndexesEmpty(currentUser);//For 'Go back!' button
-
-
-            if (currentUser == null)
-            {
-                return View("Login");
-            }
-
-            IUser? randomUser = null;
-            int counter = 0;
-
-            // Keep generating random users until an unmatched and unrequested user is found
-            while (randomUser == null || (_matchingManager.IsMatched(currentUser.Id, randomUser.Id) && _matchingManager.IsRequestedMatch(currentUser.Id, randomUser.Id)))
-            {
-                randomUser = _userManager.GetRandomUser(currentUser);
-
-                counter++;
-                if (counter > _userManager.GetAllUsers().Count())
-                    break;
-            }
-            TempData.Remove("HideGoBackButton");
-
-            return View("RandomProfile", randomUser);
+            return View("Login");
         }
-        else
+
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+        ViewBag.ViewedFirstProfile = currentUser != null && _userManager.IsUsedIndexesEmpty(currentUser);// For 'Go back!' button
+
+        if (currentUser == null)
         {
-            View("Error");
+            return View("Login");
         }
-        return View("Login");
+
+        IUser? randomUser = null;
+        int counter = 0;
+
+        // Keep generating random users until an unmatched and unrequested user is found
+        while (randomUser == null || (_matchingManager.IsMatched(currentUser.Id, randomUser.Id) && _matchingManager.IsRequestedMatch(currentUser.Id, randomUser.Id)))
+        {
+            randomUser = _userManager.GetRandomUser(currentUser);
+
+            counter++;
+            if (counter > _userManager.GetAllUsers().Count)
+            {
+                break;
+            }
+        }
+
+        TempData.Remove("HideGoBackButton");
+
+        return View("RandomProfile", randomUser);
+
     }
 
     public IActionResult SetViewedFirstProfile()
@@ -237,31 +244,25 @@ public class ProfileController : Controller
             ViewBag.CurrentUserId = currentUserId;
         }
 
-        if (Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
         {
-            UserId parseUserId = UserId.From(userIdGuid);
-
-            IUser? currentUser = _userManager.GetUserById(parseUserId);
-
-            if (currentUser == null)
-            {
-                return View("Login");
-            }
-
-            IUser? previousUser = _userManager.GetPreviousRandomProfile(currentUser);
-
-            TempData["HideGoBackButton"] = true;
-
-            return View("RandomProfile", previousUser);
-
-        }
-        else
-        {
-            View("Error");
+            return View("Login");
         }
 
+        UserId parseUserId = UserId.From(userIdGuid);
 
-        return View("Login");
+        IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+        if (currentUser == null)
+        {
+            return View("Login");
+        }
+
+        IUser? previousUser = _userManager.GetPreviousRandomProfile(currentUser);
+
+        TempData["HideGoBackButton"] = true;
+
+        return View("RandomProfile", previousUser);
     }
 
     public IActionResult Login(string? userId)
@@ -342,7 +343,7 @@ public class ProfileController : Controller
             "RandomProfile" => RedirectToAction("RandomProfile"),
             "DisplayProfiles" => RedirectToAction("DisplayProfiles"),
             "CurrentRandomUserProfile" => RedirectToAction("CurrentRandomUserProfile"),
-            _ => RedirectToAction("Index")
+            _ => RedirectToAction("Index", "Home")
         };
     }
 

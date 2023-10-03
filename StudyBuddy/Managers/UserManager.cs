@@ -37,14 +37,16 @@ public class UserManager : IUserManager
     }
 
     public List<IUser> GetAllUsers() => s_users.Where(u => u != null).Cast<IUser>().ToList();
-    
+
     public IUser? GetRandomUser(IUser user)
     {
         Random random = new();
         int maxTries = s_users.Count - user.UsedIndexes.Count;
 
         if (user.UsedIndexes.Count == s_users.Count)
+        {
             return null;
+        }
 
         for (int i = 0; i < maxTries; i++)
         {
@@ -53,8 +55,7 @@ public class UserManager : IUserManager
             do
             {
                 currentIndex = random.Next(0, s_users.Count);
-            }
-            while (user.UsedIndexes.Contains(currentIndex));
+            } while (user.UsedIndexes.Contains(currentIndex));
 
 
             if (s_users[currentIndex]!.Id == user.Id)
@@ -100,13 +101,7 @@ public class UserManager : IUserManager
         return null;
     }
 
-    public IUser? GetCurrentRandomUser(IUser user)
-    {
-        return s_users[user.UsedIndexes.Last()];
-    }
+    public IUser? GetCurrentRandomUser(IUser user) => s_users[user.UsedIndexes.Last()];
 
-    public bool IsUsedIndexesEmpty(IUser user)
-    {
-        return user.UsedIndexes.Count > 0;
-    }
+    public bool IsUsedIndexesEmpty(IUser user) => user.UsedIndexes.Count > 0;
 }

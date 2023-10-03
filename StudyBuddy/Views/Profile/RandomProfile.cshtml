@@ -1,12 +1,11 @@
-﻿@{
+﻿@model StudyBuddy.Abstractions.IUser?
+@using StudyBuddy.Abstractions
+@inject IMatchingManager MatchingManager
+
+@{
     ViewBag.Title = "Random Profile";
     Layout = "_Layout";
 }
-
-@model StudyBuddy.Abstractions.IUser
-@using StudyBuddy.Extensions;
-@using StudyBuddy.Abstractions
-@inject IMatchingManager MatchingManager
 
 <div class="text-center">
     <h1 class="display-4">User Profile</h1>
@@ -14,8 +13,8 @@
     @if (Model != null)
     {
         var avatarUrl = Model.Traits.AvatarPath.Contains("://")
-        ? Model.Traits.AvatarPath
-        : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
+            ? Model.Traits.AvatarPath
+            : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
 
         var isRequestedMatch = false;
         var isMatched = false;
@@ -56,18 +55,18 @@
             {
                 <a href="@Url.Action("PreviousProfile", "Profile")" class="btn btn-secondary">Go back!</a>
             }
-            
+
             <!-- Button to view the new random profile -->
             <a href="@Url.Action("RandomProfile", "Profile")" class="btn btn-primary">Get New Profile</a>
-            
+
         </div>
 
         @if (ViewBag.CurrentUserId != null && !isMatched && !isRequestedMatch)
         {
             <form method="post" asp-controller="Profile" asp-action="MatchUsers"
                   asp-route-redirectAction="CurrentRandomUserProfile">
-                <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId" />
-                <input type="hidden" name="otherUser" value="@Model.Id" />
+                <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId"/>
+                <input type="hidden" name="otherUser" value="@Model.Id"/>
                 <button id="matchButton" type="submit" class="btn btn-success btn-lg mt-2 w-100">Match</button>
             </form>
         }
@@ -90,4 +89,3 @@
         <a href="@Url.Action("PreviousProfile", "Profile")" class="btn btn-secondary">Go back!</a>
     }
 </div>
-

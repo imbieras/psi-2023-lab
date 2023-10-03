@@ -15,6 +15,7 @@ public class User : IUser, IEquatable<User>
 
         UsedIndexes = new List<int>();
     }
+
     public List<int> UsedIndexes { get; set; }
 
     public UserId Id { get; }
@@ -31,18 +32,15 @@ public class User : IUser, IEquatable<User>
 
     public bool Equals(User? other)
     {
-        if (other == null) return false;
+        if (other == null)
+        {
+            return false;
+        }
 
         return Id == other.Id;
     }
 
-    public override bool Equals(object? obj)
-    {
-        return obj is User user && Equals(user);
-    }
+    public override bool Equals(object? obj) => obj is User user && Equals(user);
 
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+    public override int GetHashCode() => Id.GetHashCode();
 }

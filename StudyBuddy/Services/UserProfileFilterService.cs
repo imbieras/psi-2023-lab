@@ -1,33 +1,27 @@
 ﻿using StudyBuddy.Abstractions;
 
+namespace StudyBuddy.Services;
+
 public class UserProfileFilterService
 {
-    private readonly IUserManager _userManager;
-
-    public UserProfileFilterService(IUserManager userManager)
+    public static List<IUser> FilterByBirthYear(int? startYear, int? endYear, IEnumerable<IUser> userList)
     {
-        _userManager = userManager;
-    }
+        IEnumerable<IUser> userQuery = from user in userList
+            where user.Traits.Birthdate.Year >= startYear && user.Traits.Birthdate.Year <= endYear
+            select user;
 
-    public List<IUser> FilterByBirthYear(int? startYear, int? endYear, List<IUser> userList)
-    {
-        var userQuery = from user in userList
-                        where user.Traits.Birthdate.Year >= startYear && user.Traits.Birthdate.Year <= endYear
-                        select user;
-
-        var filteredUsers = userQuery.ToList();
+        List<IUser> filteredUsers = userQuery.ToList();
 
         return filteredUsers;
     }
-    public List<IUser> FilterBySubject(string? subject, List<IUser> userList)
+    public static List<IUser> FilterBySubject(string? subject, IEnumerable<IUser> userList)
     {
-        var userQuery = from user in userList
-                        where user.Traits.Subject.Equals(subject)
-                        select user;
+        IEnumerable<IUser> userQuery = from user in userList
+            where user.Traits.Subject.Equals(subject)
+            select user;
 
-        var filteredUsers = userQuery.ToList();
+        List<IUser> filteredUsers = userQuery.ToList();
 
         return filteredUsers;
     }
-
 }
