@@ -91,7 +91,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies, string? longitude, string? latitude)
+    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies, string? longitude = null, string? latitude = null)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -211,7 +211,7 @@ public class ProfileController : Controller
         int counter = 0;
 
         // Keep generating random users until an unmatched and unrequested user is found
-        while (randomUser == null || (_matchingManager.IsMatched(currentUser.Id, randomUser.Id) && _matchingManager.IsRequestedMatch(currentUser.Id, randomUser.Id)))
+        while (randomUser == null || (_matchingManager.IsMatched(currentUser.Id, otherUser:randomUser.Id) && _matchingManager.IsRequestedMatch(currentUser.Id, otherUser:randomUser.Id)))
         {
             randomUser = _userManager.GetRandomUser(currentUser);
 
@@ -271,7 +271,7 @@ public class ProfileController : Controller
 
         if (currentUserId != null && _userManager.GetUserById(currentUserId.Value) != null)
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", controllerName:"Home");
         }
 
         if (string.IsNullOrEmpty(userId))
@@ -304,7 +304,7 @@ public class ProfileController : Controller
             Secure = true
         };
 
-        Response.Cookies.Append("UserId", userId, cookieOptions);
+        Response.Cookies.Append(key:"UserId", value:userId, cookieOptions);
 
         return RedirectToAction("Index", "Home");
     }

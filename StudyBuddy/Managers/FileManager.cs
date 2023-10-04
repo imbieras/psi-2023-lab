@@ -59,7 +59,7 @@ public class FileManager
     }
 }
 
-public class UserCsvRecord
+public record UserCsvRecord
 {
     public UserCsvRecord(string username, string flags, string subject, string avatarPath, string description, string hobbies, DateTime birthdate)
     {
