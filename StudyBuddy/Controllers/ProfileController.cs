@@ -49,14 +49,14 @@ public class ProfileController : Controller
 
             if (filterModel.StartYear != 0 && filterModel.EndYear != 0)
             {
-                userList = UserProfileFilterService.FilterByBirthYear(filterModel.StartYear, filterModel.EndYear, userList);
+                userList = GenericFilterService<IUser>.FilterByPredicate(userList, u => u.Traits.Birthdate.Year >= filterModel.StartYear && u.Traits.Birthdate.Year <= filterModel.EndYear);
             }
 
             /* Subject filter */
             if (!string.IsNullOrEmpty(filterModel.Subject))
             {
                 // Input is assumed to be safe since it's coming from the model property
-                userList = UserProfileFilterService.FilterBySubject(filterModel.Subject, userList);
+                userList = GenericFilterService<IUser>.FilterByPredicate(userList, u => u.Traits.Subject.Equals(filterModel.Subject));
             }
 
             return View(userList);
