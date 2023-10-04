@@ -8,8 +8,8 @@ namespace StudyBuddy.Managers;
 
 public class FileManager
 {
-    private readonly IUserManager _userManager;
     private const string CsvDelimiter = ";";
+    private readonly IUserManager _userManager;
 
     public FileManager(IUserManager userManager) => _userManager = userManager;
 
@@ -24,14 +24,20 @@ public class FileManager
         try
         {
             using StreamReader reader = new(filePath);
-            using CsvReader csv = new(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower() });
+            using CsvReader csv = new(reader,
+                new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower()
+                });
 
             List<UserCsvRecord> records = csv.GetRecords<UserCsvRecord>().ToList();
 
             foreach (UserCsvRecord? record in records)
             {
                 string username = record.Username;
-                UserFlags flags = Enum.TryParse(record.Flags, out UserFlags parsedFlags) ? parsedFlags : UserFlags.Registered;
+                UserFlags flags = Enum.TryParse(record.Flags, out UserFlags parsedFlags)
+                    ? parsedFlags
+                    : UserFlags.Registered;
                 DateTime birthdate = record.Birthdate;
                 string subject = record.Subject;
                 string avatarPath = record.AvatarPath;
@@ -59,30 +65,19 @@ public class FileManager
     }
 }
 
-public record UserCsvRecord
+public record UserCsvRecord(string Username, string Flags, DateTime Birthdate, string Subject, string AvatarPath, string Description, string Hobbies)
 {
-    public UserCsvRecord(string username, string flags, string subject, string avatarPath, string description, string hobbies, DateTime birthdate)
-    {
-        Username = username;
-        Flags = flags;
-        Subject = subject;
-        AvatarPath = avatarPath;
-        Description = description;
-        Hobbies = hobbies;
-        Birthdate = birthdate;
-    }
+    public string Username { get; } = Username;
 
-    public string Username { get; }
+    public string Flags { get; } = Flags;
 
-    public string Flags { get; }
+    public DateTime Birthdate { get; } = Birthdate;
 
-    public DateTime Birthdate { get; }
+    public string Subject { get; } = Subject;
 
-    public string Subject { get; }
+    public string AvatarPath { get; } = AvatarPath;
 
-    public string AvatarPath { get; }
+    public string Description { get; } = Description;
 
-    public string Description { get; }
-
-    public string Hobbies { get; }
+    public string Hobbies { get; } = Hobbies;
 }
