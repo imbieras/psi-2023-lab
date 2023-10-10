@@ -1,24 +1,21 @@
+using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Models;
-using StudyBuddy.ValueObjects;
-using Markdig;
-using StudyBuddy.Services;
 using StudyBuddy.Managers.UserManager;
-using StudyBuddy.Managers.MatchingManager;
+using StudyBuddy.Models;
+using StudyBuddy.Services;
+using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Controllers;
 
 public class ProfileController : Controller
 {
     private readonly IUserManager _userManager;
-    private readonly IMatchingManager _matchingManager;
     private readonly IUserService _userService;
 
-    public ProfileController(IUserManager userManager, IMatchingManager matchingManager, IUserService userService)
+    public ProfileController(IUserManager userManager, IUserService userService)
     {
         _userManager = userManager;
-        _matchingManager = matchingManager;
         _userService = userService;
     }
 
@@ -51,14 +48,17 @@ public class ProfileController : Controller
 
             if (filterModel.StartYear != 0 && filterModel.EndYear != 0)
             {
-                userList = GenericFilterService<IUser>.FilterByPredicate(userList, u => u.Traits.Birthdate.Year >= filterModel.StartYear && u.Traits.Birthdate.Year <= filterModel.EndYear);
+                userList = GenericFilterService<IUser>.FilterByPredicate(userList,
+                    u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
+                         u.Traits.Birthdate.Year <= filterModel.EndYear);
             }
 
             /* Subject filter */
             if (!string.IsNullOrEmpty(filterModel.Subject))
             {
                 // Input is assumed to be safe since it's coming from the model property
-                userList = GenericFilterService<IUser>.FilterByPredicate(userList, u => u.Traits.Subject.Equals(filterModel.Subject));
+                userList = GenericFilterService<IUser>.FilterByPredicate(userList,
+                    u => u.Traits.Subject.Equals(filterModel.Subject));
             }
 
             return View(userList);
@@ -67,7 +67,7 @@ public class ProfileController : Controller
         {
             // Log the exception
             ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
-            return View(new List<IUser>());// Provide an empty list
+            return View(new List<IUser>()); // Provide an empty list
         }
     }
 
@@ -93,7 +93,8 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar, string? markdownContent, List<string> hobbies, string? longitude = null, string? latitude = null)
+    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar,
+        string? markdownContent, List<string> hobbies, string? longitude = null, string? latitude = null)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -129,7 +130,8 @@ public class ProfileController : Controller
             }
 
             Coordinates? location = null;
-            if (double.TryParse(longitude, out double parsedLongitude) && double.TryParse(latitude, out double parsedLatitude))
+            if (double.TryParse(longitude, out double parsedLongitude) &&
+                double.TryParse(latitude, out double parsedLatitude))
             {
                 location = Coordinates.From((parsedLongitude, parsedLatitude));
             }
@@ -167,7 +169,7 @@ public class ProfileController : Controller
 
         if (currentUserId != null && _userManager.GetUserById(currentUserId.Value) != null)
         {
-            return RedirectToAction("Index", controllerName: "Home");
+            return RedirectToAction("Index", "Home");
         }
 
         if (string.IsNullOrEmpty(userId))
@@ -200,7 +202,7 @@ public class ProfileController : Controller
             Secure = true
         };
 
-        Response.Cookies.Append(key: "UserId", value: userId, cookieOptions);
+        Response.Cookies.Append("UserId", userId, cookieOptions);
 
         return RedirectToAction("Index", "Home");
     }
@@ -212,6 +214,4 @@ public class ProfileController : Controller
 
         return RedirectToAction("Index", "Home");
     }
-
-
 }

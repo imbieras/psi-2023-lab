@@ -5,7 +5,6 @@ namespace StudyBuddy.Models;
 
 public class User : IUser, IEquatable<User>
 {
-
     public User(UserId id, string name, UserFlags flags, UserTraits traits)
     {
         Id = id;
@@ -14,6 +13,16 @@ public class User : IUser, IEquatable<User>
         Traits = traits;
 
         UsedIndexes = new List<int>();
+    }
+
+    public bool Equals(User? other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        return Id == other.Id;
     }
 
     public List<int> UsedIndexes { get; set; }
@@ -29,16 +38,6 @@ public class User : IUser, IEquatable<User>
     public static string GenerateGravatarUrl(UserId userId) =>
         // Logic to create Gravatar URL based on user's unique identifier
         $"https://www.gravatar.com/avatar/{userId}?d=identicon";
-
-    public bool Equals(User? other)
-    {
-        if (other == null)
-        {
-            return false;
-        }
-
-        return Id == other.Id;
-    }
 
     public override bool Equals(object? obj) => obj is User user && Equals(user);
 
