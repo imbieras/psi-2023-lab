@@ -2,9 +2,10 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Models;
 
-namespace StudyBuddy.Managers;
+namespace StudyBuddy.Managers.FileManager;
 
 public class FileManager
 {
@@ -27,7 +28,8 @@ public class FileManager
             using CsvReader csv = new(reader,
                 new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower()
+                    Delimiter = CsvDelimiter,
+                    PrepareHeaderForMatch = args => args.Header.ToLower()
                 });
 
             List<UserCsvRecord> records = csv.GetRecords<UserCsvRecord>().ToList();

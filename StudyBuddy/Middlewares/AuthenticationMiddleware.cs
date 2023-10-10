@@ -1,4 +1,5 @@
 using StudyBuddy.Abstractions;
+using StudyBuddy.Managers.UserManager;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Middlewares;

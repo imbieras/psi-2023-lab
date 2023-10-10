@@ -1,5 +1,7 @@
 using StudyBuddy.Abstractions;
-using StudyBuddy.Managers;
+using StudyBuddy.Managers.FileManager;
+using StudyBuddy.Managers.MatchingManager;
+using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Services;
 
