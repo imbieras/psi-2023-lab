@@ -4,8 +4,8 @@ using StudyBuddy.Managers.MatchingManager;
 using StudyBuddy.Managers.UserManager;
 using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Controllers
-{
+namespace StudyBuddy.Controllers;
+
     public class MatchingController : Controller
     {
 
@@ -170,4 +170,3 @@ namespace StudyBuddy.Controllers
 
 
     }
-}
