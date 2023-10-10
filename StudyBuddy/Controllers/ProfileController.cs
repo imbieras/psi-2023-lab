@@ -169,7 +169,7 @@ public class ProfileController : Controller
 
         if (currentUserId != null && _userManager.GetUserById(currentUserId.Value) != null)
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", controllerName:"Home");
         }
 
         if (string.IsNullOrEmpty(userId))
@@ -202,9 +202,9 @@ public class ProfileController : Controller
             Secure = true
         };
 
-        Response.Cookies.Append("UserId", userId, cookieOptions);
+        Response.Cookies.Append(key:"UserId", value:userId, cookieOptions);
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", controllerName:"Home");
     }
 
     [HttpPost]
@@ -212,6 +212,6 @@ public class ProfileController : Controller
     {
         Response.Cookies.Delete("UserId");
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", controllerName:"Home");
     }
 }
