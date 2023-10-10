@@ -1,7 +1,7 @@
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Abstractions;
+namespace StudyBuddy.Managers.MatchingManager;
 
 public interface IMatchingManager
 {

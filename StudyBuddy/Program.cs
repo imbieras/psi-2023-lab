@@ -1,5 +1,7 @@
 using StudyBuddy.Abstractions;
-using StudyBuddy.Managers;
+using StudyBuddy.Managers.FileManager;
+using StudyBuddy.Managers.MatchingManager;
+using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Services;
 
@@ -45,8 +47,8 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-"default",
-"{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
 
 // Retrieve the FileManager singleton and execute LoadUsersFromCsv

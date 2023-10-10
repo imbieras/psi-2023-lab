@@ -1,4 +1,5 @@
 using StudyBuddy.Abstractions;
+using StudyBuddy.Managers.UserManager;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Middlewares;
@@ -12,7 +13,8 @@ public class AuthenticationMiddleware
     public async Task Invoke(HttpContext context, IUserService userService, IUserManager userManager)
     {
         Guid userIdGuid = default;
-        if (!context.Request.Cookies.TryGetValue("UserId", out string? userIdString) || !Guid.TryParse(userIdString, out userIdGuid))
+        if (!context.Request.Cookies.TryGetValue("UserId", out string? userIdString) ||
+            !Guid.TryParse(userIdString, out userIdGuid))
         {
             // Clear the "UserId" cookie if it's not valid or doesn't exist
             context.Response.Cookies.Delete("UserId");

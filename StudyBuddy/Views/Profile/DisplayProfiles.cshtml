@@ -1,6 +1,6 @@
 @model List<StudyBuddy.Abstractions.IUser>
-@using StudyBuddy.Extensions;
-@using StudyBuddy.Abstractions
+@using StudyBuddy.Extensions
+@using StudyBuddy.Managers.MatchingManager
 @inject IMatchingManager MatchingManager
 
 @{
@@ -18,13 +18,14 @@
     <div class="d-flex">
         <div class="col-md-3">
             <label for="startYear">Start Year:</label>
-            <input type="number" class="form-control" id="startYear" name="startYear" min="1900" max="@DateTime.Now.Year" />
+            <input type="number" class="form-control" id="startYear" name="startYear" min="1900" max="@DateTime.Now.Year"/>
         </div>
         <div class="col-md-3" style="margin-left: 10px;">
             <label for="endYear">End Year:</label>
-            <input type="number" class="form-control" id="endYear" name="endYear" min="1900" max="@DateTime.Now.Year" />
+            <input type="number" class="form-control" id="endYear" name="endYear" min="1900" max="@DateTime.Now.Year"/>
         </div>
     </div>
+
     <div class="col-md-3">
         <label for="subject">Subject:</label>
         <select class="form-select" id="subject" name="subject">
@@ -49,7 +50,6 @@
 </form>
 
 
-
 @foreach (var user in Model)
 {
     // Exclude the current user and check if someone is logged in
@@ -58,7 +58,7 @@
         var possessiveName = user.Name.AddPossessiveSuffix();
 
         var avatarUrl = user.Traits.AvatarPath.Contains("://")
-            ? user.Traits.AvatarPath// It's a link
+            ? user.Traits.AvatarPath // It's a link
             : Url.Content("~/avatars/" + user.Traits.AvatarPath);
 
         var isRequestedMatch = false;
@@ -78,7 +78,7 @@
                     </div>
                     <div class="card-body d-flex flex-column align-items-center">
                         <div class="avatar-container" style="background-image: url('@avatarUrl');"></div>
-                            <ul class="list-group list-group-flush mt-4">
+                        <ul class="list-group list-group-flush mt-4">
                             <li class="list-group-item">
                                 <strong>Birthday:</strong> @user.Traits.Birthdate.ToShortDateString()
                             </li>
@@ -96,9 +96,9 @@
                     @* Only show the match button if someone is logged in and there is no match between them *@
                     @if (ViewBag.CurrentUserId != null && !isMatched && !isRequestedMatch)
                     {
-                        <form method="post" asp-controller="Profile" asp-action="MatchUsers" asp-route-redirectAction="DisplayProfiles">
-                            <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId" />
-                            <input type="hidden" name="otherUser" value="@user.Id" />
+                        <form method="post" asp-controller="Matching" asp-action="MatchUsers" asp-route-redirectAction="DisplayProfiles">
+                            <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId"/>
+                            <input type="hidden" name="otherUser" value="@user.Id"/>
                             <button type="submit" class="btn btn-success btn-lg mt-2 w-100">Match</button>
                         </form>
                     }

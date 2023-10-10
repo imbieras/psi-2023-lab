@@ -2,9 +2,10 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Models;
 
-namespace StudyBuddy.Managers;
+namespace StudyBuddy.Managers.FileManager;
 
 public class FileManager
 {
@@ -65,7 +66,8 @@ public class FileManager
     }
 }
 
-public record UserCsvRecord(string Username, string Flags, DateTime Birthdate, string Subject, string AvatarPath, string Description, string Hobbies)
+public record UserCsvRecord(string Username, string Flags, DateTime Birthdate, string Subject, string AvatarPath,
+    string Description, string Hobbies)
 {
     public string Username { get; } = Username;
 

@@ -2,7 +2,7 @@ using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Managers;
+namespace StudyBuddy.Managers.UserManager;
 
 public class UserManager : IUserManager
 {

@@ -1,7 +1,8 @@
+using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Abstractions;
+namespace StudyBuddy.Managers.UserManager;
 
 public interface IUserManager
 {
