@@ -61,7 +61,7 @@ public class MatchingManager : IMatchingManager
         }
     }
 
-    private void AddMatchRequest(UserId userId, UserId requestUserId)
+    public void AddMatchRequest(UserId userId, UserId requestUserId)
     {
         if (!_matchRequests.ContainsKey(userId))
         {
