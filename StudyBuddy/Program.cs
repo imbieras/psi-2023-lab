@@ -1,9 +1,8 @@
-using StudyBuddy.Abstractions;
 using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Managers.MatchingManager;
 using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Middlewares;
-using StudyBuddy.Services;
+using StudyBuddy.Services.UserService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
