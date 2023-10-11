@@ -1,6 +1,6 @@
 using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Abstractions;
+namespace StudyBuddy.Services.UserService;
 
 public interface IUserService
 {

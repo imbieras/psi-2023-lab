@@ -1,7 +1,6 @@
-using StudyBuddy.Abstractions;
 using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Services;
+namespace StudyBuddy.Services.UserService;
 
 public class UserService : IUserService
 {

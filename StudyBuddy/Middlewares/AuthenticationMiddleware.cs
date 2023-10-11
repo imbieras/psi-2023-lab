@@ -1,5 +1,5 @@
-using StudyBuddy.Abstractions;
 using StudyBuddy.Managers.UserManager;
+using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Middlewares;
