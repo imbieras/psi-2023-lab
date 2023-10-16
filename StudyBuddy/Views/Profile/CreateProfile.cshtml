@@ -4,239 +4,239 @@
 }
 
 <div class="container">
-<h2>Profile Creation Page</h2>
-<form method="post" action="SaveProfile" enctype="multipart/form-data">
-<div class="mb-3">
-    <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-    <input type="text" class="form-control" id="name" name="name" required>
-</div>
-<div class="mb-3">
-    <label for="avatar" class="form-label">Profile Picture</label>
-    <input type="file" class="form-control" id="avatar" name="avatar" accept="image/png, image/jpeg">
-</div>
-<div class="mb-3">
-    <label for="birthdate" class="form-label">Birth Date <span class="text-danger">*</span></label>
-    <input type="date" class="form-control" id="birthdate" name="birthdate" required>
-</div>
-<div class="mb-3">
-    <label for="subject" class="form-label">Main Subject <span class="text-danger">*</span></label>
-    <select class="form-select" id="subject" name="subject" required>
-        <option>Natural Sciences</option>
-        <option>Health Sciences</option>
-        <option>Engineering & Technology</option>
-        <option>Social Sciences</option>
-        <option>Humanities</option>
-        <option>Business & Management</option>
-        <option>Arts & Design</option>
-        <option>Mathematical Sciences</option>
-        <option>Bio Sciences</option>
-        <option>Law & Legal Studies</option>
-        <option>Education</option>
-        <option>Agriculture & Forestry</option>
-    </select>
-</div>
-<div class="mb-3">
-    <label class="form-label">Hobbies or Interests</label>
-    <div class="btn-group-toggle" role="group">
-        <label for="reading" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="reading" name="hobbies[]" value="Reading">Reading
-        </label>
-
-        <label for="drawing" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="drawing" name="hobbies[]" value="Drawing">Drawing
-        </label>
-
-        <label for="playing_instrument" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="playing_instrument" name="hobbies[]" value="Playing an instrument">Playing an instrument
-        </label>
-
-        <label for="painting" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="painting" name="hobbies[]" value="Painting">Painting
-        </label>
-
-        <label for="cooking" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="cooking" name="hobbies[]" value="Cooking">Cooking
-        </label>
-
-        <label for="gardening" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="gardening" name="hobbies[]" value="Gardening">Gardening
-        </label>
-
-        <label for="photography" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="photography" name="hobbies[]" value="Photography">Photography
-        </label>
-
-        <label for="writing" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="writing" name="hobbies[]" value="Writing">Writing
-        </label>
-
-        <label for="hiking" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="hiking" name="hobbies[]" value="Hiking">Hiking
-        </label>
-
-        <label for="cycling" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="cycling" name="hobbies[]" value="Cycling">Cycling
-        </label>
-
-        <label for="singing" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="singing" name="hobbies[]" value="Singing">Singing
-        </label>
-
-        <label for="dancing" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="dancing" name="hobbies[]" value="Dancing">Dancing
-        </label>
-
-        <label for="yoga" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="yoga" name="hobbies[]" value="Yoga">Yoga
-        </label>
-
-        <label for="meditation" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="meditation" name="hobbies[]" value="Meditation">Meditation
-        </label>
-
-        <label for="chess" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="chess" name="hobbies[]" value="Chess">Chess
-        </label>
-
-        <label for="video_gaming" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="video_gaming" name="hobbies[]" value="Video gaming">Video gaming
-        </label>
-
-        <label for="binge_watching" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="binge_watching" name="hobbies[]" value="Binge-watching">Binge-watching
-        </label>
-
-        <label for="crafting" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="crafting" name="hobbies[]" value="Crafting">Crafting
-        </label>
-
-        <label for="collecting" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="collecting" name="hobbies[]" value="Collecting">Collecting
-        </label>
-
-        <label for="baking" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="baking" name="hobbies[]" value="Baking">Baking
-        </label>
-
-        <label for="fitness" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="fitness" name="hobbies[]" value="Fitness">Fitness
-        </label>
-
-        <label for="rock_climbing" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="rock_climbing" name="hobbies[]" value="Rock climbing">Rock climbing
-        </label>
-
-        <label for="skiing_snowboarding" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="skiing_snowboarding" name="hobbies[]" value="Skiing or snowboarding">Skiing or snowboarding
-        </label>
-
-        <label for="surfing" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="surfing" name="hobbies[]" value="Surfing">Surfing
-        </label>
-
-        <label for="scuba_diving" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="scuba_diving" name="hobbies[]" value="Scuba diving">Scuba diving
-        </label>
-
-        <label for="tabletop_gaming" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="tabletop_gaming" name="hobbies[]" value="Tabletop gaming">Tabletop gaming
-        </label>
-
-        <label for="birdwatching" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="birdwatching" name="hobbies[]" value="Birdwatching">Birdwatching
-        </label>
-
-        <label for="volunteering" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="volunteering" name="hobbies[]" value="Volunteering">Volunteering
-        </label>
-
-        <label for="traveling" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="traveling" name="hobbies[]" value="Traveling">Traveling
-        </label>
-
-        <label for="auto_mechanics" class="btn btn-secondary mr-2 mb-2">
-            <input type="checkbox" id="auto_mechanics" name="hobbies[]" value="Auto mechanics">Auto mechanics
-        </label>
-    </div>
-</div>
-<div class="mb-3">
-    <label for="markdownButtons" class="form-label">Insert Markdown Elements</label>
-    <div class="btn-mb-3" id="markdownButtons">
-        <div class="btn-group mr-2 mb-2">
-            <button type="button" class="btn btn-outline-secondary" onclick="insertText('# Heading 1')">
-                <i class="fas fa-heading"></i>
-            </button>
-            <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu">
-                <li>
-                    <a class="dropdown-item" onclick="insertText('# Heading 1')">Heading 1</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" onclick="insertText('## Heading 2')">Heading 2</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" onclick="insertText('### Heading 3')">Heading 3</a>
-                </li>
-            </ul>
+    <h2>Profile Creation Page</h2>
+    <form method="post" action="SaveProfile" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="name" name="name" required>
         </div>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('**Bold Text**')">
-            <i class="fas fa-bold"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('*Italic Text*')">
-            <i class="fas fa-italic"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('~~Strikethrough~~')">
-            <i class="fas fa-strikethrough"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('- List Item')">
-            <i class="fas fa-list-ul"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('1. List Item')">
-            <i class="fas fa-list-ol"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('- [ ] Checklist Item')">
-            <i class="fa-regular fa-square"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('- [x] Completed Item')">
-            <i class="fas fa-check-square"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('&gt; Blockquote')">
-            <i class="fas fa-quote-right"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('`Inline Code`')">
-            <i class="fas fa-code"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('```code block\n\n```')">
-            <i class="fas fa-code"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('[Link Text](link-url)')">
-            <i class="fas fa-link"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('![Alt Text](image-url)')">
-            <i class="fas fa-image"></i>
-        </button>
-        <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('---')">
-            —
-        </button>
-    </div>
-</div>
-<div class="mb-3">
-    <label for="markdownContent" class="form-label">Markdown Content</label>
-    <textarea class="form-control" id="markdownContent" name="markdownContent" rows="6"></textarea>
-</div>
-<div class="mb-3">
-    <label for="htmlPreview" class="form-label">HTML Preview</label>
-    <div class="form-control" id="htmlPreview"></div>
-</div>
-<div class="mb-3">
-    <input type="hidden" id="latitude" name="latitude">
-    <input type="hidden" id="longitude" name="longitude">
-    <button type="button" class="btn btn-secondary" onclick="getLocation()">Add Location</button>
-</div>
-<button type="submit" class="btn btn-primary">Submit</button>
-</form>
+        <div class="mb-3">
+            <label for="avatar" class="form-label">Profile Picture</label>
+            <input type="file" class="form-control" id="avatar" name="avatar" accept="image/png, image/jpeg">
+        </div>
+        <div class="mb-3">
+            <label for="birthdate" class="form-label">Birth Date <span class="text-danger">*</span></label>
+            <input type="date" max="@DateTime.Now.Year-@DateTime.Now.Month-@DateTime.Now.Day" class="form-control" id="birthdate" name="birthdate" required>
+        </div>
+        <div class="mb-3">
+            <label for="subject" class="form-label">Main Subject <span class="text-danger">*</span></label>
+            <select class="form-select" id="subject" name="subject" required>
+                <option>Natural Sciences</option>
+                <option>Health Sciences</option>
+                <option>Engineering & Technology</option>
+                <option>Social Sciences</option>
+                <option>Humanities</option>
+                <option>Business & Management</option>
+                <option>Arts & Design</option>
+                <option>Mathematical Sciences</option>
+                <option>Bio Sciences</option>
+                <option>Law & Legal Studies</option>
+                <option>Education</option>
+                <option>Agriculture & Forestry</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Hobbies or Interests</label>
+            <div class="btn-group-toggle" role="group">
+                <label for="reading" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="reading" name="hobbies[]" value="Reading">Reading
+                </label>
+
+                <label for="drawing" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="drawing" name="hobbies[]" value="Drawing">Drawing
+                </label>
+
+                <label for="playing_instrument" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="playing_instrument" name="hobbies[]" value="Playing an instrument">Playing an instrument
+                </label>
+
+                <label for="painting" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="painting" name="hobbies[]" value="Painting">Painting
+                </label>
+
+                <label for="cooking" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="cooking" name="hobbies[]" value="Cooking">Cooking
+                </label>
+
+                <label for="gardening" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="gardening" name="hobbies[]" value="Gardening">Gardening
+                </label>
+
+                <label for="photography" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="photography" name="hobbies[]" value="Photography">Photography
+                </label>
+
+                <label for="writing" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="writing" name="hobbies[]" value="Writing">Writing
+                </label>
+
+                <label for="hiking" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="hiking" name="hobbies[]" value="Hiking">Hiking
+                </label>
+
+                <label for="cycling" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="cycling" name="hobbies[]" value="Cycling">Cycling
+                </label>
+
+                <label for="singing" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="singing" name="hobbies[]" value="Singing">Singing
+                </label>
+
+                <label for="dancing" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="dancing" name="hobbies[]" value="Dancing">Dancing
+                </label>
+
+                <label for="yoga" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="yoga" name="hobbies[]" value="Yoga">Yoga
+                </label>
+
+                <label for="meditation" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="meditation" name="hobbies[]" value="Meditation">Meditation
+                </label>
+
+                <label for="chess" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="chess" name="hobbies[]" value="Chess">Chess
+                </label>
+
+                <label for="video_gaming" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="video_gaming" name="hobbies[]" value="Video gaming">Video gaming
+                </label>
+
+                <label for="binge_watching" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="binge_watching" name="hobbies[]" value="Binge-watching">Binge-watching
+                </label>
+
+                <label for="crafting" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="crafting" name="hobbies[]" value="Crafting">Crafting
+                </label>
+
+                <label for="collecting" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="collecting" name="hobbies[]" value="Collecting">Collecting
+                </label>
+
+                <label for="baking" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="baking" name="hobbies[]" value="Baking">Baking
+                </label>
+
+                <label for="fitness" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="fitness" name="hobbies[]" value="Fitness">Fitness
+                </label>
+
+                <label for="rock_climbing" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="rock_climbing" name="hobbies[]" value="Rock climbing">Rock climbing
+                </label>
+
+                <label for="skiing_snowboarding" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="skiing_snowboarding" name="hobbies[]" value="Skiing or snowboarding">Skiing or snowboarding
+                </label>
+
+                <label for="surfing" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="surfing" name="hobbies[]" value="Surfing">Surfing
+                </label>
+
+                <label for="scuba_diving" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="scuba_diving" name="hobbies[]" value="Scuba diving">Scuba diving
+                </label>
+
+                <label for="tabletop_gaming" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="tabletop_gaming" name="hobbies[]" value="Tabletop gaming">Tabletop gaming
+                </label>
+
+                <label for="birdwatching" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="birdwatching" name="hobbies[]" value="Birdwatching">Birdwatching
+                </label>
+
+                <label for="volunteering" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="volunteering" name="hobbies[]" value="Volunteering">Volunteering
+                </label>
+
+                <label for="traveling" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="traveling" name="hobbies[]" value="Traveling">Traveling
+                </label>
+
+                <label for="auto_mechanics" class="btn btn-secondary mr-2 mb-2">
+                    <input type="checkbox" id="auto_mechanics" name="hobbies[]" value="Auto mechanics">Auto mechanics
+                </label>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="markdownButtons" class="form-label">Insert Markdown Elements</label>
+            <div class="btn-mb-3" id="markdownButtons">
+                <div class="btn-group mr-2 mb-2">
+                    <button type="button" class="btn btn-outline-secondary" onclick="insertText('# Heading 1')">
+                        <i class="fas fa-heading"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" onclick="insertText('# Heading 1')">Heading 1</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" onclick="insertText('## Heading 2')">Heading 2</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" onclick="insertText('### Heading 3')">Heading 3</a>
+                        </li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('**Bold Text**')">
+                    <i class="fas fa-bold"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('*Italic Text*')">
+                    <i class="fas fa-italic"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('~~Strikethrough~~')">
+                    <i class="fas fa-strikethrough"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('- List Item')">
+                    <i class="fas fa-list-ul"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('1. List Item')">
+                    <i class="fas fa-list-ol"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('- [ ] Checklist Item')">
+                    <i class="fa-regular fa-square"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('- [x] Completed Item')">
+                    <i class="fas fa-check-square"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('&gt; Blockquote')">
+                    <i class="fas fa-quote-right"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('`Inline Code`')">
+                    <i class="fas fa-code"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('```code block\n\n```')">
+                    <i class="fas fa-code"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('[Link Text](link-url)')">
+                    <i class="fas fa-link"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('![Alt Text](image-url)')">
+                    <i class="fas fa-image"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('---')">
+                    —
+                </button>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="markdownContent" class="form-label">Markdown Content</label>
+            <textarea class="form-control" id="markdownContent" name="markdownContent" rows="6"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="htmlPreview" class="form-label">HTML Preview</label>
+            <div class="form-control" id="htmlPreview"></div>
+        </div>
+        <div class="mb-3">
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+            <button type="button" class="btn btn-secondary" onclick="getLocation()">Add Location</button>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -278,7 +278,7 @@
     }
 
     function showError(error) {
-        switch(error.code) {
+        switch (error.code) {
             case error.PERMISSION_DENIED:
                 alert("User denied the request for Geolocation.");
                 break;
