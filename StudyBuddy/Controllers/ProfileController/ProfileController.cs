@@ -7,7 +7,7 @@ using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Controllers;
+namespace StudyBuddy.Controllers.ProfileController;
 
 public class ProfileController : Controller
 {
@@ -94,8 +94,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(string name, string birthdate, string subject, IFormFile? avatar,
-        string? markdownContent, List<string> hobbies, string? longitude = null, string? latitude = null)
+    public async Task<IActionResult> SaveProfile(ProfileDTO profileDTO)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -103,7 +102,7 @@ public class ProfileController : Controller
         {
             string avatarPath = string.Empty;
 
-            if (avatar is { Length: > 0 })
+            if (profileDTO.Avatar is { Length: > 0 })
             {
                 string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
 
@@ -113,37 +112,37 @@ public class ProfileController : Controller
                     Directory.CreateDirectory(uploadsFolder);
                 }
 
-                string uniqueFileName = Guid.NewGuid() + "_" + avatar.FileName;
+                string uniqueFileName = Guid.NewGuid() + "_" + profileDTO.Avatar.FileName;
 
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                 await using FileStream fileStream = new(filePath, FileMode.Create);
-                await avatar.CopyToAsync(fileStream);
+                await profileDTO.Avatar.CopyToAsync(fileStream);
 
                 avatarPath = uniqueFileName;
             }
 
             string htmlContent = string.Empty;
-            if (markdownContent != null)
+            if (profileDTO.MarkdownContent != null)
             {
                 // Convert Markdown to HTML
-                htmlContent = Markdown.ToHtml(markdownContent);
+                htmlContent = Markdown.ToHtml(profileDTO.MarkdownContent);
             }
 
             Coordinates? location = null;
-            if (double.TryParse(longitude, out double parsedLongitude) &&
-                double.TryParse(latitude, out double parsedLatitude))
+            if (double.TryParse(profileDTO.Longitude, out double parsedLongitude) &&
+                double.TryParse(profileDTO.Latitude, out double parsedLatitude))
             {
                 location = Coordinates.From((parsedLongitude, parsedLatitude));
             }
 
             UserTraits traits = new()
             {
-                Birthdate = DateTime.Parse(birthdate),
-                Subject = subject,
+                Birthdate = DateTime.Parse(profileDTO.Birthdate),
+                Subject = profileDTO.Subject,
                 AvatarPath = avatarPath,
                 Description = htmlContent,
-                Hobbies = hobbies
+                Hobbies = profileDTO.Hobbies
             };
 
             if (location != null)
@@ -151,7 +150,7 @@ public class ProfileController : Controller
                 traits.Location = location.Value;
             }
 
-            _userManager.RegisterUser(name, flags, traits);
+            _userManager.RegisterUser(profileDTO.Name, flags, traits);
 
             TempData["SuccessMessage"] = "Profile created successfully";
 
@@ -170,7 +169,7 @@ public class ProfileController : Controller
 
         if (currentUserId != null && _userManager.GetUserById(currentUserId.Value) != null)
         {
-            return RedirectToAction("Index", controllerName:"Home");
+            return RedirectToAction("Index", controllerName: "Home");
         }
 
         if (string.IsNullOrEmpty(userId))
@@ -203,9 +202,9 @@ public class ProfileController : Controller
             Secure = true
         };
 
-        Response.Cookies.Append(key:"UserId", value:userId, cookieOptions);
+        Response.Cookies.Append(key: "UserId", value: userId, cookieOptions);
 
-        return RedirectToAction("Index", controllerName:"Home");
+        return RedirectToAction("Index", controllerName: "Home");
     }
 
     [HttpPost]
@@ -213,6 +212,6 @@ public class ProfileController : Controller
     {
         Response.Cookies.Delete("UserId");
 
-        return RedirectToAction("Index", controllerName:"Home");
+        return RedirectToAction("Index", controllerName: "Home");
     }
 }
