@@ -8,7 +8,7 @@ public class ProfileDTO
     public IFormFile? Avatar { get; set; }
     public string? MarkdownContent { get; set; }
     public List<string>? Hobbies { get; set; }
-    public string? Longitude { get; set; }
-    public string? Latitude { get; set; }
+    public string? Longitude { get; set; } = null;
+    public string? Latitude { get; set; } = null;
 }
 
