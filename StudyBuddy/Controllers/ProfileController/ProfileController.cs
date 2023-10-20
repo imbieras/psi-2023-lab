@@ -36,7 +36,7 @@ public class ProfileController : Controller
             }
 
 
-            /* Year filter */
+            // Year filter
             if (filterModel.StartYear == 0)
             {
                 filterModel.StartYear = 1900;
@@ -50,16 +50,16 @@ public class ProfileController : Controller
             if (filterModel.StartYear != 0 && filterModel.EndYear != 0)
             {
                 userList = GenericFilterService<IUser>.FilterByPredicate(userList,
-                    u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
-                         u.Traits.Birthdate.Year <= filterModel.EndYear);
+                u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
+                     u.Traits.Birthdate.Year <= filterModel.EndYear);
             }
 
-            /* Subject filter */
+            // Subject filter
             if (!string.IsNullOrEmpty(filterModel.Subject))
             {
                 // Input is assumed to be safe since it's coming from the model property
                 userList = GenericFilterService<IUser>.FilterByPredicate(userList,
-                    u => u.Traits.Subject.Equals(filterModel.Subject));
+                u => u.Traits.Subject.Equals(filterModel.Subject));
             }
 
             return View(userList);
@@ -68,7 +68,7 @@ public class ProfileController : Controller
         {
             // Log the exception
             ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
-            return View(new List<IUser>()); // Provide an empty list
+            return View(new List<IUser>());// Provide an empty list
         }
     }
 
@@ -94,7 +94,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(ProfileDTO profileDTO)
+    public async Task<IActionResult> SaveProfile(ProfileDto profileDTO)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -169,7 +169,7 @@ public class ProfileController : Controller
 
         if (currentUserId != null && _userManager.GetUserById(currentUserId.Value) != null)
         {
-            return RedirectToAction("Index", controllerName: "Home");
+            return RedirectToAction("Index", "Home");
         }
 
         if (string.IsNullOrEmpty(userId))
@@ -202,9 +202,9 @@ public class ProfileController : Controller
             Secure = true
         };
 
-        Response.Cookies.Append(key: "UserId", value: userId, cookieOptions);
+        Response.Cookies.Append("UserId", userId, cookieOptions);
 
-        return RedirectToAction("Index", controllerName: "Home");
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpPost]
@@ -212,6 +212,6 @@ public class ProfileController : Controller
     {
         Response.Cookies.Delete("UserId");
 
-        return RedirectToAction("Index", controllerName: "Home");
+        return RedirectToAction("Index", "Home");
     }
 }

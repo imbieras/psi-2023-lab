@@ -16,8 +16,14 @@ public struct UserTraits
 
     public Coordinates Location { get; set; }
 
-    public UserTraits(DateTime birthdate, string subject, string avatarPath, string description, List<string> hobbies,
-        Coordinates location)
+    public UserTraits(
+        DateTime birthdate,
+        string subject,
+        string avatarPath,
+        string description,
+        List<string> hobbies,
+        Coordinates location
+    )
     {
         Birthdate = birthdate;
         Subject = subject;

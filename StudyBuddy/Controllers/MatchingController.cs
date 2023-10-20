@@ -65,7 +65,7 @@ public class MatchingController : Controller
         IUser? currentUser = _userManager.GetUserById(parseUserId);
 
         ViewBag.ViewedFirstProfile =
-            currentUser != null && _userManager.IsUsedIndexesEmpty(currentUser); // For 'Go back!' button
+            currentUser != null && _userManager.IsUsedIndexesEmpty(currentUser);// For 'Go back!' button
 
         if (currentUser == null)
         {

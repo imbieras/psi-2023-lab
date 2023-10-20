@@ -26,10 +26,7 @@ public class FileManager
         {
             using StreamReader reader = new(filePath);
             using CsvReader csv = new(reader,
-                new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower()
-                });
+            new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower() });
 
             List<UserCsvRecord> records = csv.GetRecords<UserCsvRecord>().ToList();
 
@@ -66,8 +63,15 @@ public class FileManager
     }
 }
 
-public record UserCsvRecord(string Username, string Flags, DateTime Birthdate, string Subject, string AvatarPath,
-    string Description, string Hobbies)
+public record UserCsvRecord(
+    string Username,
+    string Flags,
+    DateTime Birthdate,
+    string Subject,
+    string AvatarPath,
+    string Description,
+    string Hobbies
+)
 {
     public string Username { get; } = Username;
 
