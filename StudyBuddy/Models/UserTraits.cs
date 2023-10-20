@@ -12,7 +12,7 @@ public struct UserTraits
 
     public string Description { get; set; }
 
-    public List<string>? Hobbies { get; set; }
+    public List<string> Hobbies { get; set; }
 
     public Coordinates Location { get; set; }
 
@@ -21,7 +21,7 @@ public struct UserTraits
         string subject,
         string avatarPath,
         string description,
-        List<string>? hobbies,
+        List<string> hobbies,
         Coordinates location
     )
     {

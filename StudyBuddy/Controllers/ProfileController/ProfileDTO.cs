@@ -12,7 +12,7 @@ public class ProfileDto
 
     public string? MarkdownContent { get; set; }
 
-    public List<string>? Hobbies { get; set; }
+    public List<string> Hobbies { get; set; } = new();
 
     public string? Longitude { get; set; } = null;
 
