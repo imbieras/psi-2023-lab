@@ -16,7 +16,7 @@
 </div>
 <div class="mb-3">
     <label for="birthdate" class="form-label">Birth Date <span class="text-danger">*</span></label>
-    <input type="date" class="form-control" id="birthdate" name="birthdate" required>
+    <input type="date" max="@DateTime.Now.Year-@DateTime.Now.Month-@DateTime.Now.Day" class="form-control" id="birthdate" name="birthdate" required>
 </div>
 <div class="mb-3">
     <label for="subject" class="form-label">Main Subject <span class="text-danger">*</span></label>
@@ -278,7 +278,7 @@
     }
 
     function showError(error) {
-        switch(error.code) {
+        switch (error.code) {
             case error.PERMISSION_DENIED:
                 alert("User denied the request for Geolocation.");
                 break;

@@ -39,6 +39,7 @@ public class MatchingController : Controller
         }
 
         IUser? currentRandomUser = _userManager.GetCurrentRandomUser(currentUser);
+        ViewBag.ShowMatchRequestMessage = true;
 
         return View("RandomProfile", currentRandomUser);
     }
@@ -51,6 +52,7 @@ public class MatchingController : Controller
         if (currentUserId != null)
         {
             ViewBag.CurrentUserId = currentUserId;
+            ViewBag.ShowMatchRequestMessage = false;
         }
 
         if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
@@ -63,7 +65,7 @@ public class MatchingController : Controller
         IUser? currentUser = _userManager.GetUserById(parseUserId);
 
         ViewBag.ViewedFirstProfile =
-            currentUser != null && _userManager.IsUsedIndexesEmpty(currentUser); // For 'Go back!' button
+            currentUser != null && _userManager.IsUsedIndexesEmpty(currentUser);// For 'Go back!' button
 
         if (currentUser == null)
         {
@@ -105,6 +107,7 @@ public class MatchingController : Controller
         if (currentUserId != null)
         {
             ViewBag.CurrentUserId = currentUserId;
+            ViewBag.ShowMatchRequestMessage = false;
         }
 
         if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
@@ -145,11 +148,13 @@ public class MatchingController : Controller
             {
                 // Store a "Match request sent" message in TempData
                 TempData["MatchRequestSentMessage"] = "Match request sent.";
+                ViewBag.ShowMatchRequestMessage = true;
             }
 
             if (_matchingManager.IsMatched(currentUserId, otherUserId))
             {
                 TempData["SuccessMessage"] = "Users matched successfully";
+                ViewBag.ShowMatchRequestMessage = false;
             }
         }
         catch (Exception ex)

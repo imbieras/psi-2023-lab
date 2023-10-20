@@ -3,7 +3,7 @@
 @inject IMatchingManager MatchingManager
 
 @{
-    ViewBag.Title = "Random Profile";
+    ViewBag.Title = "Find a friend!";
     Layout = "_Layout";
 }
 
@@ -55,10 +55,13 @@
             {
                 <a href="@Url.Action("PreviousProfile", "Matching")" class="btn btn-secondary">Go back!</a>
             }
+            else
+            {
+                <a class="btn btn-dark btn-secondary">Go back!</a>
+            }
 
             <!-- Button to view the new random profile -->
             <a href="@Url.Action("RandomProfile", "Matching")" class="btn btn-primary">Get New Profile</a>
-
         </div>
 
         @if (ViewBag.CurrentUserId != null && !isMatched && !isRequestedMatch)
@@ -70,7 +73,7 @@
                 <button id="matchButton" type="submit" class="btn btn-success btn-lg mt-2 w-100">Match</button>
             </form>
         }
-        else if (isRequestedMatch)
+        else if (isRequestedMatch || ViewBag.ShowMatchRequestMessage)
         {
             <div class="alert alert-success mt-2 mb-0">
                 Match request sent
