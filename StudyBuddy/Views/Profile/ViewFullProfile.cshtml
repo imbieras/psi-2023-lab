@@ -39,9 +39,12 @@
                     </li>
                     <li class="list-group-item">
                         <strong>Hobbies:</strong>
-                        @foreach (var hobby in Model.Traits.Hobbies)
+                        @if (Model.Traits.Hobbies != null)
                         {
-                            <span class="badge bg-secondary">@hobby</span>
+                            foreach (var hobby in Model.Traits.Hobbies)
+                            {
+                                <span class="badge bg-secondary">@hobby</span>
+                            }
                         }
                     </li>
                 </ul>
