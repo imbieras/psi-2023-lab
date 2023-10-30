@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>SignalR Chat Test</title>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <label for="displayname">Your name:</label>
+            <input type="text" id="displayname">
+        </div>
+
+        <div class="mt-5">
+            <input type="text" id="message">
+            <input type="button" id="sendmessage" value="Send">
+        </div>
+
+        <div class="mt-3">
+            <ul id="discussion"></ul>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.11/signalr.min.js"></script>
+
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chat").build();
+
+        connection.start().then(function () {
+            console.log("SignalR connection established.");
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+
+        document.getElementById("sendmessage").addEventListener("click", function (event) {
+            var user = document.getElementById("displayname").value;
+            var message = document.getElementById("message").value;
+
+            connection.invoke("ReceiveMessage", user, message).catch(function (err) {
+                console.error(err.toString());
+            });
+        });
+
+        connection.on("ReceiveMessage", function (user, message) {
+            var encodedMsg = user + ": " + message;
+            var li = document.createElement("li");
+            li.textContent = encodedMsg;
+            document.getElementById("discussion").appendChild(li);
+        });
+    </script>
+</body>
+</html>

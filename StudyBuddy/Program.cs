@@ -3,6 +3,10 @@ using StudyBuddy.Managers.MatchingManager;
 using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Services.UserService;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SignalR;
+using StudyBuddy.Controllers.ChatController;
+using StudyBuddy.Hubs;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,9 @@ builder.Services.AddSingleton<IUserManager, UserManager>();
 builder.Services.AddSingleton<IMatchingManager, MatchingManager>();
 builder.Services.AddSingleton<FileManager>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddMvc();
+builder.Services.AddSignalR();
 
 // Registering <AuthenticationMiddleware> with its implementation for DI
 builder.Services.AddHttpContextAccessor();
@@ -38,12 +45,21 @@ if (!app.Environment.IsDevelopment())
 // Add middleware to the HTTP request pipeline.
 app.UseMiddleware<AuthenticationMiddleware>();
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseWebSockets(); // for SignalR
 
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ChatHub>("/chat");
+});
+
+
 
 app.MapControllerRoute(
 "default",
