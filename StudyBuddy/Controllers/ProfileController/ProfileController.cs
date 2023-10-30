@@ -12,12 +12,12 @@ namespace StudyBuddy.Controllers.ProfileController;
 public class ProfileController : Controller
 {
     private readonly IUserManager _userManager;
-    private readonly IUserService _userService;
+    private readonly IUserSessionService _userSessionService;
 
-    public ProfileController(IUserManager userManager, IUserService userService)
+    public ProfileController(IUserManager userManager, IUserSessionService userSessionService)
     {
         _userManager = userManager;
-        _userService = userService;
+        _userSessionService = userSessionService;
     }
 
     public IActionResult DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
@@ -25,7 +25,7 @@ public class ProfileController : Controller
         try
         {
             // Get the current user's ID from UserService if not null, otherwise use a default value
-            UserId? currentUserId = _userService.GetCurrentUserId();
+            UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
             List<IUser> userList = _userManager.GetAllUsers();
 
@@ -129,12 +129,9 @@ public class ProfileController : Controller
                 htmlContent = Markdown.ToHtml(profileDTO.MarkdownContent);
             }
 
-            Coordinates? location = null;
-            if (double.TryParse(profileDTO.Longitude, out double parsedLongitude) &&
-                double.TryParse(profileDTO.Latitude, out double parsedLatitude))
-            {
-                location = Coordinates.From((parsedLongitude, parsedLatitude));
-            }
+            double parsedLongitude = 0, parsedLatitude = 0;
+            double.TryParse(profileDTO.Longitude, out parsedLongitude);
+            double.TryParse(profileDTO.Latitude, out parsedLatitude);
 
             UserTraits traits = new()
             {
@@ -145,10 +142,8 @@ public class ProfileController : Controller
                 Hobbies = profileDTO.Hobbies
             };
 
-            if (location != null)
-            {
-                traits.Location = location.Value;
-            }
+            traits.Latitude = parsedLatitude;
+            traits.Longitude = parsedLongitude;
 
             _userManager.RegisterUser(profileDTO.Name, flags, traits);
 
@@ -165,7 +160,7 @@ public class ProfileController : Controller
 
     public IActionResult Login(string? userId)
     {
-        UserId? currentUserId = _userService.GetCurrentUserId();
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
         if (currentUserId != null && _userManager.GetUserById(currentUserId.Value) != null)
         {

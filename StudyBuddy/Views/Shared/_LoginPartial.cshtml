@@ -2,10 +2,10 @@
 @using StudyBuddy.Services.UserService
 @using StudyBuddy.Abstractions
 @inject IUserManager UserManager
-@inject IUserService UserService
+@inject IUserSessionService UserSessionService
 
 @{
-    var currentUserId = UserService.GetCurrentUserId();
+    var currentUserId = UserSessionService.GetCurrentUserId();
     IUser? user = null;
 
     if (currentUserId != null)

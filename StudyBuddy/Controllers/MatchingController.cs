@@ -12,18 +12,18 @@ public class MatchingController : Controller
     private const string LoginPath = "~/Views/Profile/Login.cshtml";
     private readonly IMatchingManager _matchingManager;
     private readonly IUserManager _userManager;
-    private readonly IUserService _userService;
+    private readonly IUserSessionService _userSessionService;
 
-    public MatchingController(IUserManager userManager, IMatchingManager matchingManager, IUserService userService)
+    public MatchingController(IUserManager userManager, IMatchingManager matchingManager, IUserSessionService userSessionService)
     {
         _userManager = userManager;
         _matchingManager = matchingManager;
-        _userService = userService;
+        _userSessionService = userSessionService;
     }
 
     public IActionResult CurrentRandomUserProfile()
     {
-        UserId? currentUserId = _userService.GetCurrentUserId();
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
         if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
         {
             return View(LoginPath);
@@ -47,7 +47,7 @@ public class MatchingController : Controller
     public IActionResult RandomProfile()
     {
         // Pass the current user's ID to the view
-        UserId? currentUserId = _userService.GetCurrentUserId();
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
         if (currentUserId != null)
         {
@@ -102,7 +102,7 @@ public class MatchingController : Controller
     public IActionResult PreviousProfile()
     {
         // Pass the current user's ID to the view
-        UserId? currentUserId = _userService.GetCurrentUserId();
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
         if (currentUserId != null)
         {

@@ -1,0 +1,12 @@
+using StudyBuddy.ValueObjects;
+
+namespace StudyBuddy.Services.UserSessionService;
+
+public class UserSessionService : IUserSessionService
+{
+    private UserId? _currentUserId;
+
+    public UserId? GetCurrentUserId() => _currentUserId;
+
+    public void SetCurrentUser(UserId userId) => _currentUserId = userId;
+}

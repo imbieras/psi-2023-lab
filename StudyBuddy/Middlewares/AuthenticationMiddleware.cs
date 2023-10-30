@@ -10,7 +10,7 @@ public class AuthenticationMiddleware
 
     public AuthenticationMiddleware(RequestDelegate next) => _next = next;
 
-    public async Task Invoke(HttpContext context, IUserService userService, IUserManager userManager)
+    public async Task Invoke(HttpContext context, IUserSessionService userSessionService, IUserManager userManager)
     {
         Guid userIdGuid = default;
         if (!context.Request.Cookies.TryGetValue("UserId", out string? userIdString) ||
@@ -20,10 +20,10 @@ public class AuthenticationMiddleware
             context.Response.Cookies.Delete("UserId");
         }
 
-        if (userService.GetCurrentUserId() == null && userManager.GetUserById(UserId.From(userIdGuid)) != null)
+        if (userSessionService.GetCurrentUserId() == null && userManager.GetUserById(UserId.From(userIdGuid)) != null)
         {
             // Set the current user if it's not already set and the user exists
-            userService.SetCurrentUser(UserId.From(userIdGuid));
+            userSessionService.SetCurrentUser(UserId.From(userIdGuid));
         }
         else
         {

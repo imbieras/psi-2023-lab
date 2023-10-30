@@ -1,8 +1,11 @@
+using StudyBuddy.Data;
+using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Managers.MatchingManager;
 using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Services.UserService;
+using StudyBuddy.Services.UserSessionService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +20,9 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddSingleton<IUserManager, UserManager>();
 builder.Services.AddSingleton<IMatchingManager, MatchingManager>();
 builder.Services.AddSingleton<FileManager>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserSessionService, UserSessionService>();
+builder.Services.AddDbContext<StudyBuddyDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Registering <AuthenticationMiddleware> with its implementation for DI
 builder.Services.AddHttpContextAccessor();
