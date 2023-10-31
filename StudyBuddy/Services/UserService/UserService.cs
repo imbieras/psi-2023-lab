@@ -16,7 +16,13 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
+    public async Task<IEnumerable<IUser>> GetAllUsersAsync() => await _userRepository.GetAllAsync();
     public async Task<IUser?> GetUserByIdAsync(UserId userId) => await _userRepository.GetByIdAsync(userId);
+
+    public async Task<List<Hobby>?> GetHobbiesById(UserId userId)
+    {
+        return await _userRepository.GetHobbiesByIdAsync(userId);
+    }
 
     public async Task<IUser?> GetUserByUsernameAsync(string username)
     {
@@ -34,7 +40,7 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<UserId> RegisterUserAsync(string username, UserFlags flags, UserTraits traits)
+    public async Task<UserId> RegisterUserAsync(string username, UserFlags flags, UserTraits traits, List<Hobby>? hobbies = null)
     {
         UserId userId = UserId.From(Guid.NewGuid());
 
@@ -43,16 +49,34 @@ public class UserService : IUserService
             traits.AvatarPath = User.GenerateGravatarUrl(userId);
         }
 
-        User newUser = new(userId, username, flags, traits);
+        User newUser = new(userId, username, flags, traits, hobbies);
         await _userRepository.AddAsync(newUser);
 
         return userId;
     }
 
-    public async Task<IEnumerable<IUser>> GetAllUsersAsync() => await _userRepository.GetAllAsync();
+    public async Task AddHobbiesToUserAsync(User user, List<Hobby> hobbies)
+    {
+        await _userRepository.AddHobbiesToUserAsync(user, hobbies);
+    }
+
+
+    // TODO: We can add a custom exception here
+    public async Task AddHobbiesToUserAsync(UserId userId, List<Hobby> hobbies)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user != null)
+        {
+            user.Hobbies = hobbies;
+            await _userRepository.AddAsync(user);
+        }
+    }
 
     public IUser? GetRandomUser(IUser user) => throw new NotImplementedException();
+
     public IUser? GetPreviousRandomProfile(IUser user) => throw new NotImplementedException();
+
     public IUser? GetCurrentRandomUser(IUser user) => throw new NotImplementedException();
+
     public bool IsUsedIndexesEmpty(IUser user) => throw new NotImplementedException();
 }

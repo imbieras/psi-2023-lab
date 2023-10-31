@@ -18,6 +18,8 @@ public class MatchRequest
         }
     }
 
+    public MatchRequest(){}
+
     public int RequestId { get; set; }
     public UserId RequesterId { get; set; }
     public UserId RequestedId { get; set; }

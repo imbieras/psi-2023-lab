@@ -1,33 +1,33 @@
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Models;
 using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
+using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Controllers.ProfileController;
 
 public class ProfileController : Controller
 {
-    private readonly IUserManager _userManager;
     private readonly IUserSessionService _userSessionService;
+    private readonly IUserService _userService;
 
-    public ProfileController(IUserManager userManager, IUserSessionService userSessionService)
+    public ProfileController(IUserService userService, IUserSessionService userSessionService)
     {
-        _userManager = userManager;
+        _userService = userService;
         _userSessionService = userSessionService;
     }
 
-    public IActionResult DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
+    public async Task<IActionResult> DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
     {
         try
         {
             // Get the current user's ID from UserService if not null, otherwise use a default value
             UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
-            List<IUser> userList = _userManager.GetAllUsers();
+            List<IUser> userList = (await _userService.GetAllUsersAsync()).ToList();
 
             // Pass the current user's ID to the view
             if (currentUserId != null)
@@ -73,18 +73,16 @@ public class ProfileController : Controller
     }
 
 
-    public IActionResult UserProfile(string id)
+    public async Task<IActionResult> UserProfile(string id)
     {
         if (Guid.TryParse(id, out Guid parsedGuid))
         {
             UserId parseUserId = UserId.From(parsedGuid);
 
-            IUser? user = _userManager.GetUserById(parseUserId);
+            IUser? user = await _userService.GetUserByIdAsync(parseUserId);
+            user.Hobbies = await _userService.GetHobbiesById(parseUserId);
 
-            if (user != null)
-            {
-                return View("ViewFullProfile", user);
-            }
+            return View("ViewFullProfile", user);
         }
 
         ErrorViewModel errorModel = new() { ErrorMessage = "User not found or invalid ID." };
@@ -94,7 +92,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(ProfileDto profileDTO)
+    public async Task<IActionResult> SaveProfile(ProfileDto profileDto)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -102,7 +100,7 @@ public class ProfileController : Controller
         {
             string avatarPath = string.Empty;
 
-            if (profileDTO.Avatar is { Length: > 0 })
+            if (profileDto.Avatar is { Length: > 0 })
             {
                 string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
 
@@ -112,40 +110,43 @@ public class ProfileController : Controller
                     Directory.CreateDirectory(uploadsFolder);
                 }
 
-                string uniqueFileName = Guid.NewGuid() + "_" + profileDTO.Avatar.FileName;
+                string uniqueFileName = Guid.NewGuid() + "_" + profileDto.Avatar.FileName;
 
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                 await using FileStream fileStream = new(filePath, FileMode.Create);
-                await profileDTO.Avatar.CopyToAsync(fileStream);
+                await profileDto.Avatar.CopyToAsync(fileStream);
 
                 avatarPath = uniqueFileName;
             }
 
             string htmlContent = string.Empty;
-            if (profileDTO.MarkdownContent != null)
+            if (profileDto.MarkdownContent != null)
             {
                 // Convert Markdown to HTML
-                htmlContent = Markdown.ToHtml(profileDTO.MarkdownContent);
+                htmlContent = Markdown.ToHtml(profileDto.MarkdownContent);
             }
 
             double parsedLongitude = 0, parsedLatitude = 0;
-            double.TryParse(profileDTO.Longitude, out parsedLongitude);
-            double.TryParse(profileDTO.Latitude, out parsedLatitude);
+            double.TryParse(profileDto.Longitude, out parsedLongitude);
+            double.TryParse(profileDto.Latitude, out parsedLatitude);
 
             UserTraits traits = new()
             {
-                Birthdate = DateTime.Parse(profileDTO.Birthdate),
-                Subject = profileDTO.Subject,
+                Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
+                Subject = profileDto.Subject,
                 AvatarPath = avatarPath,
                 Description = htmlContent,
-                Hobbies = profileDTO.Hobbies
             };
 
             traits.Latitude = parsedLatitude;
             traits.Longitude = parsedLongitude;
 
-            _userManager.RegisterUser(profileDTO.Name, flags, traits);
+            // Log to docker logs
+            System.Diagnostics.Debug.WriteLine("hobbies: " + profileDto.Hobbies);
+            Console.Out.WriteLine("hobbies: " + profileDto.Hobbies);
+
+            UserId userid = await _userService.RegisterUserAsync(profileDto.Name, flags, traits, profileDto.Hobbies);
 
             TempData["SuccessMessage"] = "Profile created successfully";
 
@@ -158,11 +159,11 @@ public class ProfileController : Controller
         }
     }
 
-    public IActionResult Login(string? userId)
+    public async Task<IActionResult> Login(string? userId)
     {
         UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
-        if (currentUserId != null && _userManager.GetUserById(currentUserId.Value) != null)
+        if (currentUserId != null && await _userService.GetUserByIdAsync(currentUserId.Value) != null)
         {
             return RedirectToAction("Index", "Home");
         }
@@ -180,7 +181,7 @@ public class ProfileController : Controller
 
         UserId parseUserId = UserId.From(userIdGuid);
 
-        IUser? user = _userManager.GetUserById(parseUserId);
+        IUser? user = await _userService.GetUserByIdAsync(parseUserId);
 
         if (user == null)
         {

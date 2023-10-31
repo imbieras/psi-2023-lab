@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Data.Repositories;
@@ -29,27 +27,10 @@ public class UserRepository : IUserRepository
         return await _context.Users.FindAsync(userId);
     }
 
-    public async Task<User?> GetWithHobbiesByIdAsync(UserId userId)
+    public async Task<List<Hobby>?> GetHobbiesByIdAsync(UserId userId)
     {
-        return await _context.Users
-            .Include(u => u.UserHobbies)
-            .ThenInclude(uh => uh.Hobby)
-            .FirstOrDefaultAsync(u => u.Id == userId);
-    }
-
-    public async Task AddAsync(User user, List<Hobby>? hobbies = null)
-    {
-        await _context.Users.AddAsync(user);
-
-        if (hobbies != null)
-        {
-            foreach (var hobby in hobbies)
-            {
-                await _context.UserHobbies.AddAsync(new UserHobby { UserId = user.Id, HobbyId = hobby.Id });
-            }
-        }
-
-        await _context.SaveChangesAsync();
+        var user = await _context.Users.FindAsync(userId);
+        return user?.Hobbies;
     }
 
     public async Task UpdateAsync(User user, List<Hobby>? updatedHobbies = null)
@@ -58,17 +39,9 @@ public class UserRepository : IUserRepository
 
         if (updatedHobbies != null)
         {
-            // Remove old hobbies
-            var existingHobbies = await _context.UserHobbies
-                .Where(uh => uh.UserId == user.Id)
-                .ToListAsync();
-            _context.UserHobbies.RemoveRange(existingHobbies);
-
-            // Add updated hobbies
-            foreach (var hobby in updatedHobbies)
-            {
-                await _context.UserHobbies.AddAsync(new UserHobby (user.Id, user, hobby.Id, hobby));
-            }
+            // Remove all hobbies from the user
+            user.Hobbies?.Clear();
+            await AddHobbiesToUserAsync(user, updatedHobbies);
         }
 
         await _context.SaveChangesAsync();
@@ -91,25 +64,25 @@ public class UserRepository : IUserRepository
 
     public async Task AddHobbiesToUserAsync(User user, List<Hobby> hobbies)
     {
-        foreach (var userHobby in hobbies.Select(hobby => new UserHobby(user.Id, user, hobby.Id, hobby)))
-        {
-            await _context.UserHobbies.AddAsync(userHobby);
-        }
+        // Hobbies are stored serialized in the User object, so we need to add it there
+        user.Hobbies ??= new List<Hobby>();
 
         await _context.SaveChangesAsync();
     }
 
-    public async Task RemoveHobbyFromUserAsync(User user, Hobby hobby)
+    public Task RemoveHobbyFromUserAsync(User user, Hobby hobby)
     {
-        var userHobby = await _context.UserHobbies
-            .Include(uh => uh.User)
-            .Include(uh => uh.Hobby)
-            .FirstOrDefaultAsync(uh => uh.UserId == user.Id && uh.HobbyId == hobby.Id);
+        // Hobbies are stored serialized in the User object, so we need to remove it from there
+        user.Hobbies?.Remove(hobby);
+        return Task.CompletedTask;
+    }
 
-        if (userHobby != null)
+    public async Task AddAsync(User user)
+    {
+        if (!await UserExistsAsync(user.Id))
         {
-            _context.UserHobbies.Remove(userHobby);
-            await _context.SaveChangesAsync();
+            _context.Users.Add(user);
         }
+        await _context.SaveChangesAsync();
     }
 }

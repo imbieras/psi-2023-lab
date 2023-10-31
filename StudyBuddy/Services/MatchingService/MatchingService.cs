@@ -31,7 +31,7 @@ public class MatchingService : IMatchingService
         }
     }
 
-    private async Task<bool> IsRequestedMatchAsync(UserId currentUser, UserId otherUser) =>
+    public async Task<bool> IsRequestedMatchAsync(UserId currentUser, UserId otherUser) =>
         await _matchRequestRepository.IsMatchRequestExistsAsync(otherUser, currentUser);
 
     public async Task<bool> IsMatchedAsync(UserId currentUser, UserId otherUser) =>

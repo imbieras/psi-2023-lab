@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using StudyBuddy.Abstractions;
 using StudyBuddy.ValueObjects;
 
@@ -8,7 +9,7 @@ public class User : IUser, IEquatable<User>
 
     private User() { } // Private parameterless constructor for EF
 
-    public User(UserId id, string name, UserFlags flags, UserTraits traits)
+    public User(UserId id, string name, UserFlags flags, UserTraits traits, List<Hobby>? hobbies)
     {
         Id = id;
         Name = name;
@@ -38,7 +39,7 @@ public class User : IUser, IEquatable<User>
 
     public UserTraits Traits { get; set; }
 
-    public ICollection<UserHobby> UserHobbies { get; set; } = new List<UserHobby>();
+    public List<Hobby>? Hobbies { get; set; } = new List<Hobby>();
 
     public static string GenerateGravatarUrl(UserId userId) =>
         // Logic to create Gravatar URL based on user's unique identifier

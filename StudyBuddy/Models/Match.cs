@@ -4,22 +4,24 @@ namespace StudyBuddy.Models;
 
 public class Match
 {
-    public Match(UserId currentUser, UserId otherUser)
+    public Match(UserId user1Id, UserId user2Id)
     {
-        if (currentUser.CompareTo(otherUser) < 0)
+        if (user1Id.CompareTo(user2Id) < 0)
         {
-            User1Id = currentUser;
-            User2Id = otherUser;
+            User1Id = user1Id;
+            User2Id = user2Id;
         }
         else
         {
-            User1Id = otherUser;
-            User2Id = currentUser;
+            User1Id = user2Id;
+            User2Id = user1Id;
         }
 
         MatchDate = DateTime.UtcNow;
         IsActive = true;
     }
+
+    public Match(){}
 
     public int MatchId { get; set; }
 

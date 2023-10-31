@@ -2,17 +2,17 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Models;
+using StudyBuddy.Services.UserService;
 
 namespace StudyBuddy.Managers.FileManager;
 
 public class FileManager
 {
     private const string CsvDelimiter = ";";
-    private readonly IUserManager _userManager;
+    private readonly IUserService _userService;
 
-    public FileManager(IUserManager userManager) => _userManager = userManager;
+    public FileManager(IUserService userService) => _userService = userService;
 
     public void LoadUsersFromCsv(string filePath)
     {
@@ -40,7 +40,7 @@ public class FileManager
                 string subject = record.Subject;
                 string avatarPath = record.AvatarPath;
                 string description = record.Description;
-                List<string> hobbies = new(record.Hobbies.Split(','));
+                List<Hobby> hobbies = record.Hobbies.Split(',').Select(hobby => new Hobby(hobby)).ToList();
 
                 UserTraits traits = new()
                 {
@@ -48,10 +48,9 @@ public class FileManager
                     Subject = subject,
                     AvatarPath = avatarPath,
                     Description = description,
-                    Hobbies = hobbies
                 };
 
-                _userManager.RegisterUser(username, flags, traits);
+                _userService.RegisterUserAsync(username, flags, traits, hobbies);
             }
 
             Console.WriteLine($"Loaded {records.Count} users from the CSV file.");
