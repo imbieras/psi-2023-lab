@@ -90,7 +90,8 @@
                             </li>
                             <li class="list-group-item">
                                 <a href="@Url.Action("UserProfile", "Profile", new { id = user.Id })" class="btn btn-primary mt-3">View Profile</a>
-                                <a href="@Url.Action("Chat", "Chat", new { id = user.Id })" class="btn btn-primary mt-3">Chat</a>
+                                <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user.Id })" class="btn btn-primary mt-3">Chat</a>
+
                             </li>
                         </ul>
                     </div>

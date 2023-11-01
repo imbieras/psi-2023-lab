@@ -49,5 +49,47 @@ namespace StudyBuddy.Controllers.ChatController
 
             return View(currentUser);
         }
+
+        public IActionResult ChatWithUser(string otherUserId)
+        {
+            // Retrieve the current user
+            UserId? currentUserId = _userService.GetCurrentUserId();
+
+            if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+            {
+                return View(LoginPath);
+            }
+
+            UserId parseUserId = UserId.From(userIdGuid);
+            IUser? currentUser = _userManager.GetUserById(parseUserId);
+
+            if (currentUser == null)
+            {
+                return View(LoginPath);
+            }
+
+            // Retrieve the other user
+            if (!Guid.TryParse(otherUserId, out Guid otherUserIdGuid))
+            {
+                return View(LoginPath);
+            }
+
+            UserId parseOtherUserId = UserId.From(otherUserIdGuid);
+            IUser? otherUser = _userManager.GetUserById(parseOtherUserId);
+
+            // Pass both the current user and the other user to the view
+            var viewModel = new ChatViewModel
+            {
+                CurrentUser = currentUser,
+                OtherUser = otherUser
+            };
+
+            return View(viewModel);
+        }
+
+
+
+
+
     }
 }

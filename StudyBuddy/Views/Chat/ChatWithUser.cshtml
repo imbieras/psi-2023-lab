@@ -1,0 +1,68 @@
+﻿@model StudyBuddy.Controllers.ChatController.ChatViewModel;
+@{
+    Layout = "_Layout";
+}
+
+@section scripts {
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chat").build();
+
+        connection.start().then(function () {
+            console.log("SignalR connection established.");
+
+            // Load chat history on page load
+            connection.invoke("GetChatHistory", "@Model.OtherUser.Id").catch(function (err) {
+                console.error(err.toString());
+            });
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+
+        // Event handler for sending private messages
+        document.getElementById("sendPrivateMessage").addEventListener("click", function () {
+            var recipientId = "@Model.OtherUser.Id"; // Set the recipient's ID from the model
+            var privateMessage = document.getElementById("privateMessage").value;
+
+            connection.invoke("SendMessage", recipientId, privateMessage).catch(function (err) {
+                console.error(err.toString());
+            });
+        });
+
+        connection.on("ReceiveMessage", function (senderId, message) {
+            // Display the message as received from the other user
+            var encodedMsg = "Other user: " + message;
+
+            // Display the message in the chat interface
+            var privateChat = document.getElementById("privateChat");
+            var li = document.createElement("li");
+            li.textContent = encodedMsg;
+            privateChat.appendChild(li);
+        });
+
+        // Add a handler for receiving chat history
+        connection.on("ReceiveChatHistory", function (chatHistory) {
+            var privateChat = document.getElementById("privateChat");
+            chatHistory.forEach(function (message) {
+                var li = document.createElement("li");
+                li.textContent = message;
+                privateChat.appendChild(li);
+            });
+        });
+    </script>
+}
+
+}
+
+<div class="container">
+    <h1>Chat with @Model.OtherUser.Name</h1>
+
+    <div class="mt-5">
+        <input type="text" id="privateMessage">
+        <input type="button" id="sendPrivateMessage" value="Send Private Message">
+    </div>
+
+    <div class="mt-3">
+        <ul id="privateChat"></ul>
+    </div>
+</div>
