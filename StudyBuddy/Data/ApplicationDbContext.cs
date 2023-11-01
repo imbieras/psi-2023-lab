@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudyBuddy.Extensions;
@@ -13,7 +14,6 @@ namespace StudyBuddy.Data
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Hobby> Hobbies { get; set; }
         public DbSet<MatchRequest> MatchRequests { get; set; }
         public DbSet<Match> Matches { get; set; }
 
@@ -23,26 +23,18 @@ namespace StudyBuddy.Data
 
             modelBuilder.UseValueConverterForType(typeof(UserId), UserIdConverter.UserIdToStringConverter);
 
-            // // Global type conversion for UserId
-            // var userIdProperties = modelBuilder
-            //     .Model
-            //     .GetEntityTypes()
-            //     .SelectMany(e => e.GetProperties())
-            //     .Where(p => p.ClrType == typeof(UserId))
-            //     .ToList();
-            //
-            // foreach (var property in userIdProperties)
-            // {
-            //     property.SetColumnType("text");
-            //     property.SetValueConverter(new ValueConverter<UserId, string>(
-            //         v => v.ToString() ?? string.Empty,
-            //         v => (UserId)Guid.Parse(v ?? string.Empty)
-            //     ));
-            // }
-
             modelBuilder.Entity<User>().OwnsOne(u => u.Traits);
 
             modelBuilder.Entity<MatchRequest>().HasKey(mr => mr.RequestId);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.HobbiesArray)
+                .HasColumnName("HobbiesArray");
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.UsedIndexesArray)
+                .HasColumnName("UsedIndexesArray");
+
 
             modelBuilder.Entity<Match>()
                 .HasOne(m => m.User1)

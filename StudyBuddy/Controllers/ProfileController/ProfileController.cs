@@ -47,12 +47,9 @@ public class ProfileController : Controller
                 filterModel.EndYear = DateTime.Now.Year;
             }
 
-            if (filterModel.StartYear != 0 && filterModel.EndYear != 0)
-            {
-                userList = GenericFilterService<IUser>.FilterByPredicate(userList,
-                u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
-                     u.Traits.Birthdate.Year <= filterModel.EndYear);
-            }
+            userList = GenericFilterService<IUser>.FilterByPredicate(userList,
+            u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
+                 u.Traits.Birthdate.Year <= filterModel.EndYear);
 
             // Subject filter
             if (!string.IsNullOrEmpty(filterModel.Subject))
@@ -141,10 +138,6 @@ public class ProfileController : Controller
 
             traits.Latitude = parsedLatitude;
             traits.Longitude = parsedLongitude;
-
-            // Log to docker logs
-            System.Diagnostics.Debug.WriteLine("hobbies: " + profileDto.Hobbies);
-            Console.Out.WriteLine("hobbies: " + profileDto.Hobbies);
 
             UserId userid = await _userService.RegisterUserAsync(profileDto.Name, flags, traits, profileDto.Hobbies);
 

@@ -14,7 +14,7 @@ public class ProfileDto
 
     public string? MarkdownContent { get; set; }
 
-    public List<Hobby> Hobbies { get; set; } = new();
+    public List<String> Hobbies { get; set; } = new();
 
     public string? Longitude { get; set; } = null;
 

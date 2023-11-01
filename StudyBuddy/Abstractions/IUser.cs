@@ -14,5 +14,5 @@ public interface IUser
     List<int> UsedIndexes { get; set; }
 
     UserTraits Traits { get; set; }
-    public List<Hobby>? Hobbies { get; set; }
+    public List<string>? Hobbies { get; set; }
 }

@@ -9,7 +9,7 @@ public class User : IUser, IEquatable<User>
 
     private User() { } // Private parameterless constructor for EF
 
-    public User(UserId id, string name, UserFlags flags, UserTraits traits, List<Hobby>? hobbies)
+    public User(UserId id, string name, UserFlags flags, UserTraits traits, List<String>? hobbies)
     {
         Id = id;
         Name = name;
@@ -29,7 +29,23 @@ public class User : IUser, IEquatable<User>
         return Id == other.Id;
     }
 
-    public List<int> UsedIndexes { get; set; }
+    [NotMapped]
+    public List<int> UsedIndexes { get; set; } = new List<int>();
+
+    public int[] UsedIndexesArray
+    {
+        get => UsedIndexes.ToArray();
+        set => UsedIndexes = value.ToList();
+    }
+
+    [NotMapped]
+    public List<string>? Hobbies { get; set; } = new List<string>();
+
+    public string[]? HobbiesArray
+    {
+        get => Hobbies?.ToArray();
+        set => Hobbies = value.ToList();
+    }
 
     public UserId Id { get; }
 
@@ -39,7 +55,6 @@ public class User : IUser, IEquatable<User>
 
     public UserTraits Traits { get; set; }
 
-    public List<Hobby>? Hobbies { get; set; } = new List<Hobby>();
 
     public static string GenerateGravatarUrl(UserId userId) =>
         // Logic to create Gravatar URL based on user's unique identifier

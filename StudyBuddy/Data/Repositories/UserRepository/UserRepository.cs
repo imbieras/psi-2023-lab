@@ -27,13 +27,13 @@ public class UserRepository : IUserRepository
         return await _context.Users.FindAsync(userId);
     }
 
-    public async Task<List<Hobby>?> GetHobbiesByIdAsync(UserId userId)
+    public async Task<List<String>?> GetHobbiesByIdAsync(UserId userId)
     {
         var user = await _context.Users.FindAsync(userId);
         return user?.Hobbies;
     }
 
-    public async Task UpdateAsync(User user, List<Hobby>? updatedHobbies = null)
+    public async Task UpdateAsync(User user, List<String>? updatedHobbies = null)
     {
         _context.Users.Update(user);
 
@@ -62,17 +62,15 @@ public class UserRepository : IUserRepository
         return await _context.Users.AnyAsync(u => u.Id == userId);
     }
 
-    public async Task AddHobbiesToUserAsync(User user, List<Hobby> hobbies)
+    public async Task AddHobbiesToUserAsync(User user, List<string> hobbies)
     {
-        // Hobbies are stored serialized in the User object, so we need to add it there
-        user.Hobbies ??= new List<Hobby>();
+        user.Hobbies ??= new List<string>();
 
         await _context.SaveChangesAsync();
     }
 
-    public Task RemoveHobbyFromUserAsync(User user, Hobby hobby)
+    public Task RemoveHobbyFromUserAsync(User user, String hobby)
     {
-        // Hobbies are stored serialized in the User object, so we need to remove it from there
         user.Hobbies?.Remove(hobby);
         return Task.CompletedTask;
     }

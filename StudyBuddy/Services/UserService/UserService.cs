@@ -19,7 +19,7 @@ public class UserService : IUserService
     public async Task<IEnumerable<IUser>> GetAllUsersAsync() => await _userRepository.GetAllAsync();
     public async Task<IUser?> GetUserByIdAsync(UserId userId) => await _userRepository.GetByIdAsync(userId);
 
-    public async Task<List<Hobby>?> GetHobbiesById(UserId userId)
+    public async Task<List<string>?> GetHobbiesById(UserId userId)
     {
         return await _userRepository.GetHobbiesByIdAsync(userId);
     }
@@ -40,7 +40,8 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<UserId> RegisterUserAsync(string username, UserFlags flags, UserTraits traits, List<Hobby>? hobbies = null)
+    public async Task<UserId> RegisterUserAsync(string username, UserFlags flags, UserTraits traits,
+        List<string> hobbies)
     {
         UserId userId = UserId.From(Guid.NewGuid());
 
@@ -55,14 +56,14 @@ public class UserService : IUserService
         return userId;
     }
 
-    public async Task AddHobbiesToUserAsync(User user, List<Hobby> hobbies)
+    public async Task AddHobbiesToUserAsync(User user, List<string> hobbies)
     {
         await _userRepository.AddHobbiesToUserAsync(user, hobbies);
     }
 
 
     // TODO: We can add a custom exception here
-    public async Task AddHobbiesToUserAsync(UserId userId, List<Hobby> hobbies)
+    public async Task AddHobbiesToUserAsync(UserId userId, List<string> hobbies)
     {
         var user = await _userRepository.GetByIdAsync(userId);
         if (user != null)

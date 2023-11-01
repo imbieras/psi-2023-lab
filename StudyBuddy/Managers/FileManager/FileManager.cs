@@ -40,7 +40,9 @@ public class FileManager
                 string subject = record.Subject;
                 string avatarPath = record.AvatarPath;
                 string description = record.Description;
-                List<Hobby> hobbies = record.Hobbies.Split(',').Select(hobby => new Hobby(hobby)).ToList();
+                List<String> hobbies = record.Hobbies.Split(',')
+                    .Select(hobby => hobby.Trim())
+                    .ToList();
 
                 UserTraits traits = new()
                 {
