@@ -5,12 +5,12 @@ namespace StudyBuddy.Hubs;
 
 public class ChatHub : Hub
 {
-    public async Task SendMessage(string user, string message)
+    public async Task SendMessage(string senderId, string userId, string message)
     {
-        Console.WriteLine("SendMessage");
-        await Clients.All.SendAsync("ReceiveMessage", user, message);
-
+        Console.WriteLine($"SendMessage: SenderId={senderId}, ReceiverId={userId}, Message={message}");
+        await Clients.User(userId).SendAsync("ReceiveMessage", senderId, message);
     }
+
 
     public async Task ReceiveMessage(string user, string message)
     {
