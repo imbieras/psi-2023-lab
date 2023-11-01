@@ -1,68 +1,35 @@
 ﻿@model StudyBuddy.Controllers.ChatController.ChatViewModel;
-@{
-    Layout = "_Layout";
-}
-
-@section scripts {
-    <script src="~/js/signalr/dist/browser/signalr.js"></script>
-    <script>
-        var connection = new signalR.HubConnectionBuilder().withUrl("/chat").build();
-
-        connection.start().then(function () {
-            console.log("SignalR connection established.");
-
-            // Load chat history on page load
-            connection.invoke("GetChatHistory", "@Model.OtherUser.Id").catch(function (err) {
-                console.error(err.toString());
-            });
-        }).catch(function (err) {
-            console.error(err.toString());
-        });
-
-        // Event handler for sending private messages
-        document.getElementById("sendPrivateMessage").addEventListener("click", function () {
-            var recipientId = "@Model.OtherUser.Id"; // Set the recipient's ID from the model
-            var privateMessage = document.getElementById("privateMessage").value;
-
-            connection.invoke("SendMessage", recipientId, privateMessage).catch(function (err) {
-                console.error(err.toString());
-            });
-        });
-
-        connection.on("ReceiveMessage", function (senderId, message) {
-            // Display the message as received from the other user
-            var encodedMsg = "Other user: " + message;
-
-            // Display the message in the chat interface
-            var privateChat = document.getElementById("privateChat");
-            var li = document.createElement("li");
-            li.textContent = encodedMsg;
-            privateChat.appendChild(li);
-        });
-
-        // Add a handler for receiving chat history
-        connection.on("ReceiveChatHistory", function (chatHistory) {
-            var privateChat = document.getElementById("privateChat");
-            chatHistory.forEach(function (message) {
-                var li = document.createElement("li");
-                li.textContent = message;
-                privateChat.appendChild(li);
-            });
-        });
-    </script>
-}
-
-}
 
 <div class="container">
-    <h1>Chat with @Model.OtherUser.Name</h1>
-
-    <div class="mt-5">
-        <input type="text" id="privateMessage">
-        <input type="button" id="sendPrivateMessage" value="Send Private Message">
+    <div class="row">&nbsp;</div>
+    @*<div class="row">
+    <div class="col-2">Sender</div>
+    <div class="col-4"><input type="text" id="userInput" /></div>
+    </div>*@
+    <div class="row">
+        <div class="col-2">Receiver</div>
+        <div class="col-4"><input type="text" asp-for="@Model.CurrentUser" value="@Model.OtherUser" id="receiverInput" /></div>
     </div>
-
-    <div class="mt-3">
-        <ul id="privateChat"></ul>
+    <div class="row">
+        <div class="col-2">Message</div>
+        <div class="col-4"><input type="text" id="messageInput" /></div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-6">
+            <input type="button" id="sendButton" value="Send Message" />
+        </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-12">
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <ul id="messagesList"></ul>
+    </div>
+</div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
