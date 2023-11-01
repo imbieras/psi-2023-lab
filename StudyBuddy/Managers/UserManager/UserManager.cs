@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
@@ -23,6 +24,14 @@ public class UserManager : IUserManager
 
     public UserId RegisterUser(string username, UserFlags flags, UserTraits traits)
     {
+
+        string usernamePattern = "/^(?=.*[A-Za-z]{2,})[A-Za-z0-9_ -]+$/";
+
+        if (!Regex.IsMatch(username, usernamePattern))
+        {
+            throw new ArgumentException("Invalid username format");
+        }
+
         UserId userId = UserId.From(Guid.NewGuid());
 
         if (string.IsNullOrEmpty(traits.AvatarPath))
