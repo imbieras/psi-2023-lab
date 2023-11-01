@@ -28,7 +28,6 @@ public class MatchingController : Controller
         {
             return View(LoginPath);
         }
-
         UserId parseUserId = UserId.From(userIdGuid);
 
         IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);

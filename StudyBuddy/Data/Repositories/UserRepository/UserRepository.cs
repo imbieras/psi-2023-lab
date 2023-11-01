@@ -1,39 +1,26 @@
-using StudyBuddy.ValueObjects;
-
-namespace StudyBuddy.Data.Repositories;
-
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using StudyBuddy.ValueObjects;
+
+namespace StudyBuddy.Data.Repositories.UserRepository;
 
 public class UserRepository : IUserRepository
 {
     private readonly StudyBuddyDbContext _context;
 
-    public UserRepository(StudyBuddyDbContext context)
-    {
-        _context = context;
-    }
+    public UserRepository(StudyBuddyDbContext context) => _context = context;
 
-    public async Task<IEnumerable<User>> GetAllAsync()
-    {
-        return await _context.Users.ToListAsync();
-    }
+    public async Task<IEnumerable<User>> GetAllAsync() => await _context.Users.ToListAsync();
 
-    public async Task<User?> GetByIdAsync(UserId userId)
-    {
-        return await _context.Users.FindAsync(userId);
-    }
+    public async Task<User?> GetByIdAsync(UserId userId) => await _context.Users.FindAsync(userId);
 
-    public async Task<List<String>?> GetHobbiesByIdAsync(UserId userId)
+    public async Task<List<string>?> GetHobbiesByIdAsync(UserId userId)
     {
-        var user = await _context.Users.FindAsync(userId);
+        User? user = await _context.Users.FindAsync(userId);
         return user?.Hobbies;
     }
 
-    public async Task UpdateAsync(User user, List<String>? updatedHobbies = null)
+    public async Task UpdateAsync(User user, List<string>? updatedHobbies = null)
     {
         _context.Users.Update(user);
 
@@ -49,7 +36,7 @@ public class UserRepository : IUserRepository
 
     public async Task DeleteAsync(UserId userId)
     {
-        var user = await _context.Users.FindAsync(userId);
+        User? user = await _context.Users.FindAsync(userId);
         if (user != null)
         {
             _context.Users.Remove(user);
@@ -57,10 +44,7 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task<bool> UserExistsAsync(UserId userId)
-    {
-        return await _context.Users.AnyAsync(u => u.Id == userId);
-    }
+    public async Task<bool> UserExistsAsync(UserId userId) => await _context.Users.AnyAsync(u => u.Id == userId);
 
     public async Task AddHobbiesToUserAsync(User user, List<string> hobbies)
     {
@@ -69,7 +53,7 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
-    public Task RemoveHobbyFromUserAsync(User user, String hobby)
+    public Task RemoveHobbyFromUserAsync(User user, string hobby)
     {
         user.Hobbies?.Remove(hobby);
         return Task.CompletedTask;
@@ -81,6 +65,7 @@ public class UserRepository : IUserRepository
         {
             _context.Users.Add(user);
         }
+
         await _context.SaveChangesAsync();
     }
 }

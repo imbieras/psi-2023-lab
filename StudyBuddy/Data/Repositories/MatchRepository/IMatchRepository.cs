@@ -1,7 +1,7 @@
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Data.Repositories;
+namespace StudyBuddy.Data.Repositories.MatchRepository;
 
 public interface IMatchRepository
 {

@@ -7,15 +7,23 @@ services:
       - "8000:80"
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       ASPNETCORE_URLS: "http://*:80"
-      ConnectionStrings__DefaultConnection: "Host=db;Database=studybuddy;Username=studybuddy;Password=studybuddypassword"
 
   db:
     image: postgres
     ports:
       - "5432:5432"
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: studybuddy
-      POSTGRES_PASSWORD: studybuddypassword
       POSTGRES_DB: studybuddy
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env

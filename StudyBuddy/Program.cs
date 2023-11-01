@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Identity;
 using StudyBuddy.Data;
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Data.Repositories;
+using StudyBuddy.Data.Repositories.MatchRepository;
+using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Services.MatchingService;

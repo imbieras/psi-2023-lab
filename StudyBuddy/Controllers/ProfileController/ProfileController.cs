@@ -124,22 +124,21 @@ public class ProfileController : Controller
                 htmlContent = Markdown.ToHtml(profileDto.MarkdownContent);
             }
 
-            double parsedLongitude = 0, parsedLatitude = 0;
-            double.TryParse(profileDto.Longitude, out parsedLongitude);
-            double.TryParse(profileDto.Latitude, out parsedLatitude);
-
             UserTraits traits = new()
             {
                 Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
                 Subject = profileDto.Subject,
                 AvatarPath = avatarPath,
-                Description = htmlContent,
+                Description = htmlContent
             };
 
-            traits.Latitude = parsedLatitude;
-            traits.Longitude = parsedLongitude;
+            if (double.TryParse(profileDto.Longitude, out double parsedLongitude) && double.TryParse(profileDto.Latitude, out double parsedLatitude))
+            {
+                traits.Longitude = parsedLongitude;
+                traits.Latitude = parsedLatitude;
+            }
 
-            UserId userid = await _userService.RegisterUserAsync(profileDto.Name, flags, traits, profileDto.Hobbies);
+            await _userService.RegisterUserAsync(profileDto.Name, flags, traits, profileDto.Hobbies);
 
             TempData["SuccessMessage"] = "Profile created successfully";
 

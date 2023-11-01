@@ -1,6 +1,4 @@
-﻿using StudyBuddy.Models;
-
-namespace StudyBuddy.Controllers.ProfileController;
+﻿namespace StudyBuddy.Controllers.ProfileController;
 
 public class ProfileDto
 {
@@ -14,7 +12,7 @@ public class ProfileDto
 
     public string? MarkdownContent { get; set; }
 
-    public List<String> Hobbies { get; set; } = new();
+    public List<string> Hobbies { get; set; } = new();
 
     public string? Longitude { get; set; } = null;
 

@@ -1,9 +1,7 @@
-namespace StudyBuddy.Services.MatchingService;
-
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
+namespace StudyBuddy.Services.MatchingService;
 
 public interface IMatchingService
 {

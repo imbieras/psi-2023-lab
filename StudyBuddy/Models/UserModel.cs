@@ -6,10 +6,11 @@ namespace StudyBuddy.Models;
 
 public class User : IUser, IEquatable<User>
 {
+    private User()
+    {
+    } // Private parameterless constructor for EF
 
-    private User() { } // Private parameterless constructor for EF
-
-    public User(UserId id, string name, UserFlags flags, UserTraits traits, List<String>? hobbies)
+    public User(UserId id, string name, UserFlags flags, UserTraits traits, List<string>? hobbies)
     {
         Id = id;
         Name = name;
@@ -29,8 +30,7 @@ public class User : IUser, IEquatable<User>
         return Id == other.Id;
     }
 
-    [NotMapped]
-    public List<int> UsedIndexes { get; set; } = new List<int>();
+    [NotMapped] public List<int> UsedIndexes { get; set; } = new();
 
     public int[] UsedIndexesArray
     {
@@ -38,8 +38,7 @@ public class User : IUser, IEquatable<User>
         set => UsedIndexes = value.ToList();
     }
 
-    [NotMapped]
-    public List<string>? Hobbies { get; set; } = new List<string>();
+    [NotMapped] public List<string>? Hobbies { get; set; } = new();
 
     public string[]? HobbiesArray
     {

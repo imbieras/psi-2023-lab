@@ -1,9 +1,9 @@
-namespace StudyBuddy.Services.MatchingService;
-
-using StudyBuddy.Data.Repositories;
+using StudyBuddy.Data.Repositories.MatchRepository;
+using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
-using System.Threading.Tasks;
+
+namespace StudyBuddy.Services.MatchingService;
 
 public class MatchingService : IMatchingService
 {
@@ -11,7 +11,8 @@ public class MatchingService : IMatchingService
     private readonly IMatchRequestRepository _matchRequestRepository;
     private readonly IUserRepository _userRepository;
 
-    public MatchingService(IMatchRepository matchRepository, IMatchRequestRepository matchRequestRepository, IUserRepository userRepository)
+    public MatchingService(IMatchRepository matchRepository, IMatchRequestRepository matchRequestRepository,
+        IUserRepository userRepository)
     {
         _matchRepository = matchRepository;
         _matchRequestRepository = matchRequestRepository;

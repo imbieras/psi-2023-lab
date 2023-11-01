@@ -1,38 +1,30 @@
-using StudyBuddy.Data.Repositories;
+using StudyBuddy.Abstractions;
+using StudyBuddy.Data.Repositories.UserRepository;
+using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Services.UserService;
-
-using StudyBuddy.Abstractions;
-using StudyBuddy.Models;
-using StudyBuddy.Data.Repositories;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
 
-    public UserService(IUserRepository userRepository)
-    {
-        _userRepository = userRepository;
-    }
+    public UserService(IUserRepository userRepository) => _userRepository = userRepository;
 
     public async Task<IEnumerable<IUser>> GetAllUsersAsync() => await _userRepository.GetAllAsync();
     public async Task<IUser?> GetUserByIdAsync(UserId userId) => await _userRepository.GetByIdAsync(userId);
 
-    public async Task<List<string>?> GetHobbiesById(UserId userId)
-    {
-        return await _userRepository.GetHobbiesByIdAsync(userId);
-    }
+    public async Task<List<string>?> GetHobbiesById(UserId userId) => await _userRepository.GetHobbiesByIdAsync(userId);
 
     public async Task<IUser?> GetUserByUsernameAsync(string username)
     {
-        var users = await _userRepository.GetAllAsync();
+        IEnumerable<User> users = await _userRepository.GetAllAsync();
         return users.FirstOrDefault(u => u.Name == username);
     }
 
     public async Task BanUserAsync(UserId userId)
     {
-        var user = await _userRepository.GetByIdAsync(userId);
+        User? user = await _userRepository.GetByIdAsync(userId);
         if (user != null)
         {
             user.Flags |= UserFlags.Banned;
@@ -56,16 +48,14 @@ public class UserService : IUserService
         return userId;
     }
 
-    public async Task AddHobbiesToUserAsync(User user, List<string> hobbies)
-    {
+    public async Task AddHobbiesToUserAsync(User user, List<string> hobbies) =>
         await _userRepository.AddHobbiesToUserAsync(user, hobbies);
-    }
 
 
     // TODO: We can add a custom exception here
     public async Task AddHobbiesToUserAsync(UserId userId, List<string> hobbies)
     {
-        var user = await _userRepository.GetByIdAsync(userId);
+        User? user = await _userRepository.GetByIdAsync(userId);
         if (user != null)
         {
             user.Hobbies = hobbies;

@@ -1,31 +1,18 @@
-using StudyBuddy.ValueObjects;
-
-namespace StudyBuddy.Data.Repositories;
-
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using StudyBuddy.ValueObjects;
+
+namespace StudyBuddy.Data.Repositories.MatchRepository;
 
 public class MatchRequestRepository : IMatchRequestRepository
 {
     private readonly StudyBuddyDbContext _context;
 
-    public MatchRequestRepository(StudyBuddyDbContext context)
-    {
-        _context = context;
-    }
+    public MatchRequestRepository(StudyBuddyDbContext context) => _context = context;
 
-    public async Task<IEnumerable<MatchRequest>> GetAllAsync()
-    {
-        return await _context.MatchRequests.ToListAsync();
-    }
+    public async Task<IEnumerable<MatchRequest>> GetAllAsync() => await _context.MatchRequests.ToListAsync();
 
-    public async Task<MatchRequest?> GetByIdAsync(int requestId)
-    {
-        return await _context.MatchRequests.FindAsync(requestId);
-    }
+    public async Task<MatchRequest?> GetByIdAsync(int requestId) => await _context.MatchRequests.FindAsync(requestId);
 
     public async Task AddAsync(MatchRequest matchRequest)
     {
@@ -41,7 +28,7 @@ public class MatchRequestRepository : IMatchRequestRepository
 
     public async Task DeleteAsync(int requestId)
     {
-        var matchRequest = await _context.MatchRequests.FindAsync(requestId);
+        MatchRequest? matchRequest = await _context.MatchRequests.FindAsync(requestId);
         if (matchRequest != null)
         {
             _context.MatchRequests.Remove(matchRequest);
@@ -49,17 +36,15 @@ public class MatchRequestRepository : IMatchRequestRepository
         }
     }
 
-    public async Task<bool> IsMatchRequestExistsAsync(UserId requesterId, UserId requestedId)
-    {
-        return await _context.MatchRequests
+    public async Task<bool> IsMatchRequestExistsAsync(UserId requesterId, UserId requestedId) =>
+        await _context.MatchRequests
             .AnyAsync(mr => mr.RequesterId == requesterId && mr.RequestedId == requestedId);
-    }
 
     public Task DeleteAsync(UserId currentUser, UserId otherUser)
     {
-        var matchRequests = _context.MatchRequests
-            .Where(mr => mr.RequesterId == currentUser && mr.RequestedId == otherUser
-                         || mr.RequesterId == otherUser && mr.RequestedId == currentUser);
+        IQueryable<MatchRequest> matchRequests = _context.MatchRequests
+            .Where(mr => (mr.RequesterId == currentUser && mr.RequestedId == otherUser)
+                         || (mr.RequesterId == otherUser && mr.RequestedId == currentUser));
         _context.MatchRequests.RemoveRange(matchRequests);
         return Task.CompletedTask;
     }

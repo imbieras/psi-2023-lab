@@ -21,7 +21,9 @@ public class Match
         IsActive = true;
     }
 
-    public Match(){}
+    public Match()
+    {
+    }
 
     public int MatchId { get; set; }
 
