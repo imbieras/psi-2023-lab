@@ -25,7 +25,7 @@ public class UserManager : IUserManager
     public UserId RegisterUser(string username, UserFlags flags, UserTraits traits)
     {
 
-        string usernamePattern = "/^(?=.*[A-Za-z]{2,})[A-Za-z0-9_ -]+$/";
+        string usernamePattern = "^(?=.*[A-Za-z]{2,})[A-Za-z0-9_ -]+$";
 
         if (!Regex.IsMatch(username, usernamePattern))
         {
