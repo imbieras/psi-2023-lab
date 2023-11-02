@@ -18,37 +18,25 @@ public class ChatHub : Hub
     }
 
 
-    public override Task OnConnectedAsync()
+    public override async Task OnConnectedAsync()
     {
         HttpContext httpContext = Context.GetHttpContext();
-
         string receiver = httpContext.Request.Query["userid"];
-        // string sender = _userService.GetCurrentUserId().ToString();
         string sender = httpContext.Request.Query["sender"];
 
-
-        Console.WriteLine("OUTSIDE GROUP SENDER:" + sender + "    " + _userService.GetCurrentUserId);
-
-
-        if (!string.IsNullOrEmpty(sender))
+        if (!string.IsNullOrEmpty(sender) && !string.IsNullOrEmpty(receiver))
         {
-            Groups.AddToGroupAsync(Context.ConnectionId, sender);
-        }
-
-
-        if (!string.IsNullOrEmpty(receiver))
-        {
-            Groups.AddToGroupAsync(Context.ConnectionId, receiver);
+            string groupName = $"{sender}-{receiver}";
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
 
         Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " + receiver);
 
-        return base.OnConnectedAsync();
+        await base.OnConnectedAsync();
     }
-    public Task SendMessageToGroup(string receiver, string message)
+    public Task SendMessageToGroup(string groupName, string message)
     {
-        return Clients.Group(receiver).SendAsync("ReceiveMessage"
-            , Context.User.Identity.Name, message);
+        return Clients.Group(groupName).SendAsync("ReceiveMessage", Context.User.Identity.Name, message);
     }
 
     public async Task SendMessage(string user, string message)
