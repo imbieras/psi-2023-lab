@@ -26,25 +26,38 @@ public class ChatHub : Hub
 
         if (!string.IsNullOrEmpty(sender) && !string.IsNullOrEmpty(receiver))
         {
-            string groupName = $"{sender}-{receiver}";
+            // Sort user IDs to ensure consistent group names regardless of user roles
+            var userIds = new List<string> { sender, receiver };
+            userIds.Sort();
+
+            string groupName = $"{userIds[0]}-{userIds[1]}";
+
+            Console.WriteLine("Adding user to group: " + groupName);
+
+            // Add the current connection to the conversation group
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
-
 
         Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " + receiver);
 
         await base.OnConnectedAsync();
     }
+
     public Task SendMessageToGroup(string groupName, string message)
     {
+        // Broadcast the message to the conversation group
         return Clients.Group(groupName).SendAsync("ReceiveMessage", Context.User.Identity.Name, message);
     }
 
-    public async Task SendMessage(string user, string message)
+
+
+    public async Task SendMessage(string sender, string message)
     {
-        await Console.Out.WriteLineAsync("SendMessage " + user + " " + message);
-        await Clients.All.SendAsync("ReceiveMessage", user, message);
+        // Broadcast the message to the sender's group
+        string groupForSender = $"user-{sender}";
+        await Clients.Group(groupForSender).SendAsync("ReceiveMessage", sender, message);
     }
+
 
     public async Task ReceiveMessage(string user, string message)
     {
