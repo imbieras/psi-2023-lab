@@ -77,8 +77,12 @@ namespace StudyBuddy.Controllers.ChatController
             UserId parseOtherUserId = UserId.From(otherUserIdGuid);
             IUser? otherUser = _userManager.GetUserById(parseOtherUserId);
 
-            // Generate a unique group name based on user IDs or usernames
-            string groupName = $"{currentUser.Id}-{otherUser.Id}";
+            // Sort user IDs to ensure consistent group names regardless of user roles
+            var userIds = new List<UserId> { currentUser.Id, otherUser.Id };
+            userIds.Sort();
+
+            // Generate a unique group name based on user IDs
+            string groupName = $"{userIds[0]}-{userIds[1]}";
 
             // Add both users to the same SignalR group
             _hubContext.Groups.AddToGroupAsync(currentUser.Id.ToString(), groupName);
@@ -93,6 +97,7 @@ namespace StudyBuddy.Controllers.ChatController
 
             return View(viewModel);
         }
+
 
 
 

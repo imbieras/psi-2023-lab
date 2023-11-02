@@ -30,6 +30,7 @@ public class ChatHub : Hub
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
 
+
         Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " + receiver);
 
         await base.OnConnectedAsync();
