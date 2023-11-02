@@ -35,6 +35,9 @@ connection.on("ReceiveMessage", function (user, message) {
     userLabel.classList.add("fw-bold", "mb-1");
     userLabel.textContent = user === userId.value ? "You" : receiverName.value;
 
+    // Wrap the message at 80 characters
+    message = wrapText(message, 80);
+
     var messageText = document.createElement("div");
     messageText.textContent = message;
 
@@ -45,6 +48,23 @@ connection.on("ReceiveMessage", function (user, message) {
     messageContainer.appendChild(messageContent);
     messageList.appendChild(messageContainer);
 });
+
+// Function to wrap text at a specified character limit
+function wrapText(text, limit) {
+    var result = '';
+    while (text.length > limit) {
+        var chunk = text.slice(0, limit);
+        var lastSpace = chunk.lastIndexOf(' ');
+        if (lastSpace !== -1) {
+            result += chunk.slice(0, lastSpace + 1) + '\n';
+            text = text.slice(lastSpace + 1);
+        } else {
+            result += chunk + '\n';
+            text = text.slice(limit);
+        }
+    }
+    return result + text;
+}
 
 function getCurrentTime() {
     const now = new Date();
@@ -64,6 +84,7 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     var sender = document.getElementById("senderInput").value;
     var receiver = document.getElementById("receiverInput").value;
     var message = document.getElementById("messageInput").value;
+    document.getElementById("messageInput").value = "";
 
     // Sort user IDs to ensure consistent group names regardless of user roles
     var userIds = [sender, receiver];
