@@ -12,8 +12,8 @@ using StudyBuddy.Data;
 namespace StudyBuddy.Migrations
 {
     [DbContext(typeof(StudyBuddyDbContext))]
-    [Migration("20231101120436_AddArrayColumns")]
-    partial class AddArrayColumns
+    [Migration("20231102121455_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,11 @@ namespace StudyBuddy.Migrations
 
             modelBuilder.Entity("StudyBuddy.Models.Match", b =>
                 {
-                    b.Property<int>("MatchId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                    b.Property<string>("User1Id")
+                        .HasColumnType("text");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MatchId"));
+                    b.Property<string>("User2Id")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -39,40 +39,26 @@ namespace StudyBuddy.Migrations
                     b.Property<DateTime>("MatchDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("User1Id")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("User2Id")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("MatchId");
-
-                    b.HasIndex("User1Id");
+                    b.HasKey("User1Id", "User2Id");
 
                     b.HasIndex("User2Id");
+
+                    b.HasIndex("User1Id", "User2Id")
+                        .IsUnique();
 
                     b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("StudyBuddy.Models.MatchRequest", b =>
                 {
-                    b.Property<int>("RequestId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RequestId"));
+                    b.Property<string>("RequesterId")
+                        .HasColumnType("text");
 
                     b.Property<string>("RequestedId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("RequesterId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("RequestId");
+                    b.HasKey("RequesterId");
 
                     b.ToTable("MatchRequests");
                 });
@@ -86,7 +72,6 @@ namespace StudyBuddy.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<string[]>("HobbiesArray")
-                        .IsRequired()
                         .HasColumnType("text[]")
                         .HasColumnName("HobbiesArray");
 
@@ -106,21 +91,17 @@ namespace StudyBuddy.Migrations
 
             modelBuilder.Entity("StudyBuddy.Models.Match", b =>
                 {
-                    b.HasOne("StudyBuddy.Models.User", "User1")
+                    b.HasOne("StudyBuddy.Models.User", null)
                         .WithMany()
                         .HasForeignKey("User1Id")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("StudyBuddy.Models.User", "User2")
+                    b.HasOne("StudyBuddy.Models.User", null)
                         .WithMany()
                         .HasForeignKey("User2Id")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("User1");
-
-                    b.Navigation("User2");
                 });
 
             modelBuilder.Entity("StudyBuddy.Models.User", b =>

@@ -18,4 +18,5 @@ public interface IUserService
     bool IsUsedIndexesEmpty(IUser user);
     Task AddHobbiesToUserAsync(User user, List<string> hobbies);
     Task AddHobbiesToUserAsync(UserId userid, List<string> hobbies);
+
 }

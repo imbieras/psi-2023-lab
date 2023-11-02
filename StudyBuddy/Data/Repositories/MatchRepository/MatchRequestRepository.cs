@@ -14,38 +14,20 @@ public class MatchRequestRepository : IMatchRequestRepository
 
     public async Task<MatchRequest?> GetByIdAsync(int requestId) => await _context.MatchRequests.FindAsync(requestId);
 
-    public async Task AddAsync(MatchRequest matchRequest)
+    public async Task AddAsync(UserId requesterId, UserId requestedId)
     {
+        MatchRequest matchRequest = new(requesterId, requestedId);
         await _context.MatchRequests.AddAsync(matchRequest);
         await _context.SaveChangesAsync();
-    }
-
-    public async Task UpdateAsync(MatchRequest matchRequest)
-    {
-        _context.MatchRequests.Update(matchRequest);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(int requestId)
-    {
-        MatchRequest? matchRequest = await _context.MatchRequests.FindAsync(requestId);
-        if (matchRequest != null)
-        {
-            _context.MatchRequests.Remove(matchRequest);
-            await _context.SaveChangesAsync();
-        }
     }
 
     public async Task<bool> IsMatchRequestExistsAsync(UserId requesterId, UserId requestedId) =>
         await _context.MatchRequests
             .AnyAsync(mr => mr.RequesterId == requesterId && mr.RequestedId == requestedId);
 
-    public Task DeleteAsync(UserId currentUser, UserId otherUser)
+    public async Task DeleteAsync(UserId requesterId, UserId requestedId)
     {
-        IQueryable<MatchRequest> matchRequests = _context.MatchRequests
-            .Where(mr => (mr.RequesterId == currentUser && mr.RequestedId == otherUser)
-                         || (mr.RequesterId == otherUser && mr.RequestedId == currentUser));
-        _context.MatchRequests.RemoveRange(matchRequests);
-        return Task.CompletedTask;
+        _context.MatchRequests.Remove(new MatchRequest(requesterId, requestedId));
+        await _context.SaveChangesAsync();
     }
 }

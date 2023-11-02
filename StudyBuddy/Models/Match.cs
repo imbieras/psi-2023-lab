@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Models;
@@ -25,13 +26,10 @@ public class Match
     {
     }
 
-    public int MatchId { get; set; }
-
-    // Smaller UserId value is always User1Id
+    [ForeignKey ("UserId")]
     public UserId User1Id { get; set; }
-    public User User1 { get; set; } // Navigation property
+    [ForeignKey ("UserId")]
     public UserId User2Id { get; set; }
-    public User User2 { get; set; } // Navigation property
 
     public DateTime MatchDate { get; set; }
     public bool IsActive { get; set; }

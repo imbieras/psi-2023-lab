@@ -1,5 +1,4 @@
 using StudyBuddy.Data.Repositories.MatchRepository;
-using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
@@ -9,34 +8,31 @@ public class MatchingService : IMatchingService
 {
     private readonly IMatchRepository _matchRepository;
     private readonly IMatchRequestRepository _matchRequestRepository;
-    private readonly IUserRepository _userRepository;
 
-    public MatchingService(IMatchRepository matchRepository, IMatchRequestRepository matchRequestRepository,
-        IUserRepository userRepository)
+    public MatchingService(IMatchRepository matchRepository, IMatchRequestRepository matchRequestRepository)
     {
         _matchRepository = matchRepository;
         _matchRequestRepository = matchRequestRepository;
-        _userRepository = userRepository;
     }
 
-    public async Task MatchUsersAsync(UserId currentUser, UserId otherUser)
+    public async Task MatchUsersAsync(UserId requesterId, UserId requestedId)
     {
-        if (await IsRequestedMatchAsync(otherUser, currentUser))
+        if (await IsRequestedMatchAsync(requestedId, requesterId))
         {
-            await _matchRepository.AddAsync(new Match(currentUser, otherUser));
-            await _matchRequestRepository.DeleteAsync(currentUser, otherUser);
+            await _matchRepository.AddAsync(requesterId, requestedId);
+            await _matchRequestRepository.DeleteAsync(requestedId, requesterId);
         }
         else
         {
-            await _matchRequestRepository.AddAsync(new MatchRequest(currentUser, otherUser));
+            await _matchRequestRepository.AddAsync(requesterId, requestedId);
         }
     }
 
-    public async Task<bool> IsRequestedMatchAsync(UserId currentUser, UserId otherUser) =>
-        await _matchRequestRepository.IsMatchRequestExistsAsync(otherUser, currentUser);
+    public async Task<bool> IsRequestedMatchAsync(UserId requesterId, UserId requestedId) =>
+        await _matchRequestRepository.IsMatchRequestExistsAsync(requesterId, requestedId);
 
-    public async Task<bool> IsMatchedAsync(UserId currentUser, UserId otherUser) =>
-        await _matchRepository.IsMatchAsync(currentUser, otherUser);
+    public async Task<bool> IsMatchedAsync(UserId user1Id, UserId user2Id) =>
+        await _matchRepository.IsMatchAsync(user1Id, user2Id);
 
     public async Task<IEnumerable<Match>> GetMatchHistoryAsync(UserId userId) =>
         await _matchRepository.GetMatchHistoryByUserIdAsync(userId);

@@ -143,17 +143,16 @@ public class MatchingController : Controller
             // Call UserManager.MatchUsers with the user IDs
             await _matchingService.MatchUsersAsync(currentUserId, otherUserId);
 
-            if (await _matchingService.IsRequestedMatchAsync(currentUserId, otherUserId))
-            {
-                // Store a "Match request sent" message in TempData
-                TempData["MatchRequestSentMessage"] = "Match request sent.";
-                ViewBag.ShowMatchRequestMessage = true;
-            }
-
             if (await _matchingService.IsMatchedAsync(currentUserId, otherUserId))
             {
                 TempData["SuccessMessage"] = "Users matched successfully";
                 ViewBag.ShowMatchRequestMessage = false;
+            }
+            else
+            {
+                // Store a "Match request sent" message in TempData
+                TempData["MatchRequestSentMessage"] = "Match request sent.";
+                ViewBag.ShowMatchRequestMessage = true;
             }
         }
         catch (Exception ex)

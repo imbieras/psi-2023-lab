@@ -15,6 +15,8 @@ public class StudyBuddyDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<MatchRequest> MatchRequests { get; set; }
     public DbSet<Match> Matches { get; set; }
+    public DbSet<Conversation> Conversations { get; set; }
+    public DbSet<ChatMessage> ChatMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,7 +26,7 @@ public class StudyBuddyDbContext : DbContext
 
         modelBuilder.Entity<User>().OwnsOne(u => u.Traits);
 
-        modelBuilder.Entity<MatchRequest>().HasKey(mr => mr.RequestId);
+        modelBuilder.Entity<MatchRequest>().HasKey(mr => new { mr.RequesterId, mr.RequestedId });
 
         modelBuilder.Entity<User>()
             .Property(u => u.HobbiesArray)
@@ -34,16 +36,38 @@ public class StudyBuddyDbContext : DbContext
             .Property(u => u.UsedIndexesArray)
             .HasColumnName("UsedIndexesArray");
 
+        modelBuilder.Entity<Match>()
+            .HasKey(m => new { m.User1Id, m.User2Id });
 
         modelBuilder.Entity<Match>()
-            .HasOne(m => m.User1)
+            .HasOne<User>()
             .WithMany()
-            .HasForeignKey(m => m.User1Id);
+            .HasForeignKey(m => m.User1Id)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Match>()
-            .HasOne(m => m.User2)
+            .HasOne<User>()
             .WithMany()
-            .HasForeignKey(m => m.User2Id);
+            .HasForeignKey(m => m.User2Id)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Match>()
+            .HasIndex(m => new { m.User1Id, m.User2Id })
+            .IsUnique();
+
+        // Configure the Conversation
+        modelBuilder.Entity<Conversation>()
+            .HasKey(c => c.Id);
+
+        modelBuilder.Entity<Conversation>()
+            .HasIndex(c => new { c.User1Id, c.User2Id }).IsUnique();
+
+        // Configure the ChatMessage
+        modelBuilder.Entity<ChatMessage>()
+            .HasKey(m => m.Id);
+
+        modelBuilder.Entity<ChatMessage>()
+            .HasIndex(m => m.ConversationId);
     }
 }
 

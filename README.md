@@ -4,17 +4,6 @@
 
 Before running the project with Docker, make sure you have Docker and Docker Compose installed on your system. If not, you can install them following the official Docker documentation: [Install Docker](https://docs.docker.com/get-docker/).
 
-### Initial Database Setup
-
-In the "StudyBuddy" directory, run the following commands to set up the initial database:
-
-```bash
-$ cd StudyBuddy
-$ dotnet ef migrations add <MigrationName>
-$ dotnet ef database update
-```
-
-This will create the necessary database schema.
 
 ### Create an Environment Configuration File
 
@@ -90,6 +79,18 @@ This will automatically update the project when code changes occur.
 4. The project should open in your browser, and changes will be reflected without manual rebuilding. (Note that for some changes, you may still need to rebuild the Docker containers as necessary.)
 
 5. To stop the project, use `CTRL-C` on both terminals, then rebuild if needed.
+
+### Initial Database Setup
+
+In the "StudyBuddy" directory, run the following commands to set up the initial database (while the database container is running):
+
+```bash
+$ cd StudyBuddy
+$ dotnet ef migrations add <MigrationName>
+$ dotnet ef database update
+```
+
+This will create the necessary database schema.
 
 ## Functional requirements
 

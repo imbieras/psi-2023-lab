@@ -63,7 +63,14 @@ public class UserService : IUserService
         }
     }
 
-    public IUser? GetRandomUser(IUser user) => throw new NotImplementedException();
+    public IUser? GetRandomUser(IUser user)
+    {
+        IEnumerable<User> users = _userRepository.GetAllAsync().Result;
+        Random random = new();
+        IEnumerable<User> enumerable = users.ToList();
+        int randomIndex = random.Next(0, enumerable.Count());
+        return enumerable.ElementAt(randomIndex);
+    }
 
     public IUser? GetPreviousRandomProfile(IUser user) => throw new NotImplementedException();
 

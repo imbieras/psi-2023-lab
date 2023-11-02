@@ -7,9 +7,7 @@ public interface IMatchRequestRepository
 {
     Task<IEnumerable<MatchRequest>> GetAllAsync();
     Task<MatchRequest?> GetByIdAsync(int requestId);
-    Task AddAsync(MatchRequest matchRequest);
-    Task UpdateAsync(MatchRequest matchRequest);
-    Task DeleteAsync(int requestId);
+    Task AddAsync(UserId currentUser, UserId otherUser);
     Task<bool> IsMatchRequestExistsAsync(UserId requesterId, UserId requestedId);
     Task DeleteAsync(UserId currentUser, UserId otherUser);
 }
