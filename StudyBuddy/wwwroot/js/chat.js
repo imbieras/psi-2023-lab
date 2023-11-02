@@ -1,48 +1,4 @@
-﻿@model StudyBuddy.Controllers.ChatController.ChatViewModel;
-
-<div class="container">
-    <div class="row">&nbsp;</div>
-    @*<div class="row">
-    <div class="col-2">Sender</div>
-    <div class="col-4"><input type="text" id="userInput" /></div>
-    </div>*@
-    <div class="row">
-        <div class="col-2">Sender</div>
-        <div class="col-4"><input type="text" asp-for="@Model.CurrentUser" value="@Model.CurrentUser.Id" id="senderInput" /></div>
-    </div>
-    <div class="row">
-        <div class="col-2">Receiver</div>
-        <div class="col-4"><input type="text" asp-for="@Model.OtherUser" value="@Model.OtherUser.Id" id="receiverInput" /></div>
-    </div>
-    <div class="row">
-        <div class="col-2">Message</div>
-        <div class="col-4"><input type="text" id="messageInput" /></div>
-    </div>
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-6">
-            <input type="button" id="sendButton" value="Send Message" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-12">
-        <hr />
-    </div>
-</div>
-<div class="row">
-    <div class="col-6">
-        <ul id="messagesList"></ul>
-    </div>
-</div>
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/chat.js"></script>
-
-
-        <!--Working JS SCRIPT (BACKUP JUST IN CASE!!!)
-
-
-        "use strict";
+﻿"use strict";
 
 var senderId = document.getElementById("senderInput").value;
 
@@ -86,9 +42,3 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     event.preventDefault();
 });
 
-
-
-
-
-
-        -->
