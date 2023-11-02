@@ -29,7 +29,7 @@ public class UserManager : IUserManager
 
         if (!Regex.IsMatch(username, usernamePattern))
         {
-            throw new ArgumentException("Invalid username format");
+            throw new InvalidUsernameException("Invalid username format" + username);
         }
 
         UserId userId = UserId.From(Guid.NewGuid());
