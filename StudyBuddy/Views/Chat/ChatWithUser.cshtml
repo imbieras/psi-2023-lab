@@ -1,94 +1,108 @@
 ﻿@model StudyBuddy.Controllers.ChatController.ChatViewModel;
 
-<div class="container">
-    <div class="row">&nbsp;</div>
-    @*<div class="row">
-    <div class="col-2">Sender</div>
-    <div class="col-4"><input type="text" id="userInput" /></div>
-    </div>*@
-    <div class="row">
-        <div class="col-2">Sender</div>
-        <div class="col-4"><input type="text" asp-for="@Model.CurrentUser" value="@Model.CurrentUser.Id" id="senderInput" /></div>
-    </div>
-    <div class="row">
-        <div class="col-2">Receiver</div>
-        <div class="col-4"><input type="text" asp-for="@Model.OtherUser" value="@Model.OtherUser.Id" id="receiverInput" /></div>
-    </div>
-    <div class="row">
-        <div class="col-2">Message</div>
-        <div class="col-4"><input type="text" id="messageInput" /></div>
-    </div>
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-6">
-            <input type="button" id="sendButton" value="Send Message" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap Chat Interface</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            max-height: 80vh;
+            overflow-y: scroll
+        }
+
+        .chat-message-left,
+        .chat-message-right {
+            display: flex;
+            flex-shrink: 0
+        }
+
+        .chat-message-left {
+            margin-right: auto
+        }
+
+        .chat-message-right {
+            flex-direction: row-reverse;
+            margin-left: auto
+        }
+    </style>
+</head>
+
+
+
+
+
+<body>
+    <input type="hidden" id="userId" value="@Model.CurrentUser.Id" />
+    <input type="hidden" id="userName" value="@Model.CurrentUser.Name" />
+    <input type="hidden" id="receiverId" value="@Model.OtherUser.Id" />
+    <input type="hidden" id="receiverName" value="@Model.OtherUser.Name" />
+    <input type="hidden" id="senderAvatar" value="@Model.CurrentUser.Traits.AvatarPath" />
+    <input type="hidden" id="receiverAvatar" value="@Model.OtherUser.Traits.AvatarPath" />
+    <input type="hidden" asp-for="@Model.CurrentUser" value="@Model.CurrentUser.Id" id="senderInput" />
+    <input type="hidden" asp-for="@Model.OtherUser" value="@Model.OtherUser.Id" id="receiverInput" />
+
+    <main class="content">
+        <div class="container">
+            <div class="card">
+                <div class="row">
+                    <div class="col-12 col-lg-5 col-xl-3 border-end">
+                      
+                        <ul class="list-group">
+                            <li class="list-group-item border border-0">
+                                <a href="#" class="text-decoration-none text-reset">
+                                    <div class="d-flex align-items-start">
+                                        <!-- Use the sender's avatar from your model -->
+                                        <img src="@Model.CurrentUser.Traits.AvatarPath" class="rounded-circle me-1" alt="@Model.CurrentUser.Name" width="40" height="40">
+                                        <div class="fw-bold flex-grow-1 ms-3">
+                                            @Model.CurrentUser.Name
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="list-group-item border border-0">
+                                <!-- Repeat the list items for other users -->
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-lg-7 col-xl-9">
+                        <div class="py-2 px-4 border-bottom d-none d-lg-block">
+                            <div class="d-flex align-items-center py-1">
+                                <div class="position-relative">
+                                    <!-- Display the receiver's avatar and name -->
+                                    <img src="@Model.OtherUser.Traits.AvatarPath" class="rounded-circle me-1" alt="@Model.OtherUser.Name" width="40" height="40">
+                                </div>
+                                <div class="flex-grow-1 px-3">
+                                    <strong>@Model.OtherUser.Name</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="position-relative">
+                            <ul class="chat-messages p-4" id="messagesList">
+                                <!-- Messages will be added here using JavaScript -->
+                            </ul>
+                        </div>
+
+                        <div class="flex-grow-0 py-3 px-4 border-top">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Type your message" id="messageInput">
+                                <button class="btn btn-primary" id="sendButton">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-12">
-        <hr />
-    </div>
-</div>
-<div class="row">
-    <div class="col-6">
-        <ul id="messagesList"></ul>
-    </div>
-</div>
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/chat.js"></script>
+    </main>
 
-
-        <!--Working JS SCRIPT (BACKUP JUST IN CASE!!!)
-
-
-        "use strict";
-
-var senderId = document.getElementById("senderInput").value;
-
-var connection = new signalR.HubConnectionBuilder()
-    .withUrl("/chat?userid=" + document.getElementById("receiverInput").value + "&sender=" + senderId) // Pass the sender parameter in the query string
-    .build();
-console.log("Console result");
-console.log(document.getElementById("receiverInput").value);
-console.log(document.getElementById("senderInput").value);
-//Disable send button until connection is established
-document.getElementById("sendButton").disabled = true;
-
-connection.on("ReceiveMessage", function (user, message) {
-    var li = document.createElement("li");
-    li.textContent = `${user} says ${message}`;
-    document.getElementById("messagesList").appendChild(li);
-});
-
-
-connection.start().then(function () {
-    document.getElementById("sendButton").disabled = false;
-}).catch(function (err) {
-    return console.error(err.toString());
-});
-
-document.getElementById("sendButton").addEventListener("click", function (event) {
-    var sender = document.getElementById("senderInput").value;
-    var receiver = document.getElementById("receiverInput").value;
-    var message = document.getElementById("messageInput").value;
-
-    // Sort user IDs to ensure consistent group names regardless of user roles
-    var userIds = [sender, receiver];
-    userIds.sort();
-
-    var groupName = `${userIds[0]}-${userIds[1]}`;
-
-    connection.invoke("SendMessageToGroup", groupName, message).catch(function (err) {
-        return console.error(err.toString());
-    });
-
-    event.preventDefault();
-});
-
-
-
-
-
-
-        -->
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>

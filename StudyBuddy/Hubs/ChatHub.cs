@@ -23,7 +23,7 @@ public class ChatHub : Hub
     public override async Task OnConnectedAsync()
     {
         HttpContext httpContext = Context.GetHttpContext();
-        string receiver = httpContext.Request.Query["userid"];
+        string receiver = httpContext.Request.Query["receiver"];
         string sender = httpContext.Request.Query["sender"];
 
         if (!string.IsNullOrEmpty(sender) && !string.IsNullOrEmpty(receiver))
@@ -34,7 +34,7 @@ public class ChatHub : Hub
 
             string groupName = $"{userIds[0]}-{userIds[1]}";
 
-            Console.WriteLine("Adding user to group: " + groupName);
+            Console.WriteLine("\nAdding user to group: " + groupName);
 
             // Add the current connection to the conversation group
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
@@ -56,7 +56,7 @@ public class ChatHub : Hub
 
 
         // Broadcast the message to the conversation group
-        return Clients.Group(groupName).SendAsync("ReceiveMessage", sender.Name, message);
+        return Clients.Group(groupName).SendAsync("ReceiveMessage", sender.Id, message);
     }
 
 
