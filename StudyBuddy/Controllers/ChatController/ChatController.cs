@@ -73,11 +73,17 @@ namespace StudyBuddy.Controllers.ChatController
             // Retrieve the other user
             if (!Guid.TryParse(otherUserId, out Guid otherUserIdGuid))
             {
-                return View(LoginPath);
+                return View(LoginPath); //change later
             }
 
             UserId parseOtherUserId = UserId.From(otherUserIdGuid);
             IUser? otherUser = _userManager.GetUserById(parseOtherUserId);
+
+            if (otherUser == null)
+            {
+                return View(LoginPath); //change later
+
+            }
 
             // Sort user IDs to ensure consistent group names regardless of user roles
             var userIds = new List<UserId> { currentUser.Id, otherUser.Id };
