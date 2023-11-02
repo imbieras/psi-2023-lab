@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Services.UserService;
+using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Hubs;
 
@@ -22,13 +23,25 @@ public class ChatHub : Hub
         HttpContext httpContext = Context.GetHttpContext();
 
         string receiver = httpContext.Request.Query["userid"];
-        string sender = _userService.GetCurrentUserId().ToString();
+        // string sender = _userService.GetCurrentUserId().ToString();
+        string sender = httpContext.Request.Query["sender"];
 
-        Groups.AddToGroupAsync(Context.ConnectionId, sender);
+
+        Console.WriteLine("OUTSIDE GROUP SENDER:" + sender + "    " + _userService.GetCurrentUserId);
+
+
+        if (!string.IsNullOrEmpty(sender))
+        {
+            Groups.AddToGroupAsync(Context.ConnectionId, sender);
+        }
+
+
         if (!string.IsNullOrEmpty(receiver))
         {
             Groups.AddToGroupAsync(Context.ConnectionId, receiver);
         }
+
+        Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " + receiver);
 
         return base.OnConnectedAsync();
     }
@@ -40,6 +53,7 @@ public class ChatHub : Hub
 
     public async Task SendMessage(string user, string message)
     {
+        await Console.Out.WriteLineAsync("SendMessage " + user + " " + message);
         await Clients.All.SendAsync("ReceiveMessage", user, message);
     }
 

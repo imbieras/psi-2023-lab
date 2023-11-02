@@ -7,8 +7,12 @@
     <div class="col-4"><input type="text" id="userInput" /></div>
     </div>*@
     <div class="row">
+        <div class="col-2">Sender</div>
+        <div class="col-4"><input type="text" asp-for="@Model.CurrentUser" value="@Model.CurrentUser.Id" id="senderInput" /></div>
+    </div>
+    <div class="row">
         <div class="col-2">Receiver</div>
-        <div class="col-4"><input type="text" asp-for="@Model.CurrentUser" value="@Model.OtherUser" id="receiverInput" /></div>
+        <div class="col-4"><input type="text" asp-for="@Model.OtherUser" value="@Model.OtherUser.Id" id="receiverInput" /></div>
     </div>
     <div class="row">
         <div class="col-2">Message</div>
