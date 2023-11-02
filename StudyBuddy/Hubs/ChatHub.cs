@@ -1,5 +1,7 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using StudyBuddy.Abstractions;
 using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
@@ -45,8 +47,16 @@ public class ChatHub : Hub
 
     public Task SendMessageToGroup(string groupName, string message)
     {
+        HttpContext httpContext = Context.GetHttpContext();
+
+        UserId.TryParse(httpContext.Request.Query["sender"], out UserId senderId);
+
+
+        IUser sender = _userManager.GetUserById(senderId);
+
+
         // Broadcast the message to the conversation group
-        return Clients.Group(groupName).SendAsync("ReceiveMessage", Context.User.Identity.Name, message);
+        return Clients.Group(groupName).SendAsync("ReceiveMessage", sender.Name, message);
     }
 
 
