@@ -6,6 +6,8 @@ namespace StudyBuddy.Controllers.ChatController
     {
         public IUser CurrentUser { get; set; }
         public IUser OtherUser { get; set; }
+
+        public List<IUser> Matches { get; set; }
     }
 
 }

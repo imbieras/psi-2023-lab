@@ -52,7 +52,7 @@
             <div class="card">
                 <div class="row">
                     <div class="col-12 col-lg-5 col-xl-3 border-end">
-                      
+
                         <ul class="list-group">
                             <li class="list-group-item border border-0">
                                 <a href="#" class="text-decoration-none text-reset">
@@ -65,9 +65,21 @@
                                     </div>
                                 </a>
                             </li>
-                            <li class="list-group-item border border-0">
-                                <!-- Repeat the list items for other users -->
-                            </li>
+                            @foreach (var user in Model.Matches)
+                            {
+                                <li class="list-group-item border border-0">
+                                    <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user.Id })" class="text-decoration-none text-reset">
+                                        <div class="d-flex align-items-start">
+                                            <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user.Id })">
+                                                <img src="@user.Traits.AvatarPath" class="rounded-circle me-1" alt="@user.Name" width="40" height="40">
+                                            </a>
+                                            <div class="fw-bold flex-grow-1 ms-3">
+                                                @user.Name
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            }
                         </ul>
                     </div>
                     <div class="col-12 col-lg-7 col-xl-9">

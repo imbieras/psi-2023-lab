@@ -7,6 +7,8 @@ using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 using StudyBuddy.Hubs;
+using StudyBuddy.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace StudyBuddy.Controllers.ChatController
 {
@@ -88,11 +90,26 @@ namespace StudyBuddy.Controllers.ChatController
             _hubContext.Groups.AddToGroupAsync(currentUser.Id.ToString(), groupName);
             _hubContext.Groups.AddToGroupAsync(otherUser.Id.ToString(), groupName);
 
+
+            //Show list of matched users
+            List<IUser> matches = new List<IUser>();
+            List<IUser> userList = _userManager.GetAllUsers();
+
+            foreach (var user in userList)
+            {
+                if (_matchingManager.IsMatched(currentUser.Id, user.Id))
+                {
+                    matches.Add(user);
+                }
+
+            }
+
             // Pass both the current user and the other user to the view
             var viewModel = new ChatViewModel
             {
                 CurrentUser = currentUser,
-                OtherUser = otherUser
+                OtherUser = otherUser,
+                Matches = matches
             };
 
             return View(viewModel);
