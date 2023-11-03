@@ -1,11 +1,12 @@
 using System.Text.RegularExpressions;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Exceptions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Managers.UserManager;
 
-public class UserManager : IUserManager
+public partial class UserManager : IUserManager
 {
     private static readonly List<User?> s_users = new();
 
@@ -24,10 +25,7 @@ public class UserManager : IUserManager
 
     public UserId RegisterUser(string username, UserFlags flags, UserTraits traits)
     {
-
-        string usernamePattern = "^(?=.*[A-Za-z]{2,})[A-Za-z0-9_ -]+$";
-
-        if (!Regex.IsMatch(username, usernamePattern))
+        if (!MyRegex().IsMatch(username))
         {
             throw new InvalidUsernameException("Invalid username format" + username);
         }
@@ -113,4 +111,7 @@ public class UserManager : IUserManager
     public IUser? GetCurrentRandomUser(IUser user) => s_users[user.UsedIndexes.Last()];
 
     public bool IsUsedIndexesEmpty(IUser user) => user.UsedIndexes.Count > 0;
+
+    [GeneratedRegex("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")]
+    private static partial Regex MyRegex();
 }
