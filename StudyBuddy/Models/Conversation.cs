@@ -4,7 +4,7 @@ namespace StudyBuddy.Models;
 
 public class Conversation
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public UserId User1Id { get; set; }
     public UserId User2Id { get; set; }
 

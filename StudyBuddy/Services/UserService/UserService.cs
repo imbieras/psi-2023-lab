@@ -48,6 +48,7 @@ public class UserService : IUserService
         return userId;
     }
 
+
     public async Task AddHobbiesToUserAsync(User user, List<string> hobbies) =>
         await _userRepository.AddHobbiesToUserAsync(user, hobbies);
 
@@ -63,7 +64,7 @@ public class UserService : IUserService
         }
     }
 
-    public IUser? GetRandomUser(IUser user)
+    public IUser? GetRandomUser()
     {
         IEnumerable<User> users = _userRepository.GetAllAsync().Result;
         Random random = new();
@@ -72,9 +73,13 @@ public class UserService : IUserService
         return enumerable.ElementAt(randomIndex);
     }
 
-    public IUser? GetPreviousRandomProfile(IUser user) => throw new NotImplementedException();
+    public async Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId)
+    {
+        return await _userRepository.IsUserSeenAsync(userId, otherUserId);
+    }
 
-    public IUser? GetCurrentRandomUser(IUser user) => throw new NotImplementedException();
-
-    public bool IsUsedIndexesEmpty(IUser user) => throw new NotImplementedException();
+    public async Task UserSeenAsync(UserId userId, UserId otherUserId)
+    {
+        await _userRepository.UserSeenAsync(userId, otherUserId);
+    }
 }

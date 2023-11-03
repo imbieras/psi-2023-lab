@@ -17,24 +17,24 @@ public class StudyBuddyDbContext : DbContext
     public DbSet<Match> Matches { get; set; }
     public DbSet<Conversation> Conversations { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<UserSeenProfile> UserSeenProfiles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.UseValueConverterForType(typeof(UserId), UserIdConverter.UserIdToStringConverter);
+        modelBuilder.UseValueConverterForType(typeof(Guid), GuidConverter.GuidToStringConverter);
 
+        // Configure Users
         modelBuilder.Entity<User>().OwnsOne(u => u.Traits);
-
-        modelBuilder.Entity<MatchRequest>().HasKey(mr => new { mr.RequesterId, mr.RequestedId });
 
         modelBuilder.Entity<User>()
             .Property(u => u.HobbiesArray)
             .HasColumnName("HobbiesArray");
 
-        modelBuilder.Entity<User>()
-            .Property(u => u.UsedIndexesArray)
-            .HasColumnName("UsedIndexesArray");
+        // Configure Matches
+        modelBuilder.Entity<MatchRequest>().HasKey(mr => new { mr.RequesterId, mr.RequestedId });
 
         modelBuilder.Entity<Match>()
             .HasKey(m => new { m.User1Id, m.User2Id });
@@ -68,6 +68,24 @@ public class StudyBuddyDbContext : DbContext
 
         modelBuilder.Entity<ChatMessage>()
             .HasIndex(m => m.ConversationId);
+
+        // Configure UserSeenProfiles
+        modelBuilder.Entity<UserSeenProfile>()
+            .HasKey(usp => new { usp.UserId, SeenProfileId = usp.SeenUserId });
+
+        modelBuilder.Entity<UserSeenProfile>()
+            .HasIndex(usp => usp.UserId);
+
+        modelBuilder.Entity<UserSeenProfile>()
+            .HasIndex(usp => usp.SeenUserId);
+
+        modelBuilder.Entity<UserSeenProfile>()
+            .Property(usp => usp.UserId)
+            .HasConversion(UserIdConverter.UserIdToStringConverter);
+
+        modelBuilder.Entity<UserSeenProfile>()
+            .Property(usp => usp.SeenUserId)
+            .HasConversion(UserIdConverter.UserIdToStringConverter);
     }
 }
 
@@ -76,4 +94,11 @@ public static class UserIdConverter
     public static readonly ValueConverter<UserId, string> UserIdToStringConverter = new(
         v => v.ToString() ?? string.Empty,
         v => (UserId)Guid.Parse(v));
+}
+
+public static class GuidConverter
+{
+    public static readonly ValueConverter<Guid, string> GuidToStringConverter= new(
+        v => v.ToString() ?? string.Empty,
+        v => Guid.Parse(v));
 }

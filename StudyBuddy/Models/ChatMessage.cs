@@ -4,7 +4,7 @@ namespace StudyBuddy.Models;
 
 public class ChatMessage
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Content { get; set; }
     public DateTime Timestamp { get; set; }
     public UserId SenderUserId { get; set; }

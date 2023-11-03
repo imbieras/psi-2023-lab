@@ -14,4 +14,6 @@ public interface IUserRepository
     Task DeleteAsync(UserId userId);
     Task<bool> UserExistsAsync(UserId userId);
     Task RemoveHobbyFromUserAsync(User user, string hobby);
+    Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId);
+    Task UserSeenAsync(UserId userId, UserId otherUserId);
 }

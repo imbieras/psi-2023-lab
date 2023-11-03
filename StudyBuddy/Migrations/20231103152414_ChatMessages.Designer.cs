@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StudyBuddy.Data;
@@ -11,9 +12,11 @@ using StudyBuddy.Data;
 namespace StudyBuddy.Migrations
 {
     [DbContext(typeof(StudyBuddyDbContext))]
-    partial class StudyBuddyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231103152414_ChatMessages")]
+    partial class ChatMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,17 +27,16 @@ namespace StudyBuddy.Migrations
 
             modelBuilder.Entity("StudyBuddy.Models.ChatMessage", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ConversationId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("SenderUserId")
                         .IsRequired()
@@ -52,9 +54,9 @@ namespace StudyBuddy.Migrations
 
             modelBuilder.Entity("StudyBuddy.Models.Conversation", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("User1Id")
                         .IsRequired()
@@ -125,26 +127,14 @@ namespace StudyBuddy.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int[]>("UsedIndexesArray")
+                        .IsRequired()
+                        .HasColumnType("integer[]")
+                        .HasColumnName("UsedIndexesArray");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("StudyBuddy.Models.UserSeenProfile", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SeenProfileId")
-                        .HasColumnType("text");
-
-                    b.HasKey("UserId", "SeenProfileId");
-
-                    b.HasIndex("SeenProfileId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserSeenProfile");
                 });
 
             modelBuilder.Entity("StudyBuddy.Models.Match", b =>

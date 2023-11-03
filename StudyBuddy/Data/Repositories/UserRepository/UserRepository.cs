@@ -59,6 +59,17 @@ public class UserRepository : IUserRepository
         return Task.CompletedTask;
     }
 
+    public Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId)
+    {
+        return _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId && u.SeenUserId == otherUserId);
+    }
+
+    public async Task UserSeenAsync(UserId userId, UserId otherUserId)
+    {
+        _context.UserSeenProfiles.Add(new UserSeenProfile(userId, otherUserId));
+        await _context.SaveChangesAsync();
+    }
+
     public async Task AddAsync(User user)
     {
         if (!await UserExistsAsync(user.Id))

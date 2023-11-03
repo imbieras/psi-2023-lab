@@ -17,7 +17,7 @@ public class User : IUser, IEquatable<User>
         Flags = flags;
         Traits = traits;
 
-        UsedIndexes = new List<int>();
+        Hobbies = hobbies;
     }
 
     public bool Equals(User? other)
@@ -28,14 +28,6 @@ public class User : IUser, IEquatable<User>
         }
 
         return Id == other.Id;
-    }
-
-    [NotMapped] public List<int> UsedIndexes { get; set; } = new();
-
-    public int[] UsedIndexesArray
-    {
-        get => UsedIndexes.ToArray();
-        set => UsedIndexes = value.ToList();
     }
 
     [NotMapped] public List<string>? Hobbies { get; set; } = new();
