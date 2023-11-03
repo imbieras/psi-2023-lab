@@ -1,4 +1,5 @@
 ﻿using StudyBuddy.Abstractions;
+using StudyBuddy.Models;
 
 namespace StudyBuddy.Controllers.ChatController
 {
@@ -9,7 +10,7 @@ namespace StudyBuddy.Controllers.ChatController
 
         public List<IUser> Matches { get; set; }
 
-        public List<string> messages { get; set; }
+        public List<Message> messages { get; set; }
     }
 
 }

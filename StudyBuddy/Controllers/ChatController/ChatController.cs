@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Managers.MatchingManager;
@@ -8,7 +7,6 @@ using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 using StudyBuddy.Hubs;
 using StudyBuddy.Models;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using StudyBuddy.Services;
 
 namespace StudyBuddy.Controllers.ChatController
@@ -124,7 +122,7 @@ namespace StudyBuddy.Controllers.ChatController
             //Show list of matched users
             List<IUser> matches = new List<IUser>();
             List<IUser> userList = _userManager.GetAllUsers();
-            List<string> messageList = _messageService.GetMessages(groupName);
+            List<Message> messageList = _messageService.GetMessages(groupName);
 
             foreach (var user in userList)
             {

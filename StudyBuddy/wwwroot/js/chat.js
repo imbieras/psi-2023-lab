@@ -67,6 +67,27 @@ function wrapText(text, limit) {
     return result + text;
 }
 
+function wrapText2(text, maxLineLength) {
+    var words = text.split(' ');
+    var lines = [];
+    var currentLine = '';
+
+    words.forEach(function (word) {
+        if ((currentLine + word).length <= maxLineLength) {
+            currentLine += (currentLine !== '' ? ' ' : '') + word;
+        } else {
+            lines.push(currentLine);
+            currentLine = word;
+        }
+    });
+
+    if (currentLine !== '') {
+        lines.push(currentLine);
+    }
+
+    return lines.join('\n');
+}
+
 function getCurrentTime() {
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0'); // Ensure 2-digit format

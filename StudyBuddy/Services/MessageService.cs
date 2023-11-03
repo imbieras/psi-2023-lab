@@ -1,26 +1,28 @@
-﻿namespace StudyBuddy.Services;
+﻿using StudyBuddy.Models;
+
+namespace StudyBuddy.Services;
 
 public class MessageService
 {
-    private readonly Dictionary<string, List<string>> messages = new Dictionary<string, List<string>>();
+    private readonly Dictionary<string, List<Message>> messages = new Dictionary<string, List<Message>>();
 
-    public void AddMessage(string groupName, string message)
+    public void AddMessage(string groupName, Message message)
     {
         if (!messages.ContainsKey(groupName))
         {
-            messages[groupName] = new List<string>();
+            messages[groupName] = new List<Message>();
         }
 
         messages[groupName].Add(message);
     }
 
-    public List<string> GetMessages(string groupName)
+    public List<Message> GetMessages(string groupName)
     {
         if (messages.ContainsKey(groupName))
         {
             return messages[groupName];
         }
 
-        return new List<string>();
+        return new List<Message>();
     }
 }
