@@ -9,6 +9,7 @@ using StudyBuddy.ValueObjects;
 using StudyBuddy.Hubs;
 using StudyBuddy.Models;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using StudyBuddy.Services;
 
 namespace StudyBuddy.Controllers.ChatController
 {
@@ -19,13 +20,15 @@ namespace StudyBuddy.Controllers.ChatController
         private readonly IMatchingManager _matchingManager;
         private readonly IUserManager _userManager;
         private readonly IUserService _userService;
+        private readonly MessageService _messageService;
 
-        public ChatController(IHubContext<ChatHub> hubContext, IUserManager userManager, IMatchingManager matchingManager, IUserService userService)
+        public ChatController(IHubContext<ChatHub> hubContext, IUserManager userManager, IMatchingManager matchingManager, IUserService userService, MessageService messageService)
         {
             _hubContext = hubContext;
             _userManager = userManager;
             _matchingManager = matchingManager;
             _userService = userService;
+            _messageService = messageService;
 
         }
 
@@ -121,6 +124,7 @@ namespace StudyBuddy.Controllers.ChatController
             //Show list of matched users
             List<IUser> matches = new List<IUser>();
             List<IUser> userList = _userManager.GetAllUsers();
+            List<string> messageList = _messageService.GetMessages(groupName);
 
             foreach (var user in userList)
             {
@@ -136,7 +140,8 @@ namespace StudyBuddy.Controllers.ChatController
             {
                 CurrentUser = currentUser,
                 OtherUser = otherUser,
-                Matches = matches
+                Matches = matches,
+                messages = messageList
             };
 
             return View(viewModel);

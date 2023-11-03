@@ -99,6 +99,12 @@
                         <div class="position-relative">
                             <ul class="chat-messages p-4" id="messagesList">
                                 <!-- Messages will be added here using JavaScript -->
+                                @{
+                                foreach(var message in Model.messages){
+                                    
+                                    <p>@message</p>
+                                }
+                                }
                             </ul>
                         </div>
 

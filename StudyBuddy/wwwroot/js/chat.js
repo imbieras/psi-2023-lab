@@ -4,7 +4,7 @@ var senderId = document.getElementById("senderInput").value;
 var receiverId = document.getElementById("receiverInput").value;
 
 var connection = new signalR.HubConnectionBuilder()
-    .withUrl("/chat?receiver=" + document.getElementById("receiverInput").value + "&sender=" + senderId) // Pass the sender parameter in the query string
+    .withUrl("/chat?receiver=" + document.getElementById("receiverInput").value + "&sender=" + senderId) // Pass the receiver and sender parameter in the query string
     .build();
 console.log("Console result");
 console.log(document.getElementById("receiverInput").value);
@@ -12,6 +12,7 @@ console.log(document.getElementById("senderInput").value);
 //Disable send button until connection is established
 document.getElementById("sendButton").disabled = true;
 
+//Message style right here
 connection.on("ReceiveMessage", function (user, message) {
     var messageList = document.getElementById("messagesList");
 

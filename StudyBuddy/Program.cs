@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Controllers.ChatController;
 using StudyBuddy.Hubs;
+using StudyBuddy.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddSingleton<IUserManager, UserManager>();
 builder.Services.AddSingleton<IMatchingManager, MatchingManager>();
 builder.Services.AddSingleton<FileManager>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<MessageService>();
 
 builder.Services.AddMvc();
 builder.Services.AddSignalR();

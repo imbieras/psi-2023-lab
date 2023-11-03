@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Managers.UserManager;
+using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 
@@ -13,10 +14,14 @@ public class ChatHub : Hub
 
     private readonly IUserManager _userManager;
     private readonly IUserService _userService;
-    public ChatHub(IUserManager userManager, IUserService userService)
+    private readonly MessageService _messageService;
+
+
+    public ChatHub(IUserManager userManager, IUserService userService, MessageService messageService)
     {
         _userManager = userManager;
         _userService = userService;
+        _messageService = messageService;
     }
 
 
@@ -54,6 +59,7 @@ public class ChatHub : Hub
 
         IUser sender = _userManager.GetUserById(senderId);
 
+        _messageService.AddMessage(groupName, message);
 
         // Broadcast the message to the conversation group
         return Clients.Group(groupName).SendAsync("ReceiveMessage", sender.Id, message);
