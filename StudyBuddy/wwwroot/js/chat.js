@@ -89,10 +89,14 @@ function wrapText2(text, maxLineLength) {
 }
 
 function getCurrentTime() {
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0'); // Ensure 2-digit format
-    const minutes = now.getMinutes().toString().padStart(2, '0'); // Ensure 2-digit format
-    return `${hours}:${minutes}`;
+    var currentUnixTimestap = ~~(+new Date() / 1000);
+    var date = new Date(currentUnixTimestap * 1000)
+    var hours = date.getHours();
+    var minutes = "0" + date.getMinutes();
+    var seconds = "0" + date.getSeconds();
+    var formattedTime = hours + ':' + minutes.substr(-2);
+
+    return formattedTime;
 }
 
 
