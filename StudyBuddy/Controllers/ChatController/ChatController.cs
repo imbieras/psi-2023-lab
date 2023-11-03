@@ -49,7 +49,28 @@ namespace StudyBuddy.Controllers.ChatController
                 return View(LoginPath);
             }
 
-            return View(currentUser);
+            //Show list of matched users
+            List<IUser> matches = new List<IUser>();
+            List<IUser> userList = _userManager.GetAllUsers();
+
+            foreach (var user in userList)
+            {
+                if (_matchingManager.IsMatched(currentUser.Id, user.Id))
+                {
+                    matches.Add(user);
+                }
+
+            }
+
+            // Pass both the current user and the other user to the view
+            var viewModel = new ChatViewModel
+            {
+                CurrentUser = currentUser,
+                Matches = matches
+            };
+
+
+            return View(viewModel);
         }
 
         public IActionResult ChatWithUser(string otherUserId)

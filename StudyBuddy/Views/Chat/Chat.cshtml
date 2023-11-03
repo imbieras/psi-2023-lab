@@ -1,57 +1,91 @@
-﻿@model StudyBuddy.Abstractions.IUser;
+﻿@model StudyBuddy.Controllers.ChatController.ChatViewModel;
 
-<div class="container">
-    <div class="row p-1">
-        <div class="col-1">User</div>
-        <div class="col-5"><input type="text" id="userInput" /></div>
-    </div>
-    <div class="row p-1">
-        <div class="col-1">Message</div>
-        <div class="col-5"><input type="text" class="w-100" id="messageInput" /></div>
-    </div>
-    <div class="row p-1">
-        <div class="col-6 text-end">
-            <input type="button" id="sendButton" value="Send Message" />
-        </div>
-    </div>
-    <div class="row p-1">
-        <div class="col-6">
-            <hr />
-        </div>
-    </div>
-    <div class="row p-1">
-        <div class="col-6">
-            <ul id="messagesList"></ul>
-        </div>
-    </div>
-</div>
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap Chat Interface</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            max-height: 80vh;
+            overflow-y: scroll
+        }
+
+        .chat-message-left,
+        .chat-message-right {
+            display: flex;
+            flex-shrink: 0
+        }
+
+        .chat-message-left {
+            margin-right: auto
+        }
+
+        .chat-message-right {
+            flex-direction: row-reverse;
+            margin-left: auto
+        }
+    </style>
+</head>
 
 
-<script>
-    "use strict";
-    var connection = new signalR.HubConnectionBuilder().withUrl(" /chat").build();
-    //Disable the send button until connection is established.
-    document.getElementById("sendButton").disabled = true;
-    connection.on("ReceiveMessage", function (user, message) {
-        var li = document.createElement("li");
-        document.getElementById("messagesList").appendChild(li);
-        // We can assign user-supplied strings to an element's textContent because it
-        // is not interpreted as markup. If you're assigning in any other way, you
-        // should be aware of possible script injection concerns.
-        li.textContent = `${user} says ${message}`;
-    });
-    connection.start().then(function () {
-        document.getElementById("sendButton").disabled = false;
-    }).catch(function (err) {
-        return console.error(err.toString());
-    });
-    document.getElementById("sendButton").addEventListener("click", function (event) {
-        var user = document.getElementById("userInput").value;
-        var message = document.getElementById("messageInput").value;
-        connection.invoke("SendMessage", user, message).catch(function (err) {
-            return console.error(err.toString());
-        });
-        event.preventDefault();
-    });
-</script>
+
+
+
+<body>
+
+    <main class="content">
+        <div class="container">
+            <div class="card">
+                <div class="row">
+                    <div class="col-12 col-lg-5 col-xl-3 border-end">
+
+                        <ul class="list-group">
+                            <li class="list-group-item border border-0">
+                                <a href="#" class="text-decoration-none text-reset">
+                                    <div class="d-flex align-items-start">
+                                        <!-- Use the sender's avatar from your model -->
+                                        <img src="@Model.CurrentUser.Traits.AvatarPath" class="rounded-circle me-1" alt="@Model.CurrentUser.Name" width="40" height="40">
+                                        <div class="fw-bold flex-grow-1 ms-3">
+                                            @Model.CurrentUser.Name
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            @foreach (var user in Model.Matches)
+                            {
+                                <li class="list-group-item border border-0">
+                                    <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user.Id })" class="text-decoration-none text-reset">
+                                        <div class="d-flex align-items-start">
+                                            <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user.Id })">
+                                                <img src="@user.Traits.AvatarPath" class="rounded-circle me-1" alt="@user.Name" width="40" height="40">
+                                            </a>
+                                            <div class="fw-bold flex-grow-1 ms-3">
+                                                @user.Name
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-md border-end">
+                        <h3>Click on avatar to start a chat!</h3>
+                    </div>
+
+                        </div>
+                    </div>
+                </div>
+
+    </main>
+
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>
