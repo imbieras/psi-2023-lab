@@ -21,8 +21,8 @@
 
         if (ViewBag.CurrentUserId != null)
         {
-            isRequestedMatch = MatchingService.IsRequestedMatchAsync(ViewBag.CurrentUserId, Model.Id);
-            isMatched = MatchingService.IsMatchedAsync(ViewBag.CurrentUserId, Model.Id);
+            isRequestedMatch = await MatchingService.IsRequestedMatchAsync(ViewBag.CurrentUserId, Model.Id);
+            isMatched = await MatchingService.IsMatchedAsync(ViewBag.CurrentUserId, Model.Id);
         }
 
         <div class="row justify-content-center mt-4">

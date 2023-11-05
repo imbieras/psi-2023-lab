@@ -37,7 +37,7 @@ public class MatchingController : Controller
             return View(LoginPath);
         }
 
-        IUser? currentRandomUser = _userService.GetCurrentRandomUser(currentUser);
+        IUser? currentRandomUser = await _userService.GetLatestSeenUserAsync(currentUser.Id);
         ViewBag.ShowMatchRequestMessage = true;
 
         return View("RandomProfile", currentRandomUser);
@@ -64,7 +64,7 @@ public class MatchingController : Controller
         IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
 
         ViewBag.ViewedFirstProfile =
-            currentUser != null && _userService.IsUsedIndexesEmpty(currentUser);// For 'Go back!' button
+            currentUser != null && await _userService.IsUserNotSeenAnyUserAsync(currentUser.Id);// For 'Go back!' button
 
         if (currentUser == null)
         {
@@ -75,19 +75,30 @@ public class MatchingController : Controller
         int counter = 0;
 
         // Keep generating random users until an unmatched and unrequested user is found
-        while (randomUser == null || (await _matchingService.IsMatchedAsync(currentUser.Id, randomUser.Id) &&
-                                      await _matchingService.IsRequestedMatchAsync(currentUser.Id, randomUser.Id)))
+        while (randomUser == null || await _userService.IsUserSeenAsync(currentUser.Id, randomUser.Id))
         {
-            randomUser = _userService.GetRandomUser(currentUser);
+            randomUser = _userService.GetRandomUser();
+            if (randomUser != null && randomUser.Id == currentUser.Id)
+            {
+                randomUser = null;
+                continue;
+            }
 
             counter++;
             if (counter > (await _userService.GetAllUsersAsync()).Count())
             {
+                randomUser = null;
                 break;
             }
         }
 
         TempData.Remove("HideGoBackButton");
+
+        if (randomUser != null)
+        {
+            await _userService.UserSeenAsync(currentUser.Id, randomUser.Id);
+        }
+
 
         return View("RandomProfile", randomUser);
     }
@@ -123,7 +134,7 @@ public class MatchingController : Controller
             return View(LoginPath);
         }
 
-        IUser? previousUser = _userService.GetPreviousRandomProfile(currentUser);
+        IUser? previousUser = await _userService.GetPenultimateSeenUserAsync(currentUser.Id);
 
         TempData["HideGoBackButton"] = true;
 

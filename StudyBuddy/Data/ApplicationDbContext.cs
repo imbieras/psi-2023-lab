@@ -86,6 +86,9 @@ public class StudyBuddyDbContext : DbContext
         modelBuilder.Entity<UserSeenProfile>()
             .Property(usp => usp.SeenUserId)
             .HasConversion(UserIdConverter.UserIdToStringConverter);
+
+        modelBuilder.Entity<UserSeenProfile>()
+            .Property(usp => usp.Timestamp);
     }
 }
 

@@ -70,6 +70,30 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
+    public Task<bool> IsUserNotSeenAnyUserAsync(UserId userId)
+    {
+        return _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
+    }
+
+    public Task<UserId> GetLatestSeenUserAsync(UserId userId)
+    {
+        return _context.UserSeenProfiles
+            .Where(u => u.UserId == userId)
+            .OrderByDescending(u => u.Timestamp)
+            .Select(u => u.SeenUserId)
+            .FirstOrDefaultAsync();
+    }
+
+    public Task<UserId> GetPenultimateSeenUserAsync(UserId userId)
+    {
+        return _context.UserSeenProfiles
+            .Where(u => u.UserId == userId)
+            .OrderByDescending(u => u.Timestamp)
+            .Select(u => u.SeenUserId)
+            .Skip(1)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task AddAsync(User user)
     {
         if (!await UserExistsAsync(user.Id))

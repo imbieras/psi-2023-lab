@@ -73,6 +73,23 @@ public class UserService : IUserService
         return enumerable.ElementAt(randomIndex);
     }
 
+    public async Task<IUser?> GetLatestSeenUserAsync(UserId userId)
+    {
+        UserId latestId = await _userRepository.GetLatestSeenUserAsync(userId);
+        return await _userRepository.GetByIdAsync(latestId);
+    }
+
+    public async Task<IUser?> GetPenultimateSeenUserAsync(UserId userId)
+    {
+        UserId penultimateId = await _userRepository.GetPenultimateSeenUserAsync(userId);
+        return await _userRepository.GetByIdAsync(penultimateId);
+    }
+
+    public async Task<bool> IsUserNotSeenAnyUserAsync(UserId userId)
+    {
+        return await _userRepository.IsUserNotSeenAnyUserAsync(userId);
+    }
+
     public async Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId)
     {
         return await _userRepository.IsUserSeenAsync(userId, otherUserId);

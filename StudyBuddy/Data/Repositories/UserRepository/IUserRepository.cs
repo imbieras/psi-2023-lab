@@ -16,4 +16,7 @@ public interface IUserRepository
     Task RemoveHobbyFromUserAsync(User user, string hobby);
     Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId);
     Task UserSeenAsync(UserId userId, UserId otherUserId);
+    Task<bool> IsUserNotSeenAnyUserAsync(UserId userId);
+    Task<UserId> GetLatestSeenUserAsync(UserId userId);
+    Task<UserId> GetPenultimateSeenUserAsync(UserId userId);
 }
