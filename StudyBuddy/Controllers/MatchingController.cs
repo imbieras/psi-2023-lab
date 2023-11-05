@@ -37,7 +37,7 @@ public class MatchingController : Controller
             return View(LoginPath);
         }
 
-        IUser? currentRandomUser = await _userService.GetLatestSeenUserAsync(currentUser.Id);
+        IUser? currentRandomUser = await _userService.GetUltimateSeenUserAsync(currentUser.Id);
         ViewBag.ShowMatchRequestMessage = true;
 
         return View("RandomProfile", currentRandomUser);
@@ -109,7 +109,7 @@ public class MatchingController : Controller
         return RedirectToAction("RandomProfile");
     }
 
-    public async Task<IActionResult> PreviousProfile()
+    public async Task<IActionResult> PenultimateProfile()
     {
         // Pass the current user's ID to the view
         UserId? currentUserId = _userSessionService.GetCurrentUserId();
@@ -135,6 +135,39 @@ public class MatchingController : Controller
         }
 
         IUser? previousUser = await _userService.GetPenultimateSeenUserAsync(currentUser.Id);
+
+        TempData["HideGoBackButton"] = true;
+
+        return View("RandomProfile", previousUser);
+    }
+
+
+    public async Task<IActionResult> UltimateProfile()
+    {
+        // Pass the current user's ID to the view
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
+
+        if (currentUserId != null)
+        {
+            ViewBag.CurrentUserId = currentUserId;
+            ViewBag.ShowMatchRequestMessage = false;
+        }
+
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        {
+            return View(LoginPath);
+        }
+
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
+
+        if (currentUser == null)
+        {
+            return View(LoginPath);
+        }
+
+        IUser? previousUser = await _userService.GetUltimateSeenUserAsync(currentUser.Id);
 
         TempData["HideGoBackButton"] = true;
 

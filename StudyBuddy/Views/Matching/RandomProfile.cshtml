@@ -53,7 +53,7 @@
             <!-- Button to view the previous profile -->
             @if (!TempData.ContainsKey("HideGoBackButton") && ViewBag.ViewedFirstProfile == true)
             {
-                <a href="@Url.Action("PreviousProfile", "Matching")" class="btn btn-secondary">Go back!</a>
+                <a href="@Url.Action("PenultimateProfile", "Matching")" class="btn btn-secondary">Go back!</a>
             }
             else
             {
@@ -89,6 +89,6 @@
     else
     {
         <p>It seems like there are no more users left :(</p>
-        <a href="@Url.Action("PreviousProfile", "Matching")" class="btn btn-secondary">Go back!</a>
+        <a href="@Url.Action("UltimateProfile", "Matching")" class="btn btn-secondary">Go back!</a>
     }
 </div>

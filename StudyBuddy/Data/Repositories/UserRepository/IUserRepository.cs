@@ -17,6 +17,6 @@ public interface IUserRepository
     Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId);
     Task UserSeenAsync(UserId userId, UserId otherUserId);
     Task<bool> IsUserNotSeenAnyUserAsync(UserId userId);
-    Task<UserId> GetLatestSeenUserAsync(UserId userId);
+    Task<UserId> GetUltimateSeenUserAsync(UserId userId);
     Task<UserId> GetPenultimateSeenUserAsync(UserId userId);
 }

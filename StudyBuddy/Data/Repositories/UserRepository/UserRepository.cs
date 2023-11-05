@@ -75,7 +75,7 @@ public class UserRepository : IUserRepository
         return _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
     }
 
-    public Task<UserId> GetLatestSeenUserAsync(UserId userId)
+    public Task<UserId> GetUltimateSeenUserAsync(UserId userId)
     {
         return _context.UserSeenProfiles
             .Where(u => u.UserId == userId)
