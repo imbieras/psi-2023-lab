@@ -11,6 +11,8 @@ namespace StudyBuddy.Controllers.ChatController
         public List<IUser> Matches { get; set; }
 
         public List<Message> messages { get; set; }
+
+        public Guid GroupName { get; set; }
     }
 
 }

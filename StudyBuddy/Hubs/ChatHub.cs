@@ -29,17 +29,33 @@ public class ChatHub : Hub
         string receiver = httpContext.Request.Query["receiver"];
         string sender = httpContext.Request.Query["sender"];
 
+
+
         if (!string.IsNullOrEmpty(sender) && !string.IsNullOrEmpty(receiver))
         {
+            Guid.TryParse(receiver, out Guid receiverGuid);
+            Guid.TryParse(sender, out Guid senderGuid);
+
             // Sort user IDs to ensure consistent group names regardless of user roles
             var userIds = new List<string> { sender, receiver };
             userIds.Sort();
-            string groupName = $"{userIds[0]}-{userIds[1]}";
+
+
+
+            byte[] bytes1 = senderGuid.ToByteArray();
+            byte[] bytes2 = receiverGuid.ToByteArray();
+
+            for (int i = 0; i < bytes1.Length; i++)
+            {
+                bytes1[i] = (byte)(bytes1[i] ^ bytes2[i]);
+            }
+
+            Guid groupName = new Guid(bytes1);
 
 
             Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " + receiver + "\nGROUP_NAME: " + groupName);
             // Add the current connection to the conversation group
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName.ToString());
         }
 
 
@@ -47,7 +63,7 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
 
-    public Task SendMessageToGroup(string groupName, string message)
+    public Task SendMessageToGroup(Guid groupName, string message)
     {
         HttpContext httpContext = Context.GetHttpContext();
 
@@ -57,9 +73,6 @@ public class ChatHub : Hub
 
         UserId.TryParse(httpContext.Request.Query["sender"], out UserId senderId);
 
-        if (Guid.TryParse(groupName, out Guid parsedGroupName))
-            Console.WriteLine("PARRSSEEED: " + parsedGroupName);
-
         //ChatMessage chatMessage = new ChatMessage(message, DateTime.Now, senderId, groupName);
         Message sentMessage = new Message();
         sentMessage.SenderId = senderId;
@@ -68,10 +81,10 @@ public class ChatHub : Hub
 
         Console.WriteLine($"SENDING MESSAGE TO:{sender} TEXT:{message} GROUP NAME {groupName}");
 
-        _messageService.AddMessage(groupName, sentMessage);
+        _messageService.AddMessage(groupName.ToString(), sentMessage);
 
         // Broadcast the message to the conversation group
-        return Clients.Group(groupName).SendAsync("ReceiveMessage", sender, message);
+        return Clients.Group(groupName.ToString()).SendAsync("ReceiveMessage", sender, message);
     }
 
 

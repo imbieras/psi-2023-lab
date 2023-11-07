@@ -9,6 +9,7 @@ using StudyBuddy.Models;
 using StudyBuddy.Services;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.Services.MatchingService;
+using NuGet.Protocol.Plugins;
 
 namespace StudyBuddy.Controllers.ChatController
 {
@@ -115,16 +116,19 @@ namespace StudyBuddy.Controllers.ChatController
 
             }
 
-            // Sort user IDs to ensure consistent group names regardless of user roles
-            var userIds = new List<UserId> { currentUser.Id, otherUser.Id };
-            userIds.Sort();
+            byte[] bytes1 = userIdGuid.ToByteArray();
+            byte[] bytes2 = otherUserIdGuid.ToByteArray();
 
-            // Generate a unique group name based on user IDs
-            string groupName = $"{userIds[0]}-{userIds[1]}";
+            for (int i = 0; i < bytes1.Length; i++)
+            {
+                bytes1[i] = (byte)(bytes1[i] ^ bytes2[i]);
+            }
+
+            Guid groupName = new Guid(bytes1);
 
             // Add both users to the same SignalR group
-            _hubContext.Groups.AddToGroupAsync(currentUser.Id.ToString(), groupName);
-            _hubContext.Groups.AddToGroupAsync(otherUser.Id.ToString(), groupName);
+            _hubContext.Groups.AddToGroupAsync(currentUser.Id.ToString(), groupName.ToString());
+            _hubContext.Groups.AddToGroupAsync(otherUser.Id.ToString(), groupName.ToString());
 
 
             //Show list of matched users
@@ -145,7 +149,7 @@ namespace StudyBuddy.Controllers.ChatController
                 }
 
             }
-            List<Message> messageList = _messageService.GetMessages(groupName);
+            List<Models.Message> messageList = _messageService.GetMessages(groupName.ToString());
 
             // Pass both the current user and the other user to the view
             var viewModel = new ChatViewModel
@@ -153,7 +157,8 @@ namespace StudyBuddy.Controllers.ChatController
                 CurrentUser = currentUser,
                 OtherUser = otherUser,
                 Matches = userList,
-                messages = messageList
+                messages = messageList,
+                GroupName = groupName
             };
 
             return View(viewModel);

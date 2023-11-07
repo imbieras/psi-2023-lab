@@ -112,13 +112,8 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     var message = document.getElementById("messageInput").value;
     document.getElementById("messageInput").value = "";
 
-    // Sort user IDs to ensure consistent group names regardless of user roles
-    var userIds = [sender, receiver];
-    userIds.sort();
-
-    var groupName = `${userIds[0]}-${userIds[1]}`;
-
-    console.log("groupName:" + groupName);
+    var groupName = document.getElementById("groupName").value;
+    console.log("groupName: " + groupName);
     console.log("message:" + message);
     connection.invoke("SendMessageToGroup", groupName, message).catch(function (err) {
         return console.error(err.toString());
@@ -126,4 +121,5 @@ document.getElementById("sendButton").addEventListener("click", function (event)
 
     event.preventDefault();
 });
+
 
