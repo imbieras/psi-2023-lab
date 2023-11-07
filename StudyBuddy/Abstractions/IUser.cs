@@ -11,7 +11,6 @@ public interface IUser
 
     UserFlags Flags { get; }
 
-    List<int> UsedIndexes { get; set; }
-
     UserTraits Traits { get; set; }
+    public List<string>? Hobbies { get; set; }
 }

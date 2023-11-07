@@ -1,17 +1,17 @@
-﻿@using StudyBuddy.Managers.UserManager
+﻿@using StudyBuddy.Abstractions
 @using StudyBuddy.Services.UserService
-@using StudyBuddy.Abstractions
-@inject IUserManager UserManager
+@using StudyBuddy.Services.UserSessionService
 @inject IUserService UserService
+@inject IUserSessionService UserSessionService
 
 @{
     ViewData["Title"] = "Home Page";
-    var currentUserId = UserService.GetCurrentUserId();
+    var currentUserId = UserSessionService.GetCurrentUserId();
     IUser? user = null;
 
     if (currentUserId != null)
     {
-        user = UserManager.GetUserById(currentUserId.Value);
+        user = await UserService.GetUserByIdAsync(currentUserId.Value);
     }
 }
 
