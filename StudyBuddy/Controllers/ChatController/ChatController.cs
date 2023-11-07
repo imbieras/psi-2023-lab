@@ -59,8 +59,15 @@ namespace StudyBuddy.Controllers.ChatController
 
             foreach (var match in matches)
             {
+                if (match.User1Id == currentUser.Id)
+                {
+                    userList.Add(await _userService.GetUserByIdAsync(match.User2Id));
+                }
+                else
+                {
 
-                userList.Add(await _userService.GetUserByIdAsync(match.User2Id));
+                    userList.Add(await _userService.GetUserByIdAsync(match.User1Id));
+                }
 
             }
 
