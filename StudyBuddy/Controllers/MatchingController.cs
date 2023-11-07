@@ -89,7 +89,7 @@ public class MatchingController : Controller
                 break;
             }
 
-            if (!(await _userService.IsUserSeenAsync(currentUser.Id, randomUser.Id)))
+            if (!await _userService.IsUserSeenAsync(currentUser.Id, randomUser.Id))
             {
                 break;
             }
