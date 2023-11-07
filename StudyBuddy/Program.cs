@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Controllers.ChatController;
 using StudyBuddy.Hubs;
 using StudyBuddy.Services;
+using StudyBuddy.Services.UserSessionService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,14 @@ builder.Services.AddScoped<IMatchRequestRepository, MatchRequestRepository>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserSessionService, UserSessionService>();
+builder.Services.AddScoped<IMatchingService, MatchingService>();
 builder.Services.AddSingleton<MessageService>();
+
+// Registering implementations for DI
+builder.Services.AddScoped<FileManager>();
+builder.Services.AddDbContext<StudyBuddyDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddMvc();
 builder.Services.AddSignalR();

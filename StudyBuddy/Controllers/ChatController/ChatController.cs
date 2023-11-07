@@ -2,15 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Data.Repositories;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 using StudyBuddy.Hubs;
 using StudyBuddy.Models;
 using StudyBuddy.Services;
-using StudyBuddy.Data.Repositories.MatchRepository;
-using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Services.UserSessionService;
+using StudyBuddy.Services.MatchingService;
 
 namespace StudyBuddy.Controllers.ChatController
 {
@@ -18,21 +16,19 @@ namespace StudyBuddy.Controllers.ChatController
     {
         private const string LoginPath = "~/Views/Profile/Login.cshtml";
         private readonly IHubContext<ChatHub> _hubContext;
-        private readonly IMatchRepository _matchRepository;
-        private readonly IUserRepository _userRepository;
         private readonly IUserService _userService;
         private readonly IUserSessionService _userSessionService;
+        private readonly IMatchingService _matchingService;
         private readonly MessageService _messageService;
 
-        public ChatController(IHubContext<ChatHub> hubContext, IUserRepository userRepository, IMatchRepository matchRepository, IUserService userService, MessageService messageService,
-            IUserSessionService userSessionService)
+        public ChatController(IHubContext<ChatHub> hubContext, IUserService userService, MessageService messageService,
+            IUserSessionService userSessionService, IMatchingService matchingService)
         {
             _hubContext = hubContext;
-            _userRepository = userRepository;
-            _matchRepository = matchRepository;
             _userService = userService;
             _messageService = messageService;
             _userSessionService = userSessionService;
+            _matchingService = matchingService;
 
         }
 
@@ -49,7 +45,7 @@ namespace StudyBuddy.Controllers.ChatController
 
             UserId parseUserId = UserId.From(userIdGuid);
 
-            IUser? currentUser = (IUser?)_userService.GetUserByIdAsync(parseUserId);
+            IUser? currentUser = await _userService.GetUserByIdAsync((UserId)currentUserId);
 
             if (currentUser == null)
             {
@@ -57,14 +53,14 @@ namespace StudyBuddy.Controllers.ChatController
             }
 
             //Show list of matched users
-            List<Match> matches = await _matchRepository.GetMatchHistoryByUserIdAsync((UserId)currentUserId);
+            List<Match> matches = (List<Match>)await _matchingService.GetMatchHistoryAsync((UserId)currentUserId);
 
             List<IUser> userList = new List<IUser>();
 
             foreach (var match in matches)
             {
-                
-                    userList.Add((IUser)_userRepository.GetByIdAsync(match.User2Id));
+
+                userList.Add(await _userService.GetUserByIdAsync(match.User2Id));
 
             }
 
@@ -90,7 +86,7 @@ namespace StudyBuddy.Controllers.ChatController
             }
 
             UserId parseUserId = UserId.From(userIdGuid);
-            IUser? currentUser = (IUser?)_userService.GetUserByIdAsync(parseUserId);
+            IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
 
             if (currentUser == null)
             {
@@ -104,7 +100,7 @@ namespace StudyBuddy.Controllers.ChatController
             }
 
             UserId parseOtherUserId = UserId.From(otherUserIdGuid);
-            IUser? otherUser = (IUser?)_userService.GetUserByIdAsync(parseOtherUserId);
+            IUser? otherUser = await _userService.GetUserByIdAsync(parseOtherUserId);
 
             if (otherUser == null)
             {
@@ -125,14 +121,14 @@ namespace StudyBuddy.Controllers.ChatController
 
 
             //Show list of matched users
-            List<Match> matches = await _matchRepository.GetMatchHistoryByUserIdAsync((UserId)currentUserId);
+            List<Match> matches = (List<Match>)await _matchingService.GetMatchHistoryAsync(currentUser.Id); //I wanna do this
 
             List<IUser> userList = new List<IUser>();
 
             foreach (var match in matches)
             {
 
-                userList.Add((IUser)_userRepository.GetByIdAsync(match.User2Id));
+                userList.Add(await _userService.GetUserByIdAsync(match.User2Id));
 
             }
             List<Message> messageList = _messageService.GetMessages(groupName);
