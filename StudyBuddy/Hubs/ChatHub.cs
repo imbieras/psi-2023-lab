@@ -57,9 +57,8 @@ public class ChatHub : Hub
 
         UserId.TryParse(httpContext.Request.Query["sender"], out UserId senderId);
 
-
-
-        //        IUser? sender = (IUser?)_userService.GetUserByIdAsync(senderId);
+        if (Guid.TryParse(groupName, out Guid parsedGroupName))
+            Console.WriteLine("PARRSSEEED: " + parsedGroupName);
 
         //ChatMessage chatMessage = new ChatMessage(message, DateTime.Now, senderId, groupName);
         Message sentMessage = new Message();

@@ -121,14 +121,21 @@ namespace StudyBuddy.Controllers.ChatController
 
 
             //Show list of matched users
-            List<Match> matches = (List<Match>)await _matchingService.GetMatchHistoryAsync(currentUser.Id); //I wanna do this
+            List<Match> matches = (List<Match>)await _matchingService.GetMatchHistoryAsync(currentUser.Id);
 
             List<IUser> userList = new List<IUser>();
 
             foreach (var match in matches)
             {
+                if (match.User1Id == currentUser.Id)
+                {
+                    userList.Add(await _userService.GetUserByIdAsync(match.User2Id));
+                }
+                else
+                {
 
-                userList.Add(await _userService.GetUserByIdAsync(match.User2Id));
+                    userList.Add(await _userService.GetUserByIdAsync(match.User1Id));
+                }
 
             }
             List<Message> messageList = _messageService.GetMessages(groupName);
