@@ -37,13 +37,23 @@ public class ChatHub : Hub
             // Sort user IDs to ensure consistent group names regardless of user roles
             var userIds = new List<string> { sender, receiver };
             userIds.Sort();
+            string sortedGroupName = $"{userIds[0]}-{userIds[1]}";
 
-            string groupName = $"{userIds[0]}-{userIds[1]}";
+            Guid groupName;
 
-            Console.WriteLine("\nAdding user to group: " + groupName);
+            if (Guid.TryParse(sortedGroupName, out groupName))
+            {
+                Console.WriteLine("\nAdding user to group: " + groupName);
+            }
+            else
+            {
+                
+            }
+
+           
 
             // Add the current connection to the conversation group
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName.ToString());
         }
 
         Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " + receiver);
@@ -51,24 +61,25 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
 
-    public Task SendMessageToGroup(string groupName, string message)
+    public Task SendMessageToGroup(Guid groupName, string message)
     {
         HttpContext httpContext = Context.GetHttpContext();
 
         UserId.TryParse(httpContext.Request.Query["sender"], out UserId senderId);
 
 
-        IUser sender = _userRepository.GetByIdAsync(senderId);
+        IUser sender = (IUser)_userRepository.GetByIdAsync(senderId);
 
+        ChatMessage chatMessage = new ChatMessage(message,DateTime.Now,senderId,groupName);
         Message sentMessage = new Message();
         sentMessage.SenderId = senderId;
         sentMessage.Text = message;
         sentMessage.Time = DateTime.UtcNow;
 
-        _messageService.AddMessage(groupName, sentMessage);
+        _messageService.AddMessage(groupName.ToString(), sentMessage);
 
         // Broadcast the message to the conversation group
-        return Clients.Group(groupName).SendAsync("ReceiveMessage", sender.Id, message);
+        return Clients.Group(groupName.ToString()).SendAsync("ReceiveMessage", sender.Id, message);
     }
 
 
