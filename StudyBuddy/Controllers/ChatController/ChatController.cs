@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Data.Repositories;
@@ -36,7 +37,7 @@ namespace StudyBuddy.Controllers.ChatController
         }
 
 
-        public IActionResult Chat()
+        public async Task<IActionResult> ChatAsync()
         {
 
             UserId? currentUserId = _userSessionService.GetCurrentUserId();
@@ -56,15 +57,14 @@ namespace StudyBuddy.Controllers.ChatController
             }
 
             //Show list of matched users
-            List<IUser> matches = new List<IUser>();
-            List<IUser> userList = _userManager.GetAllUsers();
+            List<Match> matches = await _matchRepository.GetMatchHistoryByUserIdAsync((UserId)currentUserId);
 
-            foreach (var user in userList)
+            List<IUser> userList = new List<IUser>();
+
+            foreach (var match in matches)
             {
-                if (_matchingManager.IsMatched(currentUser.Id, user.Id))
-                {
-                    matches.Add(user);
-                }
+                
+                    userList.Add((IUser)_userRepository.GetByIdAsync(match.User2Id));
 
             }
 
@@ -72,17 +72,17 @@ namespace StudyBuddy.Controllers.ChatController
             var viewModel = new ChatViewModel
             {
                 CurrentUser = currentUser,
-                Matches = matches
+                Matches = userList
             };
 
 
             return View(viewModel);
         }
 
-        public IActionResult ChatWithUser(string otherUserId)
+        public async Task<IActionResult> ChatWithUserAsync(string otherUserId)
         {
             // Retrieve the current user
-            UserId? currentUserId = _userService.GetCurrentUserId();
+            UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
             if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
             {
@@ -90,7 +90,7 @@ namespace StudyBuddy.Controllers.ChatController
             }
 
             UserId parseUserId = UserId.From(userIdGuid);
-            IUser? currentUser = _userManager.GetUserById(parseUserId);
+            IUser? currentUser = (IUser?)_userService.GetUserByIdAsync(parseUserId);
 
             if (currentUser == null)
             {
@@ -104,7 +104,7 @@ namespace StudyBuddy.Controllers.ChatController
             }
 
             UserId parseOtherUserId = UserId.From(otherUserIdGuid);
-            IUser? otherUser = _userManager.GetUserById(parseOtherUserId);
+            IUser? otherUser = (IUser?)_userService.GetUserByIdAsync(parseOtherUserId);
 
             if (otherUser == null)
             {
@@ -125,25 +125,24 @@ namespace StudyBuddy.Controllers.ChatController
 
 
             //Show list of matched users
-            List<IUser> matches = new List<IUser>();
-            List<IUser> userList = _userManager.GetAllUsers();
-            List<Message> messageList = _messageService.GetMessages(groupName);
+            List<Match> matches = await _matchRepository.GetMatchHistoryByUserIdAsync((UserId)currentUserId);
 
-            foreach (var user in userList)
+            List<IUser> userList = new List<IUser>();
+
+            foreach (var match in matches)
             {
-                if (_matchingManager.IsMatched(currentUser.Id, user.Id))
-                {
-                    matches.Add(user);
-                }
+
+                userList.Add((IUser)_userRepository.GetByIdAsync(match.User2Id));
 
             }
+            List<Message> messageList = _messageService.GetMessages(groupName);
 
             // Pass both the current user and the other user to the view
             var viewModel = new ChatViewModel
             {
                 CurrentUser = currentUser,
                 OtherUser = otherUser,
-                Matches = matches,
+                Matches = userList,
                 messages = messageList
             };
 
