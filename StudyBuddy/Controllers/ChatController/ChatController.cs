@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Managers.MatchingManager;
-using StudyBuddy.Managers.UserManager;
+using StudyBuddy.Data.Repositories;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 using StudyBuddy.Hubs;
 using StudyBuddy.Models;
 using StudyBuddy.Services;
+using StudyBuddy.Data.Repositories.MatchRepository;
+using StudyBuddy.Data.Repositories.UserRepository;
+using StudyBuddy.Services.UserSessionService;
 
 namespace StudyBuddy.Controllers.ChatController
 {
@@ -15,18 +17,21 @@ namespace StudyBuddy.Controllers.ChatController
     {
         private const string LoginPath = "~/Views/Profile/Login.cshtml";
         private readonly IHubContext<ChatHub> _hubContext;
-        private readonly IMatchingManager _matchingManager;
-        private readonly IUserManager _userManager;
+        private readonly IMatchRepository _matchRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IUserService _userService;
+        private readonly IUserSessionService _userSessionService;
         private readonly MessageService _messageService;
 
-        public ChatController(IHubContext<ChatHub> hubContext, IUserManager userManager, IMatchingManager matchingManager, IUserService userService, MessageService messageService)
+        public ChatController(IHubContext<ChatHub> hubContext, IUserRepository userRepository, IMatchRepository matchRepository, IUserService userService, MessageService messageService,
+            IUserSessionService userSessionService)
         {
             _hubContext = hubContext;
-            _userManager = userManager;
-            _matchingManager = matchingManager;
+            _userRepository = userRepository;
+            _matchRepository = matchRepository;
             _userService = userService;
             _messageService = messageService;
+            _userSessionService = userSessionService;
 
         }
 
@@ -34,7 +39,7 @@ namespace StudyBuddy.Controllers.ChatController
         public IActionResult Chat()
         {
 
-            UserId? currentUserId = _userService.GetCurrentUserId();
+            UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
             if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
             {
@@ -43,7 +48,7 @@ namespace StudyBuddy.Controllers.ChatController
 
             UserId parseUserId = UserId.From(userIdGuid);
 
-            IUser? currentUser = _userManager.GetUserById(parseUserId);
+            IUser? currentUser = (IUser?)_userService.GetUserByIdAsync(parseUserId);
 
             if (currentUser == null)
             {

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Managers.UserManager;
+using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Models;
 using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
@@ -13,14 +13,14 @@ namespace StudyBuddy.Hubs;
 public class ChatHub : Hub
 {
 
-    private readonly IUserManager _userManager;
+    private readonly IUserRepository _userRepository;
     private readonly IUserService _userService;
     private readonly MessageService _messageService;
 
 
-    public ChatHub(IUserManager userManager, IUserService userService, MessageService messageService)
+    public ChatHub(IUserRepository userRepository, IUserService userService, MessageService messageService)
     {
-        _userManager = userManager;
+        _userRepository = userRepository;
         _userService = userService;
         _messageService = messageService;
     }
@@ -58,7 +58,7 @@ public class ChatHub : Hub
         UserId.TryParse(httpContext.Request.Query["sender"], out UserId senderId);
 
 
-        IUser sender = _userManager.GetUserById(senderId);
+        IUser sender = _userRepository.GetByIdAsync(senderId);
 
         Message sentMessage = new Message();
         sentMessage.SenderId = senderId;
