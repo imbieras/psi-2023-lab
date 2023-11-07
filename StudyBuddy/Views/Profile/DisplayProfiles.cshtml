@@ -1,7 +1,7 @@
 @model List<StudyBuddy.Abstractions.IUser>
 @using StudyBuddy.Extensions
-@using StudyBuddy.Managers.MatchingManager
-@inject IMatchingManager MatchingManager
+@using StudyBuddy.Services.MatchingService
+@inject IMatchingService MatchingService
 
 @{
     ViewBag.Title = "Explore page";
@@ -66,8 +66,8 @@
 
         if (ViewBag.CurrentUserId != null)
         {
-            isRequestedMatch = MatchingManager.IsRequestedMatch(ViewBag.CurrentUserId, user.Id);
-            isMatched = MatchingManager.IsMatched(ViewBag.CurrentUserId, user.Id);
+            isRequestedMatch = await MatchingService.IsRequestedMatchAsync(ViewBag.CurrentUserId, user.Id);
+            isMatched = await MatchingService.IsMatchedAsync(ViewBag.CurrentUserId, user.Id);
         }
 
         <div class="row justify-content-center mt-4">

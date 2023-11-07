@@ -2,7 +2,7 @@ using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Models;
 
-public struct UserTraits
+public class UserTraits
 {
     public DateTime Birthdate { get; set; }
 
@@ -12,16 +12,18 @@ public struct UserTraits
 
     public string Description { get; set; }
 
-    public List<string> Hobbies { get; set; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
 
-    public Coordinates Location { get; set; }
+    public UserTraits()
+    {
+    } // Parameterless constructor for EF
 
     public UserTraits(
         DateTime birthdate,
         string subject,
         string avatarPath,
         string description,
-        List<string> hobbies,
         Coordinates location
     )
     {
@@ -29,7 +31,7 @@ public struct UserTraits
         Subject = subject;
         AvatarPath = avatarPath;
         Description = description;
-        Hobbies = hobbies;
-        Location = location;
+        Latitude = location.Value.Item1;
+        Longitude = location.Value.Item2;
     }
 }

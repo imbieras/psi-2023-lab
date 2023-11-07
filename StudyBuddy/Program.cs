@@ -1,8 +1,13 @@
+using StudyBuddy.Data;
+using Microsoft.EntityFrameworkCore;
+using StudyBuddy.Data.Repositories;
+using StudyBuddy.Data.Repositories.MatchRepository;
+using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Managers.FileManager;
-using StudyBuddy.Managers.MatchingManager;
-using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Middlewares;
+using StudyBuddy.Services.MatchingService;
 using StudyBuddy.Services.UserService;
+using StudyBuddy.Services.UserSessionService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +18,20 @@ if (builder.Environment.IsDevelopment())
     mvcBuilder.AddRazorRuntimeCompilation();
 }
 
-// Registering implementations for DI
-builder.Services.AddSingleton<IUserManager, UserManager>();
-builder.Services.AddSingleton<IMatchingManager, MatchingManager>();
-builder.Services.AddSingleton<FileManager>();
+// Register repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IMatchRepository, MatchRepository>();
+builder.Services.AddScoped<IMatchRequestRepository, MatchRequestRepository>();
+
+// Register services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserSessionService, UserSessionService>();
+builder.Services.AddScoped<IMatchingService, MatchingService>();
+
+// Registering implementations for DI
+builder.Services.AddScoped<FileManager>();
+builder.Services.AddDbContext<StudyBuddyDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Registering <AuthenticationMiddleware> with its implementation for DI
 builder.Services.AddHttpContextAccessor();
@@ -51,7 +65,7 @@ app.MapControllerRoute(
 
 
 // Retrieve the FileManager singleton and execute LoadUsersFromCsv
-FileManager fileManager = app.Services.GetRequiredService<FileManager>();
-fileManager.LoadUsersFromCsv("test.csv");
+// FileManager fileManager = app.Services.GetRequiredService<FileManager>();
+// fileManager.LoadUsersFromCsv("test.csv");
 
 app.Run();

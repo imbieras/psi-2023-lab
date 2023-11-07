@@ -1,33 +1,33 @@
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Managers.UserManager;
 using StudyBuddy.Models;
 using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
+using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Controllers.ProfileController;
 
 public class ProfileController : Controller
 {
-    private readonly IUserManager _userManager;
+    private readonly IUserSessionService _userSessionService;
     private readonly IUserService _userService;
 
-    public ProfileController(IUserManager userManager, IUserService userService)
+    public ProfileController(IUserService userService, IUserSessionService userSessionService)
     {
-        _userManager = userManager;
         _userService = userService;
+        _userSessionService = userSessionService;
     }
 
-    public IActionResult DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
+    public async Task<IActionResult> DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
     {
         try
         {
             // Get the current user's ID from UserService if not null, otherwise use a default value
-            UserId? currentUserId = _userService.GetCurrentUserId();
+            UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
-            List<IUser> userList = _userManager.GetAllUsers();
+            List<IUser> userList = (await _userService.GetAllUsersAsync()).ToList();
 
             // Pass the current user's ID to the view
             if (currentUserId != null)
@@ -47,12 +47,9 @@ public class ProfileController : Controller
                 filterModel.EndYear = DateTime.Now.Year;
             }
 
-            if (filterModel.StartYear != 0 && filterModel.EndYear != 0)
-            {
-                userList = GenericFilterService<IUser>.FilterByPredicate(userList,
-                u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
-                     u.Traits.Birthdate.Year <= filterModel.EndYear);
-            }
+            userList = GenericFilterService<IUser>.FilterByPredicate(userList,
+            u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
+                 u.Traits.Birthdate.Year <= filterModel.EndYear);
 
             // Subject filter
             if (!string.IsNullOrEmpty(filterModel.Subject))
@@ -73,18 +70,16 @@ public class ProfileController : Controller
     }
 
 
-    public IActionResult UserProfile(string id)
+    public async Task<IActionResult> UserProfile(string id)
     {
         if (Guid.TryParse(id, out Guid parsedGuid))
         {
             UserId parseUserId = UserId.From(parsedGuid);
 
-            IUser? user = _userManager.GetUserById(parseUserId);
+            IUser? user = await _userService.GetUserByIdAsync(parseUserId);
+            user.Hobbies = await _userService.GetHobbiesById(parseUserId);
 
-            if (user != null)
-            {
-                return View("ViewFullProfile", user);
-            }
+            return View("ViewFullProfile", user);
         }
 
         ErrorViewModel errorModel = new() { ErrorMessage = "User not found or invalid ID." };
@@ -94,7 +89,7 @@ public class ProfileController : Controller
     public IActionResult CreateProfile() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SaveProfile(ProfileDto profileDTO)
+    public async Task<IActionResult> SaveProfile(ProfileDto profileDto)
     {
         const UserFlags flags = UserFlags.Registered;
 
@@ -102,7 +97,7 @@ public class ProfileController : Controller
         {
             string avatarPath = string.Empty;
 
-            if (profileDTO.Avatar is { Length: > 0 })
+            if (profileDto.Avatar is { Length: > 0 })
             {
                 string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
 
@@ -112,45 +107,38 @@ public class ProfileController : Controller
                     Directory.CreateDirectory(uploadsFolder);
                 }
 
-                string uniqueFileName = Guid.NewGuid() + "_" + profileDTO.Avatar.FileName;
+                string uniqueFileName = Guid.NewGuid() + "_" + profileDto.Avatar.FileName;
 
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                 await using FileStream fileStream = new(filePath, FileMode.Create);
-                await profileDTO.Avatar.CopyToAsync(fileStream);
+                await profileDto.Avatar.CopyToAsync(fileStream);
 
                 avatarPath = uniqueFileName;
             }
 
             string htmlContent = string.Empty;
-            if (profileDTO.MarkdownContent != null)
+            if (profileDto.MarkdownContent != null)
             {
                 // Convert Markdown to HTML
-                htmlContent = Markdown.ToHtml(profileDTO.MarkdownContent);
-            }
-
-            Coordinates? location = null;
-            if (double.TryParse(profileDTO.Longitude, out double parsedLongitude) &&
-                double.TryParse(profileDTO.Latitude, out double parsedLatitude))
-            {
-                location = Coordinates.From((parsedLongitude, parsedLatitude));
+                htmlContent = Markdown.ToHtml(profileDto.MarkdownContent);
             }
 
             UserTraits traits = new()
             {
-                Birthdate = DateTime.Parse(profileDTO.Birthdate),
-                Subject = profileDTO.Subject,
+                Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
+                Subject = profileDto.Subject,
                 AvatarPath = avatarPath,
-                Description = htmlContent,
-                Hobbies = profileDTO.Hobbies
+                Description = htmlContent
             };
 
-            if (location != null)
+            if (double.TryParse(profileDto.Longitude, out double parsedLongitude) && double.TryParse(profileDto.Latitude, out double parsedLatitude))
             {
-                traits.Location = location.Value;
+                traits.Longitude = parsedLongitude;
+                traits.Latitude = parsedLatitude;
             }
 
-            _userManager.RegisterUser(profileDTO.Name, flags, traits);
+            await _userService.RegisterUserAsync(profileDto.Name, flags, traits, profileDto.Hobbies);
 
             TempData["SuccessMessage"] = "Profile created successfully";
 
@@ -163,11 +151,11 @@ public class ProfileController : Controller
         }
     }
 
-    public IActionResult Login(string? userId)
+    public async Task<IActionResult> Login(string? userId)
     {
-        UserId? currentUserId = _userService.GetCurrentUserId();
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
-        if (currentUserId != null && _userManager.GetUserById(currentUserId.Value) != null)
+        if (currentUserId != null && await _userService.GetUserByIdAsync(currentUserId.Value) != null)
         {
             return RedirectToAction("Index", "Home");
         }
@@ -185,7 +173,7 @@ public class ProfileController : Controller
 
         UserId parseUserId = UserId.From(userIdGuid);
 
-        IUser? user = _userManager.GetUserById(parseUserId);
+        IUser? user = await _userService.GetUserByIdAsync(parseUserId);
 
         if (user == null)
         {
