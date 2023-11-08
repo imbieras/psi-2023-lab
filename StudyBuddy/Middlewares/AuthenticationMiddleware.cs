@@ -20,7 +20,8 @@ public class AuthenticationMiddleware
             context.Response.Cookies.Delete("UserId");
         }
 
-        if (userSessionService.GetCurrentUserId() == null && await userService.GetUserByIdAsync(UserId.From(userIdGuid)) != null)
+        if (userSessionService.GetCurrentUserId() == null &&
+            await userService.GetUserByIdAsync(UserId.From(userIdGuid)) != null)
         {
             // Set the current user if it's not already set and the user exists
             userSessionService.SetCurrentUser(UserId.From(userIdGuid));

@@ -3,7 +3,7 @@ using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Data.Repositories.ChatRepository;
 
-public interface IMessageRepository
+public interface IChatRepository
 {
     Task<IEnumerable<ChatMessage>> GetMessagesByConversationAsync(Guid conversationId);
     Task<IEnumerable<ChatMessage>> GetMessagesByUserIdsAsync(UserId userId1, UserId userId2);

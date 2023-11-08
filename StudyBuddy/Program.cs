@@ -1,10 +1,12 @@
 using StudyBuddy.Data;
 using Microsoft.EntityFrameworkCore;
-using StudyBuddy.Data.Repositories;
-using StudyBuddy.Data.Repositories.MatchRepository;
-using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Middlewares;
+using StudyBuddy.Hubs;
+using StudyBuddy.Data.Repositories.MatchRepository;
+using StudyBuddy.Data.Repositories.UserRepository;
+using StudyBuddy.Data.Repositories.ChatRepository;
+using StudyBuddy.Services.ChatService;
 using StudyBuddy.Services.MatchingService;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
@@ -22,16 +24,20 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 builder.Services.AddScoped<IMatchRequestRepository, MatchRequestRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 builder.Services.AddScoped<IMatchingService, MatchingService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 // Registering implementations for DI
 builder.Services.AddScoped<FileManager>();
 builder.Services.AddDbContext<StudyBuddyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddMvc();
+builder.Services.AddSignalR();
 
 // Registering <AuthenticationMiddleware> with its implementation for DI
 builder.Services.AddHttpContextAccessor();
@@ -52,16 +58,21 @@ if (!app.Environment.IsDevelopment())
 // Add middleware to the HTTP request pipeline.
 app.UseMiddleware<AuthenticationMiddleware>();
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseWebSockets(); // for SignalR
 
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseEndpoints(endpoints => { endpoints.MapHub<ChatHub>("/chat"); });
+
+
 app.MapControllerRoute(
-"default",
-"{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
 
 // Retrieve the FileManager singleton and execute LoadUsersFromCsv

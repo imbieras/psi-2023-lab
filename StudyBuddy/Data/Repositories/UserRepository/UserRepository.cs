@@ -59,10 +59,8 @@ public class UserRepository : IUserRepository
         return Task.CompletedTask;
     }
 
-    public Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId)
-    {
-        return _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId && u.SeenUserId == otherUserId);
-    }
+    public Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId) =>
+        _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId && u.SeenUserId == otherUserId);
 
     public async Task UserSeenAsync(UserId userId, UserId otherUserId)
     {
@@ -70,29 +68,23 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
-    public Task<bool> IsUserNotSeenAnyUserAsync(UserId userId)
-    {
-        return _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
-    }
+    public Task<bool> IsUserNotSeenAnyUserAsync(UserId userId) =>
+        _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
 
-    public Task<UserId> GetUltimateSeenUserAsync(UserId userId)
-    {
-        return _context.UserSeenProfiles
+    public Task<UserId> GetUltimateSeenUserAsync(UserId userId) =>
+        _context.UserSeenProfiles
             .Where(u => u.UserId == userId)
             .OrderByDescending(u => u.Timestamp)
             .Select(u => u.SeenUserId)
             .FirstOrDefaultAsync();
-    }
 
-    public Task<UserId> GetPenultimateSeenUserAsync(UserId userId)
-    {
-        return _context.UserSeenProfiles
+    public Task<UserId> GetPenultimateSeenUserAsync(UserId userId) =>
+        _context.UserSeenProfiles
             .Where(u => u.UserId == userId)
             .OrderByDescending(u => u.Timestamp)
             .Select(u => u.SeenUserId)
             .Skip(1)
             .FirstOrDefaultAsync();
-    }
 
     public async Task AddAsync(User user)
     {

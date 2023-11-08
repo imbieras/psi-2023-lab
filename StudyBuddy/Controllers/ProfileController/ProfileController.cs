@@ -48,15 +48,15 @@ public class ProfileController : Controller
             }
 
             userList = GenericFilterService<IUser>.FilterByPredicate(userList,
-            u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
-                 u.Traits.Birthdate.Year <= filterModel.EndYear);
+                u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
+                     u.Traits.Birthdate.Year <= filterModel.EndYear);
 
             // Subject filter
             if (!string.IsNullOrEmpty(filterModel.Subject))
             {
                 // Input is assumed to be safe since it's coming from the model property
                 userList = GenericFilterService<IUser>.FilterByPredicate(userList,
-                u => u.Traits.Subject.Equals(filterModel.Subject));
+                    u => u.Traits.Subject.Equals(filterModel.Subject));
             }
 
             return View(userList);
@@ -65,7 +65,7 @@ public class ProfileController : Controller
         {
             // Log the exception
             ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
-            return View(new List<IUser>());// Provide an empty list
+            return View(new List<IUser>()); // Provide an empty list
         }
     }
 
@@ -132,7 +132,8 @@ public class ProfileController : Controller
                 Description = htmlContent
             };
 
-            if (double.TryParse(profileDto.Longitude, out double parsedLongitude) && double.TryParse(profileDto.Latitude, out double parsedLatitude))
+            if (double.TryParse(profileDto.Longitude, out double parsedLongitude) &&
+                double.TryParse(profileDto.Latitude, out double parsedLatitude))
             {
                 traits.Longitude = parsedLongitude;
                 traits.Latitude = parsedLatitude;

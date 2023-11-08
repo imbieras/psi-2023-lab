@@ -10,9 +10,11 @@ public class Conversation
 
     public Conversation(UserId user1Id, UserId user2Id)
     {
-        this.User1Id = user1Id;
-        this.User2Id = user2Id;
+        User1Id = user1Id;
+        User2Id = user2Id;
     }
 
-    public Conversation(){}
+    public Conversation()
+    {
+    }
 }

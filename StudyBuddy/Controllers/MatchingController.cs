@@ -14,7 +14,8 @@ public class MatchingController : Controller
     private readonly IUserService _userService;
     private readonly IUserSessionService _userSessionService;
 
-    public MatchingController(IUserService userService, IMatchingService matchingService, IUserSessionService userSessionService)
+    public MatchingController(IUserService userService, IMatchingService matchingService,
+        IUserSessionService userSessionService)
     {
         _userService = userService;
         _matchingService = matchingService;
@@ -28,6 +29,7 @@ public class MatchingController : Controller
         {
             return View(LoginPath);
         }
+
         UserId parseUserId = UserId.From(userIdGuid);
 
         IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
@@ -64,14 +66,15 @@ public class MatchingController : Controller
         IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
 
         ViewBag.ViewedFirstProfile =
-            currentUser != null && await _userService.IsUserNotSeenAnyUserAsync(currentUser.Id);// For 'Go back!' button
+            currentUser != null &&
+            await _userService.IsUserNotSeenAnyUserAsync(currentUser.Id); // For 'Go back!' button
 
         if (currentUser == null)
         {
             return View(LoginPath);
         }
 
-        IUser? randomUser = null;
+        IUser? randomUser;
         int counter = 0;
 
         int totalUserCount = (await _userService.GetAllUsersAsync()).Count();
@@ -91,6 +94,7 @@ public class MatchingController : Controller
 
             if (!await _userService.IsUserSeenAsync(currentUser.Id, randomUser.Id))
             {
+                randomUser = null;
                 break;
             }
         }
