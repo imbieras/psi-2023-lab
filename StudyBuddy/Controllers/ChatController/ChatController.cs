@@ -137,35 +137,29 @@ namespace StudyBuddy.Controllers.ChatController
             //Show list of matched users
             List<Match> matches = (List<Match>)await _matchingService.GetMatchHistoryAsync(currentUser.Id);
 
-            List<IUser> userList = new List<IUser>();
+            List<IUser> matchList = new List<IUser>();
 
             foreach (var match in matches)
             {
                 if (match.User1Id == currentUser.Id)
                 {
-                    userList.Add(await _userService.GetUserByIdAsync(match.User2Id));
+                    matchList.Add(await _userService.GetUserByIdAsync(match.User2Id));
                 }
                 else
                 {
 
-                    userList.Add(await _userService.GetUserByIdAsync(match.User1Id));
+                    matchList.Add(await _userService.GetUserByIdAsync(match.User1Id));
                 }
 
             }
             List<ChatMessage> messageList = (List<ChatMessage>)await _chatService.GetMessagesByConversationAsync(groupName);
-            Console.Out.WriteLine("\n\n" + messageList.Count());
-            foreach (var message in messageList)
-            {
-                await Console.Out.WriteLineAsync("\n\nmessage");
-                await Console.Out.WriteLineAsync(message.Content);
-            }
 
             // Pass both the current user and the other user to the view
             var viewModel = new ChatViewModel
             {
                 CurrentUser = currentUser,
                 OtherUser = otherUser,
-                Matches = userList,
+                Matches = matchList,
                 messages = messageList,
                 GroupName = groupName
             };

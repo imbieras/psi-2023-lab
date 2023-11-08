@@ -35,7 +35,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 builder.Services.AddScoped<IMatchingService, MatchingService>();
 builder.Services.AddScoped<ChatService, ChatService>();
-builder.Services.AddSingleton<MessageService>();
+builder.Services.AddScoped<MessageService>();
+
 
 // Registering implementations for DI
 builder.Services.AddScoped<FileManager>();

@@ -93,15 +93,16 @@
                                 <!-- Messages will be added here using JavaScript -->
                                 @foreach (var message in Model.messages)
                                 {
-                                    <div class="d-flex @((message.SenderUserId == Model.CurrentUser.Id) ? "chat-message-left" : "chat-message-right") pb-4">
-                                        <div class="d-flex flex-shrink-1 @((message.SenderUserId == Model.CurrentUser.Id) ? "ms-3" : "me-3")">
+                                    bool isCurrentUser = (message.SenderUserId == Model.CurrentUser.Id);
+                                    <div class="d-flex @((isCurrentUser) ? "chat-message-left" : "chat-message-right") pb-4">
+                                        <div class="d-flex flex-shrink-1 @((isCurrentUser) ? "ms-3" : "me-3")">
                                             <div>
-                                                <img src="@((message.SenderUserId == Model.CurrentUser.Id) ? Model.CurrentUser.Traits.AvatarPath : Model.OtherUser.Traits.AvatarPath)"
-                                                     class="rounded-circle me-1" alt="@((message.SenderUserId == Model.CurrentUser.Id) ? Model.CurrentUser.Name : Model.OtherUser.Name)" width="40" height="40">
+                                                <img src="@((isCurrentUser) ? Model.CurrentUser.Traits.AvatarPath : Model.OtherUser.Traits.AvatarPath)"
+                                                     class="rounded-circle me-1" alt="@((isCurrentUser) ? Model.CurrentUser.Name : Model.OtherUser.Name)" width="40" height="40">
                                             </div>
                                         </div>
-                                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 @((message.SenderUserId == Model.CurrentUser.Id) ? "me-3" : "ms-3")">
-                                            <div class="fw-bold mb-1">@((message.SenderUserId == Model.CurrentUser.Id) ? "You" : Model.OtherUser.Name)</div>
+                                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 @((isCurrentUser) ? "me-3" : "ms-3")">
+                                            <div class="fw-bold mb-1">@((isCurrentUser) ? "You" : Model.OtherUser.Name)</div>
                                             <div>
                                                 @message.Content
                                             </div>

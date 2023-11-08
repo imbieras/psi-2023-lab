@@ -81,7 +81,7 @@ public class ChatHub : Hub
         UserId.TryParse(httpContext.Request.Query["sender"], out UserId senderId);
         UserId.TryParse(httpContext.Request.Query["receiver"], out UserId receiverId);
 
-        ChatMessage chatMessage = new ChatMessage(message, DateTime.UtcNow, senderId, groupName);
+        ChatMessage chatMessage = new ChatMessage(message, DateTime.UtcNow.AddHours(2), senderId, groupName);
 
         Console.WriteLine($"SENDING MESSAGE TO:{sender} TEXT:{message} GROUP NAME {groupName.ToString()}");
 
@@ -92,15 +92,6 @@ public class ChatHub : Hub
 
         // Broadcast the message to the conversation group
         await Clients.Group(groupName.ToString()).SendAsync("ReceiveMessage", sender, message);
-    }
-
-
-
-    public async Task SendMessage(string sender, string message)
-    {
-        // Broadcast the message to the sender's group
-        string groupForSender = $"user-{sender}";
-        await Clients.Group(groupForSender).SendAsync("ReceiveMessage", sender, message);
     }
 
 

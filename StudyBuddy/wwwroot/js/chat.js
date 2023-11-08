@@ -48,6 +48,7 @@ connection.on("ReceiveMessage", function (user, message) {
     messageContent.appendChild(textDiv);
     messageContainer.appendChild(messageContent);
     messageList.appendChild(messageContainer);
+    scrollToBottom();
 });
 
 // Function to wrap text at a specified character limit
@@ -67,25 +68,9 @@ function wrapText(text, limit) {
     return result + text;
 }
 
-function wrapText2(text, maxLineLength) {
-    var words = text.split(' ');
-    var lines = [];
-    var currentLine = '';
-
-    words.forEach(function (word) {
-        if ((currentLine + word).length <= maxLineLength) {
-            currentLine += (currentLine !== '' ? ' ' : '') + word;
-        } else {
-            lines.push(currentLine);
-            currentLine = word;
-        }
-    });
-
-    if (currentLine !== '') {
-        lines.push(currentLine);
-    }
-
-    return lines.join('\n');
+function scrollToBottom() {
+    var chatMessages = document.getElementById("messagesList");
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function getCurrentTime() {
