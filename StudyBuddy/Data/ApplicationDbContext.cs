@@ -101,7 +101,7 @@ public static class UserIdConverter
 
 public static class GuidConverter
 {
-    public static readonly ValueConverter<Guid, string> GuidToStringConverter= new(
-        v => v.ToString() ?? string.Empty,
+    public static readonly ValueConverter<Guid, string> GuidToStringConverter = new(
+        v => v.ToString(),
         v => Guid.Parse(v));
 }

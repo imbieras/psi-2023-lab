@@ -1,7 +1,7 @@
 "use strict";
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.HubConnectionBuilder = void 0;
 const DefaultReconnectPolicy_1 = require("./DefaultReconnectPolicy");
 const HttpConnection_1 = require("./HttpConnection");
@@ -21,6 +21,7 @@ const LogLevelNameMapping = {
     critical: ILogger_1.LogLevel.Critical,
     none: ILogger_1.LogLevel.None,
 };
+
 function parseLogLevel(name) {
     // Case-insensitive matching via lower-casing
     // Yes, I know case-folding is a complicated problem in Unicode, but we only support
@@ -28,27 +29,26 @@ function parseLogLevel(name) {
     const mapping = LogLevelNameMapping[name.toLowerCase()];
     if (typeof mapping !== "undefined") {
         return mapping;
-    }
-    else {
+    } else {
         throw new Error(`Unknown log level: ${name}`);
     }
 }
+
 /** A builder for configuring {@link @microsoft/signalr.HubConnection} instances. */
 class HubConnectionBuilder {
     configureLogging(logging) {
         Utils_1.Arg.isRequired(logging, "logging");
         if (isLogger(logging)) {
             this.logger = logging;
-        }
-        else if (typeof logging === "string") {
+        } else if (typeof logging === "string") {
             const logLevel = parseLogLevel(logging);
             this.logger = new Utils_1.ConsoleLogger(logLevel);
-        }
-        else {
+        } else {
             this.logger = new Utils_1.ConsoleLogger(logging);
         }
         return this;
     }
+
     withUrl(url, transportTypeOrOptions) {
         Utils_1.Arg.isRequired(url, "url");
         Utils_1.Arg.isNotEmpty(url, "url");
@@ -56,9 +56,8 @@ class HubConnectionBuilder {
         // Flow-typing knows where it's at. Since HttpTransportType is a number and IHttpConnectionOptions is guaranteed
         // to be an object, we know (as does TypeScript) this comparison is all we need to figure out which overload was called.
         if (typeof transportTypeOrOptions === "object") {
-            this.httpConnectionOptions = { ...this.httpConnectionOptions, ...transportTypeOrOptions };
-        }
-        else {
+            this.httpConnectionOptions = {...this.httpConnectionOptions, ...transportTypeOrOptions};
+        } else {
             this.httpConnectionOptions = {
                 ...this.httpConnectionOptions,
                 transport: transportTypeOrOptions,
@@ -66,6 +65,7 @@ class HubConnectionBuilder {
         }
         return this;
     }
+
     /** Configures the {@link @microsoft/signalr.HubConnection} to use the specified Hub Protocol.
      *
      * @param {IHubProtocol} protocol The {@link @microsoft/signalr.IHubProtocol} implementation to use.
@@ -75,21 +75,21 @@ class HubConnectionBuilder {
         this.protocol = protocol;
         return this;
     }
+
     withAutomaticReconnect(retryDelaysOrReconnectPolicy) {
         if (this.reconnectPolicy) {
             throw new Error("A reconnectPolicy has already been set.");
         }
         if (!retryDelaysOrReconnectPolicy) {
             this.reconnectPolicy = new DefaultReconnectPolicy_1.DefaultReconnectPolicy();
-        }
-        else if (Array.isArray(retryDelaysOrReconnectPolicy)) {
+        } else if (Array.isArray(retryDelaysOrReconnectPolicy)) {
             this.reconnectPolicy = new DefaultReconnectPolicy_1.DefaultReconnectPolicy(retryDelaysOrReconnectPolicy);
-        }
-        else {
+        } else {
             this.reconnectPolicy = retryDelaysOrReconnectPolicy;
         }
         return this;
     }
+
     /** Creates a {@link @microsoft/signalr.HubConnection} from the configuration options specified in this builder.
      *
      * @returns {HubConnection} The configured {@link @microsoft/signalr.HubConnection}.
@@ -111,8 +111,11 @@ class HubConnectionBuilder {
         return HubConnection_1.HubConnection.create(connection, this.logger || Loggers_1.NullLogger.instance, this.protocol || new JsonHubProtocol_1.JsonHubProtocol(), this.reconnectPolicy);
     }
 }
+
 exports.HubConnectionBuilder = HubConnectionBuilder;
+
 function isLogger(logger) {
     return logger.log !== undefined;
 }
+
 //# sourceMappingURL=HubConnectionBuilder.js.map

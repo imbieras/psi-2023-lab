@@ -1,7 +1,7 @@
 "use strict";
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.JsonHubProtocol = void 0;
 const IHubProtocol_1 = require("./IHubProtocol");
 const ILogger_1 = require("./ILogger");
@@ -9,6 +9,7 @@ const ITransport_1 = require("./ITransport");
 const Loggers_1 = require("./Loggers");
 const TextMessageFormat_1 = require("./TextMessageFormat");
 const JSON_HUB_PROTOCOL_NAME = "json";
+
 /** Implements the JSON Hub Protocol. */
 class JsonHubProtocol {
     constructor() {
@@ -19,6 +20,7 @@ class JsonHubProtocol {
         /** @inheritDoc */
         this.transferFormat = ITransport_1.TransferFormat.Text;
     }
+
     /** Creates an array of {@link @microsoft/signalr.HubMessage} objects from the specified serialized representation.
      *
      * @param {string} input A string containing the serialized representation.
@@ -68,6 +70,7 @@ class JsonHubProtocol {
         }
         return hubMessages;
     }
+
     /** Writes the specified {@link @microsoft/signalr.HubMessage} to a string and returns it.
      *
      * @param {HubMessage} message The message to write.
@@ -76,18 +79,21 @@ class JsonHubProtocol {
     writeMessage(message) {
         return TextMessageFormat_1.TextMessageFormat.write(JSON.stringify(message));
     }
+
     _isInvocationMessage(message) {
         this._assertNotEmptyString(message.target, "Invalid payload for Invocation message.");
         if (message.invocationId !== undefined) {
             this._assertNotEmptyString(message.invocationId, "Invalid payload for Invocation message.");
         }
     }
+
     _isStreamItemMessage(message) {
         this._assertNotEmptyString(message.invocationId, "Invalid payload for StreamItem message.");
         if (message.item === undefined) {
             throw new Error("Invalid payload for StreamItem message.");
         }
     }
+
     _isCompletionMessage(message) {
         if (message.result && message.error) {
             throw new Error("Invalid payload for Completion message.");
@@ -97,11 +103,13 @@ class JsonHubProtocol {
         }
         this._assertNotEmptyString(message.invocationId, "Invalid payload for Completion message.");
     }
+
     _assertNotEmptyString(value, errorMessage) {
         if (typeof value !== "string" || value === "") {
             throw new Error(errorMessage);
         }
     }
 }
+
 exports.JsonHubProtocol = JsonHubProtocol;
 //# sourceMappingURL=JsonHubProtocol.js.map

@@ -1,17 +1,25 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-import { AccessTokenHttpClient } from "./AccessTokenHttpClient";
-import { DefaultHttpClient } from "./DefaultHttpClient";
-import { AggregateErrors, DisabledTransportError, FailedToNegotiateWithServerError, FailedToStartTransportError, HttpError, UnsupportedTransportError, AbortError } from "./Errors";
-import { IConnection } from "./IConnection";
-import { IHttpConnectionOptions } from "./IHttpConnectionOptions";
-import { ILogger, LogLevel } from "./ILogger";
-import { HttpTransportType, ITransport, TransferFormat } from "./ITransport";
-import { LongPollingTransport } from "./LongPollingTransport";
-import { ServerSentEventsTransport } from "./ServerSentEventsTransport";
-import { Arg, createLogger, getUserAgentHeader, Platform } from "./Utils";
-import { WebSocketTransport } from "./WebSocketTransport";
+import {AccessTokenHttpClient} from "./AccessTokenHttpClient";
+import {DefaultHttpClient} from "./DefaultHttpClient";
+import {
+    AggregateErrors,
+    DisabledTransportError,
+    FailedToNegotiateWithServerError,
+    FailedToStartTransportError,
+    HttpError,
+    UnsupportedTransportError,
+    AbortError
+} from "./Errors";
+import {IConnection} from "./IConnection";
+import {IHttpConnectionOptions} from "./IHttpConnectionOptions";
+import {ILogger, LogLevel} from "./ILogger";
+import {HttpTransportType, ITransport, TransferFormat} from "./ITransport";
+import {LongPollingTransport} from "./LongPollingTransport";
+import {ServerSentEventsTransport} from "./ServerSentEventsTransport";
+import {Arg, createLogger, getUserAgentHeader, Platform} from "./Utils";
+import {WebSocketTransport} from "./WebSocketTransport";
 
 /** @private */
 const enum ConnectionState {
@@ -54,7 +62,8 @@ export class HttpConnection implements IConnection {
     private transport?: ITransport;
     private _startInternalPromise?: Promise<void>;
     private _stopPromise?: Promise<void>;
-    private _stopPromiseResolver: (value?: PromiseLike<void>) => void = () => {};
+    private _stopPromiseResolver: (value?: PromiseLike<void>) => void = () => {
+    };
     private _stopError?: Error;
     private _accessTokenFactory?: () => string | Promise<string>;
     private _sendQueue?: TransportSendQueue;
@@ -309,7 +318,7 @@ export class HttpConnection implements IConnection {
     }
 
     private async _getNegotiationResponse(url: string): Promise<INegotiateResponse> {
-        const headers: {[k: string]: string} = {};
+        const headers: { [k: string]: string } = {};
         const [name, value] = getUserAgentHeader();
         headers[name] = value;
 
@@ -318,7 +327,7 @@ export class HttpConnection implements IConnection {
         try {
             const response = await this._httpClient.post(negotiateUrl, {
                 content: "",
-                headers: { ...headers, ...this._options.headers },
+                headers: {...headers, ...this._options.headers},
                 timeout: this._options.timeout,
                 withCredentials: this._options.withCredentials,
             });
@@ -596,8 +605,8 @@ export class TransportSendQueue {
     }
 
     private _bufferData(data: string | ArrayBuffer): void {
-        if (this._buffer.length && typeof(this._buffer[0]) !== typeof(data)) {
-            throw new Error(`Expected data to be of type ${typeof(this._buffer)} but was of type ${typeof(data)}`);
+        if (this._buffer.length && typeof (this._buffer[0]) !== typeof (data)) {
+            throw new Error(`Expected data to be of type ${typeof (this._buffer)} but was of type ${typeof (data)}`);
         }
 
         this._buffer.push(data);
@@ -621,7 +630,7 @@ export class TransportSendQueue {
             const transportResult = this._transportResult!;
             this._transportResult = undefined;
 
-            const data = typeof(this._buffer[0]) === "string" ?
+            const data = typeof (this._buffer[0]) === "string" ?
                 this._buffer.join("") :
                 TransportSendQueue._concatBuffers(this._buffer);
 

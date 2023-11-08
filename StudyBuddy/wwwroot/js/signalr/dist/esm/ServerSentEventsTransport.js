@@ -1,8 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-import { LogLevel } from "./ILogger";
-import { TransferFormat } from "./ITransport";
-import { Arg, getDataDetail, getUserAgentHeader, Platform, sendMessage } from "./Utils";
+import {LogLevel} from "./ILogger";
+import {TransferFormat} from "./ITransport";
+import {Arg, getDataDetail, getUserAgentHeader, Platform, sendMessage} from "./Utils";
+
 /** @private */
 export class ServerSentEventsTransport {
     constructor(httpClient, accessToken, logger, options) {
@@ -13,6 +14,7 @@ export class ServerSentEventsTransport {
         this.onreceive = null;
         this.onclose = null;
     }
+
     async connect(url, transferFormat) {
         Arg.isRequired(url, "url");
         Arg.isRequired(transferFormat, "transferFormat");
@@ -31,16 +33,18 @@ export class ServerSentEventsTransport {
             }
             let eventSource;
             if (Platform.isBrowser || Platform.isWebWorker) {
-                eventSource = new this._options.EventSource(url, { withCredentials: this._options.withCredentials });
-            }
-            else {
+                eventSource = new this._options.EventSource(url, {withCredentials: this._options.withCredentials});
+            } else {
                 // Non-browser passes cookies via the dictionary
                 const cookies = this._httpClient.getCookieString(url);
                 const headers = {};
                 headers.Cookie = cookies;
                 const [name, value] = getUserAgentHeader();
                 headers[name] = value;
-                eventSource = new this._options.EventSource(url, { withCredentials: this._options.withCredentials, headers: { ...headers, ...this._options.headers } });
+                eventSource = new this._options.EventSource(url, {
+                    withCredentials: this._options.withCredentials,
+                    headers: {...headers, ...this._options.headers}
+                });
             }
             try {
                 eventSource.onmessage = (e) => {
@@ -48,8 +52,7 @@ export class ServerSentEventsTransport {
                         try {
                             this._logger.log(LogLevel.Trace, `(SSE transport) data received. ${getDataDetail(e.data, this._options.logMessageContent)}.`);
                             this.onreceive(e.data);
-                        }
-                        catch (error) {
+                        } catch (error) {
                             this._close(error);
                             return;
                         }
@@ -60,8 +63,7 @@ export class ServerSentEventsTransport {
                     // EventSource doesn't give any useful information about server side closes.
                     if (opened) {
                         this._close();
-                    }
-                    else {
+                    } else {
                         reject(new Error("EventSource failed to connect. The connection could not be found on the server,"
                             + " either the connection ID is not present on the server, or a proxy is refusing/buffering the connection."
                             + " If you have multiple servers check that sticky sessions are enabled."));
@@ -73,23 +75,25 @@ export class ServerSentEventsTransport {
                     opened = true;
                     resolve();
                 };
-            }
-            catch (e) {
+            } catch (e) {
                 reject(e);
                 return;
             }
         });
     }
+
     async send(data) {
         if (!this._eventSource) {
             return Promise.reject(new Error("Cannot send until the transport is connected"));
         }
         return sendMessage(this._logger, "SSE", this._httpClient, this._url, data, this._options);
     }
+
     stop() {
         this._close();
         return Promise.resolve();
     }
+
     _close(e) {
         if (this._eventSource) {
             this._eventSource.close();
@@ -100,4 +104,5 @@ export class ServerSentEventsTransport {
         }
     }
 }
+
 //# sourceMappingURL=ServerSentEventsTransport.js.map

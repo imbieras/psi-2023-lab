@@ -1,13 +1,14 @@
 "use strict";
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.LongPollingTransport = void 0;
 const AbortController_1 = require("./AbortController");
 const Errors_1 = require("./Errors");
 const ILogger_1 = require("./ILogger");
 const ITransport_1 = require("./ITransport");
 const Utils_1 = require("./Utils");
+
 // Not exported from 'index', this type is internal.
 /** @private */
 class LongPollingTransport {
@@ -20,10 +21,12 @@ class LongPollingTransport {
         this.onreceive = null;
         this.onclose = null;
     }
+
     // This is an internal type, not exported from 'index' so this is really just internal.
     get pollAborted() {
         return this._pollAbort.aborted;
     }
+
     async connect(url, transferFormat) {
         Utils_1.Arg.isRequired(url, "url");
         Utils_1.Arg.isRequired(transferFormat, "transferFormat");
@@ -36,7 +39,7 @@ class LongPollingTransport {
             throw new Error("Binary protocols over XmlHttpRequest not implementing advanced features are not supported.");
         }
         const [name, value] = Utils_1.getUserAgentHeader();
-        const headers = { [name]: value, ...this._options.headers };
+        const headers = {[name]: value, ...this._options.headers};
         const pollOptions = {
             abortSignal: this._pollAbort.signal,
             headers,
@@ -56,12 +59,12 @@ class LongPollingTransport {
             // Mark running as false so that the poll immediately ends and runs the close logic
             this._closeError = new Errors_1.HttpError(response.statusText || "", response.statusCode);
             this._running = false;
-        }
-        else {
+        } else {
             this._running = true;
         }
         this._receiving = this._poll(this._url, pollOptions);
     }
+
     async _poll(url, pollOptions) {
         try {
             while (this._running) {
@@ -72,38 +75,32 @@ class LongPollingTransport {
                     if (response.statusCode === 204) {
                         this._logger.log(ILogger_1.LogLevel.Information, "(LongPolling transport) Poll terminated by server.");
                         this._running = false;
-                    }
-                    else if (response.statusCode !== 200) {
+                    } else if (response.statusCode !== 200) {
                         this._logger.log(ILogger_1.LogLevel.Error, `(LongPolling transport) Unexpected response code: ${response.statusCode}.`);
                         // Unexpected status code
                         this._closeError = new Errors_1.HttpError(response.statusText || "", response.statusCode);
                         this._running = false;
-                    }
-                    else {
+                    } else {
                         // Process the response
                         if (response.content) {
                             this._logger.log(ILogger_1.LogLevel.Trace, `(LongPolling transport) data received. ${Utils_1.getDataDetail(response.content, this._options.logMessageContent)}.`);
                             if (this.onreceive) {
                                 this.onreceive(response.content);
                             }
-                        }
-                        else {
+                        } else {
                             // This is another way timeout manifest.
                             this._logger.log(ILogger_1.LogLevel.Trace, "(LongPolling transport) Poll timed out, reissuing.");
                         }
                     }
-                }
-                catch (e) {
+                } catch (e) {
                     if (!this._running) {
                         // Log but disregard errors that occur after stopping
                         this._logger.log(ILogger_1.LogLevel.Trace, `(LongPolling transport) Poll errored after shutdown: ${e.message}`);
-                    }
-                    else {
+                    } else {
                         if (e instanceof Errors_1.TimeoutError) {
                             // Ignore timeouts and reissue the poll.
                             this._logger.log(ILogger_1.LogLevel.Trace, "(LongPolling transport) Poll timed out, reissuing.");
-                        }
-                        else {
+                        } else {
                             // Close the connection with the error as the result.
                             this._closeError = e;
                             this._running = false;
@@ -111,8 +108,7 @@ class LongPollingTransport {
                     }
                 }
             }
-        }
-        finally {
+        } finally {
             this._logger.log(ILogger_1.LogLevel.Trace, "(LongPolling transport) Polling complete.");
             // We will reach here with pollAborted==false when the server returned a response causing the transport to stop.
             // If pollAborted==true then client initiated the stop and the stop method will raise the close event after DELETE is sent.
@@ -121,12 +117,14 @@ class LongPollingTransport {
             }
         }
     }
+
     async send(data) {
         if (!this._running) {
             return Promise.reject(new Error("Cannot send until the transport is connected"));
         }
         return Utils_1.sendMessage(this._logger, "LongPolling", this._httpClient, this._url, data, this._options);
     }
+
     async stop() {
         this._logger.log(ILogger_1.LogLevel.Trace, "(LongPolling transport) Stopping polling.");
         // Tell receiving loop to stop, abort any current request, and then wait for it to finish
@@ -140,20 +138,20 @@ class LongPollingTransport {
             const [name, value] = Utils_1.getUserAgentHeader();
             headers[name] = value;
             const deleteOptions = {
-                headers: { ...headers, ...this._options.headers },
+                headers: {...headers, ...this._options.headers},
                 timeout: this._options.timeout,
                 withCredentials: this._options.withCredentials,
             };
             await this._httpClient.delete(this._url, deleteOptions);
             this._logger.log(ILogger_1.LogLevel.Trace, "(LongPolling transport) DELETE request sent.");
-        }
-        finally {
+        } finally {
             this._logger.log(ILogger_1.LogLevel.Trace, "(LongPolling transport) Stop finished.");
             // Raise close event here instead of in polling
             // It needs to happen after the DELETE request is sent
             this._raiseOnClose();
         }
     }
+
     _raiseOnClose() {
         if (this.onclose) {
             let logMessage = "(LongPolling transport) Firing onclose event.";
@@ -165,5 +163,6 @@ class LongPollingTransport {
         }
     }
 }
+
 exports.LongPollingTransport = LongPollingTransport;
 //# sourceMappingURL=LongPollingTransport.js.map

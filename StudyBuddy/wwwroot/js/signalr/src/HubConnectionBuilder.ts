@@ -1,19 +1,19 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-import { DefaultReconnectPolicy } from "./DefaultReconnectPolicy";
-import { HttpConnection } from "./HttpConnection";
-import { HubConnection } from "./HubConnection";
-import { IHttpConnectionOptions } from "./IHttpConnectionOptions";
-import { IHubProtocol } from "./IHubProtocol";
-import { ILogger, LogLevel } from "./ILogger";
-import { IRetryPolicy } from "./IRetryPolicy";
-import { HttpTransportType } from "./ITransport";
-import { JsonHubProtocol } from "./JsonHubProtocol";
-import { NullLogger } from "./Loggers";
-import { Arg, ConsoleLogger } from "./Utils";
+import {DefaultReconnectPolicy} from "./DefaultReconnectPolicy";
+import {HttpConnection} from "./HttpConnection";
+import {HubConnection} from "./HubConnection";
+import {IHttpConnectionOptions} from "./IHttpConnectionOptions";
+import {IHubProtocol} from "./IHubProtocol";
+import {ILogger, LogLevel} from "./ILogger";
+import {IRetryPolicy} from "./IRetryPolicy";
+import {HttpTransportType} from "./ITransport";
+import {JsonHubProtocol} from "./JsonHubProtocol";
+import {NullLogger} from "./Loggers";
+import {Arg, ConsoleLogger} from "./Utils";
 
-const LogLevelNameMapping: {[k: string]: LogLevel} = {
+const LogLevelNameMapping: { [k: string]: LogLevel } = {
     trace: LogLevel.Trace,
     debug: LogLevel.Debug,
     info: LogLevel.Information,
@@ -128,7 +128,7 @@ export class HubConnectionBuilder {
         // Flow-typing knows where it's at. Since HttpTransportType is a number and IHttpConnectionOptions is guaranteed
         // to be an object, we know (as does TypeScript) this comparison is all we need to figure out which overload was called.
         if (typeof transportTypeOrOptions === "object") {
-            this.httpConnectionOptions = { ...this.httpConnectionOptions, ...transportTypeOrOptions };
+            this.httpConnectionOptions = {...this.httpConnectionOptions, ...transportTypeOrOptions};
         } else {
             this.httpConnectionOptions = {
                 ...this.httpConnectionOptions,

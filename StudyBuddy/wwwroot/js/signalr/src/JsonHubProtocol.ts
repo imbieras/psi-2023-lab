@@ -1,11 +1,18 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-import { CompletionMessage, HubMessage, IHubProtocol, InvocationMessage, MessageType, StreamItemMessage } from "./IHubProtocol";
-import { ILogger, LogLevel } from "./ILogger";
-import { TransferFormat } from "./ITransport";
-import { NullLogger } from "./Loggers";
-import { TextMessageFormat } from "./TextMessageFormat";
+import {
+    CompletionMessage,
+    HubMessage,
+    IHubProtocol,
+    InvocationMessage,
+    MessageType,
+    StreamItemMessage
+} from "./IHubProtocol";
+import {ILogger, LogLevel} from "./ILogger";
+import {TransferFormat} from "./ITransport";
+import {NullLogger} from "./Loggers";
+import {TextMessageFormat} from "./TextMessageFormat";
 
 const JSON_HUB_PROTOCOL_NAME: string = "json";
 

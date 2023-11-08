@@ -8,6 +8,7 @@ export class HttpResponse {
         this.content = content;
     }
 }
+
 /** Abstraction over an HTTP client.
  *
  * This class provides an abstraction over an HTTP client so that a different implementation can be provided on different platforms.
@@ -20,6 +21,7 @@ export class HttpClient {
             url,
         });
     }
+
     post(url, options) {
         return this.send({
             ...options,
@@ -27,6 +29,7 @@ export class HttpClient {
             url,
         });
     }
+
     delete(url, options) {
         return this.send({
             ...options,
@@ -34,6 +37,7 @@ export class HttpClient {
             url,
         });
     }
+
     /** Gets all cookies that apply to the specified URL.
      *
      * @param url The URL that the cookies are valid for.
@@ -44,4 +48,5 @@ export class HttpClient {
         return "";
     }
 }
+
 //# sourceMappingURL=HttpClient.js.map

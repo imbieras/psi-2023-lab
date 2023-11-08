@@ -1,15 +1,14 @@
 using StudyBuddy.Data;
 using Microsoft.EntityFrameworkCore;
-using StudyBuddy.Data.Repositories;
+using StudyBuddy.Managers.FileManager;
+using StudyBuddy.Middlewares;
+using StudyBuddy.Hubs;
 using StudyBuddy.Data.Repositories.MatchRepository;
 using StudyBuddy.Data.Repositories.UserRepository;
-using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Data.Repositories.ChatRepository;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.SignalR;
-using StudyBuddy.Controllers.ChatController;
-using StudyBuddy.Hubs;
-using StudyBuddy.Services;
+using StudyBuddy.Services.ChatService;
+using StudyBuddy.Services.MatchingService;
+using StudyBuddy.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -68,16 +67,12 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<ChatHub>("/chat");
-});
-
+app.UseEndpoints(endpoints => { endpoints.MapHub<ChatHub>("/chat"); });
 
 
 app.MapControllerRoute(
-"default",
-"{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
 
 // Retrieve the FileManager singleton and execute LoadUsersFromCsv

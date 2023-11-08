@@ -9,13 +9,9 @@ public class UserSeenProfile
         UserId = userId;
         SeenUserId = seenUserId;
         Timestamp = DateTime.UtcNow;
-
     }
 
-    public UserSeenProfile()
-    {
-        Timestamp = DateTime.UtcNow;
-    }
+    public UserSeenProfile() => Timestamp = DateTime.UtcNow;
 
     public DateTime Timestamp { get; set; }
     public UserId UserId { get; set; }

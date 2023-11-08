@@ -1,17 +1,18 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-import { HttpClient } from "./HttpClient";
-import { ILogger, LogLevel } from "./ILogger";
-import { NullLogger } from "./Loggers";
-import { IStreamSubscriber, ISubscription } from "./Stream";
-import { Subject } from "./Subject";
-import { IHttpConnectionOptions } from "./IHttpConnectionOptions";
+import {HttpClient} from "./HttpClient";
+import {ILogger, LogLevel} from "./ILogger";
+import {NullLogger} from "./Loggers";
+import {IStreamSubscriber, ISubscription} from "./Stream";
+import {Subject} from "./Subject";
+import {IHttpConnectionOptions} from "./IHttpConnectionOptions";
 
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR client. */
 
 export const VERSION: string = "0.0.0-DEV_BUILD";
+
 /** @private */
 export class Arg {
     public static isRequired(val: any, name: string): void {
@@ -19,6 +20,7 @@ export class Arg {
             throw new Error(`The '${name}' argument is required.`);
         }
     }
+
     public static isNotEmpty(val: string, name: string): void {
         if (!val || val.match(/^\s*$/)) {
             throw new Error(`The '${name}' argument should not be empty.`);
@@ -101,7 +103,7 @@ export function isArrayBuffer(val: any): val is ArrayBuffer {
 /** @private */
 export async function sendMessage(logger: ILogger, transportName: string, httpClient: HttpClient, url: string,
                                   content: string | ArrayBuffer, options: IHttpConnectionOptions): Promise<void> {
-    const headers: {[k: string]: string} = {};
+    const headers: { [k: string]: string } = {};
 
     const [name, value] = getUserAgentHeader();
     headers[name] = value;
@@ -111,7 +113,7 @@ export async function sendMessage(logger: ILogger, transportName: string, httpCl
     const responseType = isArrayBuffer(content) ? "arraybuffer" : "text";
     const response = await httpClient.post(url, {
         content,
-        headers: { ...headers, ...options.headers},
+        headers: {...headers, ...options.headers},
         responseType,
         timeout: options.timeout,
         withCredentials: options.withCredentials,
@@ -154,7 +156,8 @@ export class SubjectSubscription<T> implements ISubscription<T> {
         }
 
         if (this._subject.observers.length === 0 && this._subject.cancelCallback) {
-            this._subject.cancelCallback().catch((_) => { });
+            this._subject.cancelCallback().catch((_) => {
+            });
         }
     }
 }
@@ -205,7 +208,7 @@ export function getUserAgentHeader(): [string, string] {
     if (Platform.isNode) {
         userAgentHeaderName = "User-Agent";
     }
-    return [ userAgentHeaderName, constructUserAgent(VERSION, getOsName(), getRuntime(), getRuntimeVersion()) ];
+    return [userAgentHeaderName, constructUserAgent(VERSION, getOsName(), getRuntime(), getRuntimeVersion())];
 }
 
 /** @private */
@@ -236,7 +239,8 @@ export function constructUserAgent(version: string, os: string, runtime: string,
 }
 
 // eslint-disable-next-line spaced-comment
-/*#__PURE__*/ function getOsName(): string {
+/*#__PURE__*/
+function getOsName(): string {
     if (Platform.isNode) {
         switch (process.platform) {
             case "win32":
@@ -254,7 +258,8 @@ export function constructUserAgent(version: string, os: string, runtime: string,
 }
 
 // eslint-disable-next-line spaced-comment
-/*#__PURE__*/ function getRuntimeVersion(): string | undefined {
+/*#__PURE__*/
+function getRuntimeVersion(): string | undefined {
     if (Platform.isNode) {
         return process.versions.node;
     }

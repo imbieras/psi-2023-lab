@@ -18,21 +18,30 @@ yarn add @microsoft/signalr@next
 
 ## Usage
 
-See the [SignalR Documentation](https://docs.microsoft.com/aspnet/core/signalr) at docs.microsoft.com for documentation on the latest release. [API Reference Documentation](https://docs.microsoft.com/javascript/api/%40aspnet/signalr/?view=signalr-js-latest) is also available on docs.microsoft.com.
+See the [SignalR Documentation](https://docs.microsoft.com/aspnet/core/signalr) at docs.microsoft.com for documentation
+on the latest
+release. [API Reference Documentation](https://docs.microsoft.com/javascript/api/%40aspnet/signalr/?view=signalr-js-latest)
+is also available on docs.microsoft.com.
 
-For documentation on using this client with Azure SignalR Service and Azure Functions, see the [SignalR Service serverless developer guide](https://docs.microsoft.com/azure/azure-signalr/signalr-concept-serverless-development-config).
+For documentation on using this client with Azure SignalR Service and Azure Functions, see
+the [SignalR Service serverless developer guide](https://docs.microsoft.com/azure/azure-signalr/signalr-concept-serverless-development-config).
 
 ### Browser
 
-To use the client in a browser, copy `*.js` files from the `dist/browser` folder to your script folder include on your page using the `<script>` tag.
+To use the client in a browser, copy `*.js` files from the `dist/browser` folder to your script folder include on your
+page using the `<script>` tag.
 
 ### WebWorker
 
-To use the client in a webworker, copy `*.js` files from the `dist/webworker` folder to your script folder include on your webworker using the `importScripts` function. Note that webworker SignalR hub connection supports only absolute path to a SignalR hub.
+To use the client in a webworker, copy `*.js` files from the `dist/webworker` folder to your script folder include on
+your webworker using the `importScripts` function. Note that webworker SignalR hub connection supports only absolute
+path to a SignalR hub.
 
 ### Node.js
 
-To use the client in a NodeJS application, install the package to your `node_modules` folder and use `require('@microsoft/signalr')` to load the module. The object returned by `require('@microsoft/signalr')` has the same members as the global `signalR` object (when used in a browser).
+To use the client in a NodeJS application, install the package to your `node_modules` folder and
+use `require('@microsoft/signalr')` to load the module. The object returned by `require('@microsoft/signalr')` has the
+same members as the global `signalR` object (when used in a browser).
 
 ### Example (Browser)
 

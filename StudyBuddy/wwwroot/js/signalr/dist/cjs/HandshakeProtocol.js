@@ -1,16 +1,18 @@
 "use strict";
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.HandshakeProtocol = void 0;
 const TextMessageFormat_1 = require("./TextMessageFormat");
 const Utils_1 = require("./Utils");
+
 /** @private */
 class HandshakeProtocol {
     // Handshake request is always JSON
     writeHandshakeRequest(handshakeRequest) {
         return TextMessageFormat_1.TextMessageFormat.write(JSON.stringify(handshakeRequest));
     }
+
     parseHandshakeResponse(data) {
         let messageData;
         let remainingData;
@@ -26,8 +28,7 @@ class HandshakeProtocol {
             const responseLength = separatorIndex + 1;
             messageData = String.fromCharCode.apply(null, Array.prototype.slice.call(binaryData.slice(0, responseLength)));
             remainingData = (binaryData.byteLength > responseLength) ? binaryData.slice(responseLength).buffer : null;
-        }
-        else {
+        } else {
             const textData = data;
             const separatorIndex = textData.indexOf(TextMessageFormat_1.TextMessageFormat.RecordSeparator);
             if (separatorIndex === -1) {
@@ -51,5 +52,6 @@ class HandshakeProtocol {
         return [remainingData, responseMessage];
     }
 }
+
 exports.HandshakeProtocol = HandshakeProtocol;
 //# sourceMappingURL=HandshakeProtocol.js.map

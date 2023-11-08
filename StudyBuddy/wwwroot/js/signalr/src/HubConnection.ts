@@ -1,15 +1,23 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-import { HandshakeProtocol, HandshakeRequestMessage, HandshakeResponseMessage } from "./HandshakeProtocol";
-import { IConnection } from "./IConnection";
-import { AbortError } from "./Errors";
-import { CancelInvocationMessage, CompletionMessage, IHubProtocol, InvocationMessage, MessageType, StreamInvocationMessage, StreamItemMessage } from "./IHubProtocol";
-import { ILogger, LogLevel } from "./ILogger";
-import { IRetryPolicy } from "./IRetryPolicy";
-import { IStreamResult } from "./Stream";
-import { Subject } from "./Subject";
-import { Arg, getErrorString, Platform } from "./Utils";
+import {HandshakeProtocol, HandshakeRequestMessage, HandshakeResponseMessage} from "./HandshakeProtocol";
+import {IConnection} from "./IConnection";
+import {AbortError} from "./Errors";
+import {
+    CancelInvocationMessage,
+    CompletionMessage,
+    IHubProtocol,
+    InvocationMessage,
+    MessageType,
+    StreamInvocationMessage,
+    StreamItemMessage
+} from "./IHubProtocol";
+import {ILogger, LogLevel} from "./ILogger";
+import {IRetryPolicy} from "./IRetryPolicy";
+import {IStreamResult} from "./Stream";
+import {Subject} from "./Subject";
+import {Arg, getErrorString, Platform} from "./Utils";
 
 const DEFAULT_TIMEOUT_IN_MS: number = 30 * 1000;
 const DEFAULT_PING_INTERVAL_IN_MS: number = 15 * 1000;
@@ -38,7 +46,9 @@ export class HubConnection {
     private readonly _reconnectPolicy?: IRetryPolicy;
     private _protocol: IHubProtocol;
     private _handshakeProtocol: HandshakeProtocol;
-    private _callbacks: { [invocationId: string]: (invocationEvent: StreamItemMessage | CompletionMessage | null, error?: Error) => void };
+    private _callbacks: {
+        [invocationId: string]: (invocationEvent: StreamItemMessage | CompletionMessage | null, error?: Error) => void
+    };
     private _methods: { [name: string]: (((...args: any[]) => void) | ((...args: any[]) => any))[] };
     private _invocationId: number;
 
@@ -66,8 +76,7 @@ export class HubConnection {
     private _timeoutHandle?: any;
     private _pingServerHandle?: any;
 
-    private _freezeEventListener = () =>
-    {
+    private _freezeEventListener = () => {
         this._logger.log(LogLevel.Warning, "The page is being frozen, this will likely lead to the connection being closed and messages being lost. For more information see the docs at https://docs.microsoft.com/aspnet/core/signalr/javascript-client#bsleep");
     };
 
@@ -123,7 +132,7 @@ export class HubConnection {
         this._connectionState = HubConnectionState.Disconnected;
         this._connectionStarted = false;
 
-        this._cachedPingMessage = this._protocol.writeMessage({ type: MessageType.Ping });
+        this._cachedPingMessage = this._protocol.writeMessage({type: MessageType.Ping});
     }
 
     /** Indicates the state of the {@link HubConnection} to the server. */
@@ -647,8 +656,7 @@ export class HubConnection {
             this._timeoutHandle = setTimeout(() => this.serverTimeout(), this.serverTimeoutInMilliseconds);
 
             // Set keepAlive timer if there isn't one
-            if (this._pingServerHandle === undefined)
-            {
+            if (this._pingServerHandle === undefined) {
                 let nextPing = this._nextKeepAlive - new Date().getTime();
                 if (nextPing < 0) {
                     nextPing = 0;

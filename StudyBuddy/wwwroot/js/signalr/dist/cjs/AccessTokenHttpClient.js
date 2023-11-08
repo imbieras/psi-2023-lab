@@ -1,10 +1,11 @@
 "use strict";
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.AccessTokenHttpClient = void 0;
 const HeaderNames_1 = require("./HeaderNames");
 const HttpClient_1 = require("./HttpClient");
+
 /** @private */
 class AccessTokenHttpClient extends HttpClient_1.HttpClient {
     constructor(innerClient, accessTokenFactory) {
@@ -12,6 +13,7 @@ class AccessTokenHttpClient extends HttpClient_1.HttpClient {
         this._innerClient = innerClient;
         this._accessTokenFactory = accessTokenFactory;
     }
+
     async send(request) {
         let allowRetry = true;
         if (this._accessTokenFactory && (!this._accessToken || (request.url && request.url.indexOf("/negotiate?") > 0))) {
@@ -28,6 +30,7 @@ class AccessTokenHttpClient extends HttpClient_1.HttpClient {
         }
         return response;
     }
+
     _setAuthorizationHeader(request) {
         if (!request.headers) {
             request.headers = {};
@@ -42,9 +45,11 @@ class AccessTokenHttpClient extends HttpClient_1.HttpClient {
             }
         }
     }
+
     getCookieString(url) {
         return this._innerClient.getCookieString(url);
     }
 }
+
 exports.AccessTokenHttpClient = AccessTokenHttpClient;
 //# sourceMappingURL=AccessTokenHttpClient.js.map

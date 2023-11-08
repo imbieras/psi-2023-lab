@@ -1,13 +1,15 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-import { TextMessageFormat } from "./TextMessageFormat";
-import { isArrayBuffer } from "./Utils";
+import {TextMessageFormat} from "./TextMessageFormat";
+import {isArrayBuffer} from "./Utils";
+
 /** @private */
 export class HandshakeProtocol {
     // Handshake request is always JSON
     writeHandshakeRequest(handshakeRequest) {
         return TextMessageFormat.write(JSON.stringify(handshakeRequest));
     }
+
     parseHandshakeResponse(data) {
         let messageData;
         let remainingData;
@@ -23,8 +25,7 @@ export class HandshakeProtocol {
             const responseLength = separatorIndex + 1;
             messageData = String.fromCharCode.apply(null, Array.prototype.slice.call(binaryData.slice(0, responseLength)));
             remainingData = (binaryData.byteLength > responseLength) ? binaryData.slice(responseLength).buffer : null;
-        }
-        else {
+        } else {
             const textData = data;
             const separatorIndex = textData.indexOf(TextMessageFormat.RecordSeparator);
             if (separatorIndex === -1) {
@@ -48,4 +49,5 @@ export class HandshakeProtocol {
         return [remainingData, responseMessage];
     }
 }
+
 //# sourceMappingURL=HandshakeProtocol.js.map

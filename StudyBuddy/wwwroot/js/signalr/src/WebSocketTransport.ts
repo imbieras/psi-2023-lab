@@ -1,13 +1,13 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-import { HeaderNames } from "./HeaderNames";
-import { HttpClient } from "./HttpClient";
-import { MessageHeaders } from "./IHubProtocol";
-import { ILogger, LogLevel } from "./ILogger";
-import { ITransport, TransferFormat } from "./ITransport";
-import { WebSocketConstructor } from "./Polyfills";
-import { Arg, getDataDetail, getUserAgentHeader, Platform } from "./Utils";
+import {HeaderNames} from "./HeaderNames";
+import {HttpClient} from "./HttpClient";
+import {MessageHeaders} from "./IHubProtocol";
+import {ILogger, LogLevel} from "./ILogger";
+import {ITransport, TransferFormat} from "./ITransport";
+import {WebSocketConstructor} from "./Polyfills";
+import {Arg, getDataDetail, getUserAgentHeader, Platform} from "./Utils";
 
 /** @private */
 export class WebSocketTransport implements ITransport {
@@ -53,7 +53,7 @@ export class WebSocketTransport implements ITransport {
             let opened = false;
 
             if (Platform.isNode || Platform.isReactNative) {
-                const headers: {[k: string]: string} = {};
+                const headers: { [k: string]: string } = {};
                 const [name, value] = getUserAgentHeader();
                 headers[name] = value;
                 if (token) {
@@ -66,11 +66,9 @@ export class WebSocketTransport implements ITransport {
 
                 // Only pass headers when in non-browser environments
                 webSocket = new this._webSocketConstructor(url, undefined, {
-                    headers: { ...headers, ...this._headers },
+                    headers: {...headers, ...this._headers},
                 });
-            }
-            else
-            {
+            } else {
                 if (token) {
                     url += (url.indexOf("?") < 0 ? "?" : "&") + `access_token=${encodeURIComponent(token)}`;
                 }
@@ -128,9 +126,9 @@ export class WebSocketTransport implements ITransport {
                         error = event.error;
                     } else {
                         error = "WebSocket failed to connect. The connection could not be found on the server,"
-                        + " either the endpoint may not be a SignalR endpoint,"
-                        + " the connection ID is not present on the server, or there is a proxy blocking WebSockets."
-                        + " If you have multiple servers check that sticky sessions are enabled.";
+                            + " either the endpoint may not be a SignalR endpoint,"
+                            + " the connection ID is not present on the server, or there is a proxy blocking WebSockets."
+                            + " If you have multiple servers check that sticky sessions are enabled.";
                     }
 
                     reject(new Error(error));
@@ -163,9 +161,12 @@ export class WebSocketTransport implements ITransport {
         // webSocket will be null if the transport did not start successfully
         if (this._webSocket) {
             // Clear websocket handlers because we are considering the socket closed now
-            this._webSocket.onclose = () => {};
-            this._webSocket.onmessage = () => {};
-            this._webSocket.onerror = () => {};
+            this._webSocket.onclose = () => {
+            };
+            this._webSocket.onmessage = () => {
+            };
+            this._webSocket.onerror = () => {
+            };
             this._webSocket.close();
             this._webSocket = undefined;
         }

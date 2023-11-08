@@ -1,7 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-import { HeaderNames } from "./HeaderNames";
-import { HttpClient } from "./HttpClient";
+import {HeaderNames} from "./HeaderNames";
+import {HttpClient} from "./HttpClient";
+
 /** @private */
 export class AccessTokenHttpClient extends HttpClient {
     constructor(innerClient, accessTokenFactory) {
@@ -9,6 +10,7 @@ export class AccessTokenHttpClient extends HttpClient {
         this._innerClient = innerClient;
         this._accessTokenFactory = accessTokenFactory;
     }
+
     async send(request) {
         let allowRetry = true;
         if (this._accessTokenFactory && (!this._accessToken || (request.url && request.url.indexOf("/negotiate?") > 0))) {
@@ -25,6 +27,7 @@ export class AccessTokenHttpClient extends HttpClient {
         }
         return response;
     }
+
     _setAuthorizationHeader(request) {
         if (!request.headers) {
             request.headers = {};
@@ -39,8 +42,10 @@ export class AccessTokenHttpClient extends HttpClient {
             }
         }
     }
+
     getCookieString(url) {
         return this._innerClient.getCookieString(url);
     }
 }
+
 //# sourceMappingURL=AccessTokenHttpClient.js.map

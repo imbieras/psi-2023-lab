@@ -1,5 +1,6 @@
-import { AbortSignal } from "./AbortController";
-import { MessageHeaders } from "./IHubProtocol";
+import {AbortSignal} from "./AbortController";
+import {MessageHeaders} from "./IHubProtocol";
+
 /** Represents an HTTP request. */
 export interface HttpRequest {
     /** The HTTP method to use for the request. */
@@ -19,11 +20,13 @@ export interface HttpRequest {
     /** This controls whether credentials such as cookies are sent in cross-site requests. */
     withCredentials?: boolean;
 }
+
 /** Represents an HTTP response. */
 export declare class HttpResponse {
     readonly statusCode: number;
     readonly statusText?: string | undefined;
     readonly content?: string | ArrayBuffer | undefined;
+
     /** Constructs a new instance of {@link @microsoft/signalr.HttpResponse} with the specified status code.
      *
      * @param {number} statusCode The status code of the response.
@@ -57,6 +60,7 @@ export declare class HttpResponse {
      */
     constructor(statusCode: number, statusText: string, content: string | ArrayBuffer);
 }
+
 /** Abstraction over an HTTP client.
  *
  * This class provides an abstraction over an HTTP client so that a different implementation can be provided on different platforms.
@@ -75,6 +79,7 @@ export declare abstract class HttpClient {
      * @returns {Promise<HttpResponse>} A Promise that resolves with an {@link @microsoft/signalr.HttpResponse} describing the response, or rejects with an Error indicating a failure.
      */
     get(url: string, options: HttpRequest): Promise<HttpResponse>;
+
     /** Issues an HTTP POST request to the specified URL, returning a Promise that resolves with an {@link @microsoft/signalr.HttpResponse} representing the result.
      *
      * @param {string} url The URL for the request.
@@ -88,6 +93,7 @@ export declare abstract class HttpClient {
      * @returns {Promise<HttpResponse>} A Promise that resolves with an {@link @microsoft/signalr.HttpResponse} describing the response, or rejects with an Error indicating a failure.
      */
     post(url: string, options: HttpRequest): Promise<HttpResponse>;
+
     /** Issues an HTTP DELETE request to the specified URL, returning a Promise that resolves with an {@link @microsoft/signalr.HttpResponse} representing the result.
      *
      * @param {string} url The URL for the request.
@@ -101,12 +107,14 @@ export declare abstract class HttpClient {
      * @returns {Promise<HttpResponse>} A Promise that resolves with an {@link @microsoft/signalr.HttpResponse} describing the response, or rejects with an Error indicating a failure.
      */
     delete(url: string, options: HttpRequest): Promise<HttpResponse>;
+
     /** Issues an HTTP request to the specified URL, returning a {@link Promise} that resolves with an {@link @microsoft/signalr.HttpResponse} representing the result.
      *
      * @param {HttpRequest} request An {@link @microsoft/signalr.HttpRequest} describing the request to send.
      * @returns {Promise<HttpResponse>} A Promise that resolves with an HttpResponse describing the response, or rejects with an Error indicating a failure.
      */
     abstract send(request: HttpRequest): Promise<HttpResponse>;
+
     /** Gets all cookies that apply to the specified URL.
      *
      * @param url The URL that the cookies are valid for.

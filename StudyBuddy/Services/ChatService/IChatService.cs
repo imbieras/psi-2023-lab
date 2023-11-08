@@ -1,14 +1,17 @@
-using StudyBuddy.Models;
+﻿using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Data.Repositories.ChatRepository;
+namespace StudyBuddy.Services.ChatService;
 
-public interface IChatRepository
+public interface IChatService
 {
     Task<IEnumerable<ChatMessage>> GetMessagesByConversationAsync(Guid conversationId);
+
     Task<IEnumerable<ChatMessage>> GetMessagesByUserIdsAsync(UserId userId1, UserId userId2);
+
     Task<ChatMessage> GetMessageByIdAsync(Guid messageId);
-    Guid GetConversationIdByUserIds(UserId userId1, UserId userId2);
+
     Task AddMessageAsync(ChatMessage message);
+
     Task DeleteMessageAsync(Guid messageId);
 }

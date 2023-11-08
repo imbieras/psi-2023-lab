@@ -1,6 +1,7 @@
-import { IConnection } from "./IConnection";
-import { IHttpConnectionOptions } from "./IHttpConnectionOptions";
-import { HttpTransportType, ITransport, TransferFormat } from "./ITransport";
+import {IConnection} from "./IConnection";
+import {IHttpConnectionOptions} from "./IHttpConnectionOptions";
+import {HttpTransportType, ITransport, TransferFormat} from "./ITransport";
+
 /** @private */
 export interface INegotiateResponse {
     connectionId?: string;
@@ -11,11 +12,13 @@ export interface INegotiateResponse {
     accessToken?: string;
     error?: string;
 }
+
 /** @private */
 export interface IAvailableTransport {
     transport: keyof typeof HttpTransportType;
     transferFormats: (keyof typeof TransferFormat)[];
 }
+
 /** @private */
 export declare class HttpConnection implements IConnection {
     private _connectionState;
@@ -36,11 +39,16 @@ export declare class HttpConnection implements IConnection {
     onreceive: ((data: string | ArrayBuffer) => void) | null;
     onclose: ((e?: Error) => void) | null;
     private readonly _negotiateVersion;
+
     constructor(url: string, options?: IHttpConnectionOptions);
+
     start(): Promise<void>;
     start(transferFormat: TransferFormat): Promise<void>;
+
     send(data: string | ArrayBuffer): Promise<void>;
+
     stop(error?: Error): Promise<void>;
+
     private _stopInternal;
     private _startInternal;
     private _getNegotiationResponse;
@@ -54,6 +62,7 @@ export declare class HttpConnection implements IConnection {
     private _resolveUrl;
     private _resolveNegotiateUrl;
 }
+
 /** @private */
 export declare class TransportSendQueue {
     private readonly _transport;
@@ -62,9 +71,13 @@ export declare class TransportSendQueue {
     private _executing;
     private _transportResult?;
     private _sendLoopPromise;
+
     constructor(_transport: ITransport);
+
     send(data: string | ArrayBuffer): Promise<void>;
+
     stop(): Promise<void>;
+
     private _bufferData;
     private _sendLoop;
     private static _concatBuffers;

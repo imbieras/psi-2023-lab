@@ -14,13 +14,16 @@
 export interface IStreamSubscriber<T> {
     /** A boolean that will be set by the {@link @microsoft/signalr.IStreamResult} when the stream is closed. */
     closed?: boolean;
+
     /** Called by the framework when a new item is available. */
     next(value: T): void;
+
     /** Called by the framework when an error has occurred.
      *
      * After this method is called, no additional methods on the {@link @microsoft/signalr.IStreamSubscriber} will be called.
      */
     error(err: any): void;
+
     /** Called by the framework when the end of the stream is reached.
      *
      * After this method is called, no additional methods on the {@link @microsoft/signalr.IStreamSubscriber} will be called.

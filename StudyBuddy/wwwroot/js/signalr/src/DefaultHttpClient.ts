@@ -1,12 +1,12 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-import { AbortError } from "./Errors";
-import { FetchHttpClient } from "./FetchHttpClient";
-import { HttpClient, HttpRequest, HttpResponse } from "./HttpClient";
-import { ILogger } from "./ILogger";
-import { Platform } from "./Utils";
-import { XhrHttpClient } from "./XhrHttpClient";
+import {AbortError} from "./Errors";
+import {FetchHttpClient} from "./FetchHttpClient";
+import {HttpClient, HttpRequest, HttpResponse} from "./HttpClient";
+import {ILogger} from "./ILogger";
+import {Platform} from "./Utils";
+import {XhrHttpClient} from "./XhrHttpClient";
 
 /** Default implementation of {@link @microsoft/signalr.HttpClient}. */
 export class DefaultHttpClient extends HttpClient {

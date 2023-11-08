@@ -1,12 +1,12 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-import { HttpClient } from "./HttpClient";
-import { MessageHeaders } from "./IHubProtocol";
-import { ILogger, LogLevel } from "./ILogger";
-import { ITransport, TransferFormat } from "./ITransport";
-import { Arg, getDataDetail, getUserAgentHeader, Platform, sendMessage } from "./Utils";
-import { IHttpConnectionOptions } from "./IHttpConnectionOptions";
+import {HttpClient} from "./HttpClient";
+import {MessageHeaders} from "./IHubProtocol";
+import {ILogger, LogLevel} from "./ILogger";
+import {ITransport, TransferFormat} from "./ITransport";
+import {Arg, getDataDetail, getUserAgentHeader, Platform, sendMessage} from "./Utils";
+import {IHttpConnectionOptions} from "./IHttpConnectionOptions";
 
 /** @private */
 export class ServerSentEventsTransport implements ITransport {
@@ -54,7 +54,7 @@ export class ServerSentEventsTransport implements ITransport {
 
             let eventSource: EventSource;
             if (Platform.isBrowser || Platform.isWebWorker) {
-                eventSource = new this._options.EventSource!(url, { withCredentials: this._options.withCredentials });
+                eventSource = new this._options.EventSource!(url, {withCredentials: this._options.withCredentials});
             } else {
                 // Non-browser passes cookies via the dictionary
                 const cookies = this._httpClient.getCookieString(url);
@@ -63,7 +63,10 @@ export class ServerSentEventsTransport implements ITransport {
                 const [name, value] = getUserAgentHeader();
                 headers[name] = value;
 
-                eventSource = new this._options.EventSource!(url, { withCredentials: this._options.withCredentials, headers: { ...headers, ...this._options.headers} } as EventSourceInit);
+                eventSource = new this._options.EventSource!(url, {
+                    withCredentials: this._options.withCredentials,
+                    headers: {...headers, ...this._options.headers}
+                } as EventSourceInit);
             }
 
             try {
@@ -86,8 +89,8 @@ export class ServerSentEventsTransport implements ITransport {
                         this._close();
                     } else {
                         reject(new Error("EventSource failed to connect. The connection could not be found on the server,"
-                        + " either the connection ID is not present on the server, or a proxy is refusing/buffering the connection."
-                        + " If you have multiple servers check that sticky sessions are enabled."));
+                            + " either the connection ID is not present on the server, or a proxy is refusing/buffering the connection."
+                            + " If you have multiple servers check that sticky sessions are enabled."));
                     }
                 };
 

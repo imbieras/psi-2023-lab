@@ -1,13 +1,14 @@
 "use strict";
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.getGlobalThis = exports.getErrorString = exports.constructUserAgent = exports.getUserAgentHeader = exports.ConsoleLogger = exports.SubjectSubscription = exports.createLogger = exports.sendMessage = exports.isArrayBuffer = exports.formatArrayBuffer = exports.getDataDetail = exports.Platform = exports.Arg = exports.VERSION = void 0;
 const ILogger_1 = require("./ILogger");
 const Loggers_1 = require("./Loggers");
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR client. */
 exports.VERSION = "7.0.12";
+
 /** @private */
 class Arg {
     static isRequired(val, name) {
@@ -15,11 +16,13 @@ class Arg {
             throw new Error(`The '${name}' argument is required.`);
         }
     }
+
     static isNotEmpty(val, name) {
         if (!val || val.match(/^\s*$/)) {
             throw new Error(`The '${name}' argument should not be empty.`);
         }
     }
+
     static isIn(val, values, name) {
         // TypeScript enums have keys for **both** the name and the value of each enum member on the type itself.
         if (!(val in values)) {
@@ -27,28 +30,35 @@ class Arg {
         }
     }
 }
+
 exports.Arg = Arg;
+
 /** @private */
 class Platform {
     // react-native has a window but no document so we should check both
     static get isBrowser() {
         return typeof window === "object" && typeof window.document === "object";
     }
+
     // WebWorkers don't have a window object so the isBrowser check would fail
     static get isWebWorker() {
         return typeof self === "object" && "importScripts" in self;
     }
+
     // react-native has a window but no document
     static get isReactNative() {
         return typeof window === "object" && typeof window.document === "undefined";
     }
+
     // Node apps shouldn't have a window object, but WebWorkers don't either
     // so we need to check for both WebWorker and window
     static get isNode() {
         return !this.isBrowser && !this.isWebWorker && !this.isReactNative;
     }
 }
+
 exports.Platform = Platform;
+
 /** @private */
 function getDataDetail(data, includeContent) {
     let detail = "";
@@ -57,8 +67,7 @@ function getDataDetail(data, includeContent) {
         if (includeContent) {
             detail += `. Content: '${formatArrayBuffer(data)}'`;
         }
-    }
-    else if (typeof data === "string") {
+    } else if (typeof data === "string") {
         detail = `String data of length ${data.length}`;
         if (includeContent) {
             detail += `. Content: '${data}'`;
@@ -66,7 +75,9 @@ function getDataDetail(data, includeContent) {
     }
     return detail;
 }
+
 exports.getDataDetail = getDataDetail;
+
 /** @private */
 function formatArrayBuffer(data) {
     const view = new Uint8Array(data);
@@ -79,7 +90,9 @@ function formatArrayBuffer(data) {
     // Trim of trailing space.
     return str.substr(0, str.length - 1);
 }
+
 exports.formatArrayBuffer = formatArrayBuffer;
+
 // Also in signalr-protocol-msgpack/Utils.ts
 /** @private */
 function isArrayBuffer(val) {
@@ -88,7 +101,9 @@ function isArrayBuffer(val) {
             // Sometimes we get an ArrayBuffer that doesn't satisfy instanceof
             (val.constructor && val.constructor.name === "ArrayBuffer"));
 }
+
 exports.isArrayBuffer = isArrayBuffer;
+
 /** @private */
 async function sendMessage(logger, transportName, httpClient, url, content, options) {
     const headers = {};
@@ -98,14 +113,16 @@ async function sendMessage(logger, transportName, httpClient, url, content, opti
     const responseType = isArrayBuffer(content) ? "arraybuffer" : "text";
     const response = await httpClient.post(url, {
         content,
-        headers: { ...headers, ...options.headers },
+        headers: {...headers, ...options.headers},
         responseType,
         timeout: options.timeout,
         withCredentials: options.withCredentials,
     });
     logger.log(ILogger_1.LogLevel.Trace, `(${transportName} transport) request complete. Response status: ${response.statusCode}.`);
 }
+
 exports.sendMessage = sendMessage;
+
 /** @private */
 function createLogger(logger) {
     if (logger === undefined) {
@@ -119,30 +136,37 @@ function createLogger(logger) {
     }
     return new ConsoleLogger(logger);
 }
+
 exports.createLogger = createLogger;
+
 /** @private */
 class SubjectSubscription {
     constructor(subject, observer) {
         this._subject = subject;
         this._observer = observer;
     }
+
     dispose() {
         const index = this._subject.observers.indexOf(this._observer);
         if (index > -1) {
             this._subject.observers.splice(index, 1);
         }
         if (this._subject.observers.length === 0 && this._subject.cancelCallback) {
-            this._subject.cancelCallback().catch((_) => { });
+            this._subject.cancelCallback().catch((_) => {
+            });
         }
     }
 }
+
 exports.SubjectSubscription = SubjectSubscription;
+
 /** @private */
 class ConsoleLogger {
     constructor(minimumLogLevel) {
         this._minLevel = minimumLogLevel;
         this.out = console;
     }
+
     log(logLevel, message) {
         if (logLevel >= this._minLevel) {
             const msg = `[${new Date().toISOString()}] ${ILogger_1.LogLevel[logLevel]}: ${message}`;
@@ -165,7 +189,9 @@ class ConsoleLogger {
         }
     }
 }
+
 exports.ConsoleLogger = ConsoleLogger;
+
 /** @private */
 function getUserAgentHeader() {
     let userAgentHeaderName = "X-SignalR-User-Agent";
@@ -174,7 +200,9 @@ function getUserAgentHeader() {
     }
     return [userAgentHeaderName, constructUserAgent(exports.VERSION, getOsName(), getRuntime(), getRuntimeVersion())];
 }
+
 exports.getUserAgentHeader = getUserAgentHeader;
+
 /** @private */
 function constructUserAgent(version, os, runtime, runtimeVersion) {
     // Microsoft SignalR/[Version] ([Detailed Version]; [Operating System]; [Runtime]; [Runtime Version])
@@ -184,23 +212,23 @@ function constructUserAgent(version, os, runtime, runtimeVersion) {
     userAgent += ` (${version}; `;
     if (os && os !== "") {
         userAgent += `${os}; `;
-    }
-    else {
+    } else {
         userAgent += "Unknown OS; ";
     }
     userAgent += `${runtime}`;
     if (runtimeVersion) {
         userAgent += `; ${runtimeVersion}`;
-    }
-    else {
+    } else {
         userAgent += "; Unknown Runtime Version";
     }
     userAgent += ")";
     return userAgent;
 }
+
 exports.constructUserAgent = constructUserAgent;
 // eslint-disable-next-line spaced-comment
-/*#__PURE__*/ function getOsName() {
+/*#__PURE__*/
+function getOsName() {
     if (Platform.isNode) {
         switch (process.platform) {
             case "win32":
@@ -212,37 +240,40 @@ exports.constructUserAgent = constructUserAgent;
             default:
                 return process.platform;
         }
-    }
-    else {
+    } else {
         return "";
     }
 }
+
 // eslint-disable-next-line spaced-comment
-/*#__PURE__*/ function getRuntimeVersion() {
+/*#__PURE__*/
+function getRuntimeVersion() {
     if (Platform.isNode) {
         return process.versions.node;
     }
     return undefined;
 }
+
 function getRuntime() {
     if (Platform.isNode) {
         return "NodeJS";
-    }
-    else {
+    } else {
         return "Browser";
     }
 }
+
 /** @private */
 function getErrorString(e) {
     if (e.stack) {
         return e.stack;
-    }
-    else if (e.message) {
+    } else if (e.message) {
         return e.message;
     }
     return `${e}`;
 }
+
 exports.getErrorString = getErrorString;
+
 /** @private */
 function getGlobalThis() {
     // globalThis is semi-new and not available in Node until v12
@@ -260,5 +291,6 @@ function getGlobalThis() {
     }
     throw new Error("could not find global");
 }
+
 exports.getGlobalThis = getGlobalThis;
 //# sourceMappingURL=Utils.js.map

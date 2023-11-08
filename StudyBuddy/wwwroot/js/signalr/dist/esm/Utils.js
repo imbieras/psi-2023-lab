@@ -1,10 +1,11 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-import { LogLevel } from "./ILogger";
-import { NullLogger } from "./Loggers";
+import {LogLevel} from "./ILogger";
+import {NullLogger} from "./Loggers";
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR client. */
 export const VERSION = "7.0.12";
+
 /** @private */
 export class Arg {
     static isRequired(val, name) {
@@ -12,11 +13,13 @@ export class Arg {
             throw new Error(`The '${name}' argument is required.`);
         }
     }
+
     static isNotEmpty(val, name) {
         if (!val || val.match(/^\s*$/)) {
             throw new Error(`The '${name}' argument should not be empty.`);
         }
     }
+
     static isIn(val, values, name) {
         // TypeScript enums have keys for **both** the name and the value of each enum member on the type itself.
         if (!(val in values)) {
@@ -24,26 +27,31 @@ export class Arg {
         }
     }
 }
+
 /** @private */
 export class Platform {
     // react-native has a window but no document so we should check both
     static get isBrowser() {
         return typeof window === "object" && typeof window.document === "object";
     }
+
     // WebWorkers don't have a window object so the isBrowser check would fail
     static get isWebWorker() {
         return typeof self === "object" && "importScripts" in self;
     }
+
     // react-native has a window but no document
     static get isReactNative() {
         return typeof window === "object" && typeof window.document === "undefined";
     }
+
     // Node apps shouldn't have a window object, but WebWorkers don't either
     // so we need to check for both WebWorker and window
     static get isNode() {
         return !this.isBrowser && !this.isWebWorker && !this.isReactNative;
     }
 }
+
 /** @private */
 export function getDataDetail(data, includeContent) {
     let detail = "";
@@ -52,8 +60,7 @@ export function getDataDetail(data, includeContent) {
         if (includeContent) {
             detail += `. Content: '${formatArrayBuffer(data)}'`;
         }
-    }
-    else if (typeof data === "string") {
+    } else if (typeof data === "string") {
         detail = `String data of length ${data.length}`;
         if (includeContent) {
             detail += `. Content: '${data}'`;
@@ -61,6 +68,7 @@ export function getDataDetail(data, includeContent) {
     }
     return detail;
 }
+
 /** @private */
 export function formatArrayBuffer(data) {
     const view = new Uint8Array(data);
@@ -73,6 +81,7 @@ export function formatArrayBuffer(data) {
     // Trim of trailing space.
     return str.substr(0, str.length - 1);
 }
+
 // Also in signalr-protocol-msgpack/Utils.ts
 /** @private */
 export function isArrayBuffer(val) {
@@ -81,6 +90,7 @@ export function isArrayBuffer(val) {
             // Sometimes we get an ArrayBuffer that doesn't satisfy instanceof
             (val.constructor && val.constructor.name === "ArrayBuffer"));
 }
+
 /** @private */
 export async function sendMessage(logger, transportName, httpClient, url, content, options) {
     const headers = {};
@@ -90,13 +100,14 @@ export async function sendMessage(logger, transportName, httpClient, url, conten
     const responseType = isArrayBuffer(content) ? "arraybuffer" : "text";
     const response = await httpClient.post(url, {
         content,
-        headers: { ...headers, ...options.headers },
+        headers: {...headers, ...options.headers},
         responseType,
         timeout: options.timeout,
         withCredentials: options.withCredentials,
     });
     logger.log(LogLevel.Trace, `(${transportName} transport) request complete. Response status: ${response.statusCode}.`);
 }
+
 /** @private */
 export function createLogger(logger) {
     if (logger === undefined) {
@@ -110,28 +121,33 @@ export function createLogger(logger) {
     }
     return new ConsoleLogger(logger);
 }
+
 /** @private */
 export class SubjectSubscription {
     constructor(subject, observer) {
         this._subject = subject;
         this._observer = observer;
     }
+
     dispose() {
         const index = this._subject.observers.indexOf(this._observer);
         if (index > -1) {
             this._subject.observers.splice(index, 1);
         }
         if (this._subject.observers.length === 0 && this._subject.cancelCallback) {
-            this._subject.cancelCallback().catch((_) => { });
+            this._subject.cancelCallback().catch((_) => {
+            });
         }
     }
 }
+
 /** @private */
 export class ConsoleLogger {
     constructor(minimumLogLevel) {
         this._minLevel = minimumLogLevel;
         this.out = console;
     }
+
     log(logLevel, message) {
         if (logLevel >= this._minLevel) {
             const msg = `[${new Date().toISOString()}] ${LogLevel[logLevel]}: ${message}`;
@@ -154,6 +170,7 @@ export class ConsoleLogger {
         }
     }
 }
+
 /** @private */
 export function getUserAgentHeader() {
     let userAgentHeaderName = "X-SignalR-User-Agent";
@@ -162,6 +179,7 @@ export function getUserAgentHeader() {
     }
     return [userAgentHeaderName, constructUserAgent(VERSION, getOsName(), getRuntime(), getRuntimeVersion())];
 }
+
 /** @private */
 export function constructUserAgent(version, os, runtime, runtimeVersion) {
     // Microsoft SignalR/[Version] ([Detailed Version]; [Operating System]; [Runtime]; [Runtime Version])
@@ -171,22 +189,22 @@ export function constructUserAgent(version, os, runtime, runtimeVersion) {
     userAgent += ` (${version}; `;
     if (os && os !== "") {
         userAgent += `${os}; `;
-    }
-    else {
+    } else {
         userAgent += "Unknown OS; ";
     }
     userAgent += `${runtime}`;
     if (runtimeVersion) {
         userAgent += `; ${runtimeVersion}`;
-    }
-    else {
+    } else {
         userAgent += "; Unknown Runtime Version";
     }
     userAgent += ")";
     return userAgent;
 }
+
 // eslint-disable-next-line spaced-comment
-/*#__PURE__*/ function getOsName() {
+/*#__PURE__*/
+function getOsName() {
     if (Platform.isNode) {
         switch (process.platform) {
             case "win32":
@@ -198,36 +216,38 @@ export function constructUserAgent(version, os, runtime, runtimeVersion) {
             default:
                 return process.platform;
         }
-    }
-    else {
+    } else {
         return "";
     }
 }
+
 // eslint-disable-next-line spaced-comment
-/*#__PURE__*/ function getRuntimeVersion() {
+/*#__PURE__*/
+function getRuntimeVersion() {
     if (Platform.isNode) {
         return process.versions.node;
     }
     return undefined;
 }
+
 function getRuntime() {
     if (Platform.isNode) {
         return "NodeJS";
-    }
-    else {
+    } else {
         return "Browser";
     }
 }
+
 /** @private */
 export function getErrorString(e) {
     if (e.stack) {
         return e.stack;
-    }
-    else if (e.message) {
+    } else if (e.message) {
         return e.message;
     }
     return `${e}`;
 }
+
 /** @private */
 export function getGlobalThis() {
     // globalThis is semi-new and not available in Node until v12
@@ -245,4 +265,5 @@ export function getGlobalThis() {
     }
     throw new Error("could not find global");
 }
+
 //# sourceMappingURL=Utils.js.map

@@ -26,10 +26,8 @@ public class Match
     {
     }
 
-    [ForeignKey ("UserId")]
-    public UserId User1Id { get; set; }
-    [ForeignKey ("UserId")]
-    public UserId User2Id { get; set; }
+    [ForeignKey("UserId")] public UserId User1Id { get; set; }
+    [ForeignKey("UserId")] public UserId User2Id { get; set; }
 
     public DateTime MatchDate { get; set; }
     public bool IsActive { get; set; }

@@ -8,6 +8,7 @@ export interface IRetryPolicy {
      */
     nextRetryDelayInMilliseconds(retryContext: RetryContext): number | null;
 }
+
 export interface RetryContext {
     /**
      * The number of consecutive failed tries so far.

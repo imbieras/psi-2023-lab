@@ -16,7 +16,7 @@ public class MatchRepository : IMatchRepository
 
     public async Task AddAsync(UserId user1Id, UserId user2Id)
     {
-        await _context.Matches.AddAsync(new(user1Id, user2Id));
+        await _context.Matches.AddAsync(new Match(user1Id, user2Id));
         await _context.SaveChangesAsync();
     }
 
@@ -32,7 +32,10 @@ public class MatchRepository : IMatchRepository
         {
             _context.Matches.Remove(match);
         }
-        else throw new ArgumentException("Match does not exist");
+        else
+        {
+            throw new ArgumentException("Match does not exist");
+        }
     }
 
     public async Task<bool> IsMatchAsync(UserId currentUser, UserId otherUser)

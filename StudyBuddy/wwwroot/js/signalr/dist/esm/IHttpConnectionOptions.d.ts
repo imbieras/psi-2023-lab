@@ -1,7 +1,8 @@
-import { HttpClient } from "./HttpClient";
-import { MessageHeaders } from "./IHubProtocol";
-import { ILogger, LogLevel } from "./ILogger";
-import { HttpTransportType, ITransport } from "./ITransport";
+import {HttpClient} from "./HttpClient";
+import {MessageHeaders} from "./IHubProtocol";
+import {ILogger, LogLevel} from "./ILogger";
+import {HttpTransportType, ITransport} from "./ITransport";
+
 /** Options provided to the 'withUrl' method on {@link @microsoft/signalr.HubConnectionBuilder} to configure options for the HTTP-based transports. */
 export interface IHttpConnectionOptions {
     /** {@link @microsoft/signalr.MessageHeaders} containing custom headers to be sent with every HTTP request. Note, setting headers in the browser will not work for WebSockets or the ServerSentEvents stream. */
@@ -17,11 +18,13 @@ export interface IHttpConnectionOptions {
      * level (or higher).
      */
     logger?: ILogger | LogLevel;
+
     /** A function that provides an access token required for HTTP Bearer authentication.
      *
      * @returns {string | Promise<string>} A string containing the access token, or a Promise that resolves to a string containing the access token.
      */
     accessTokenFactory?(): string | Promise<string>;
+
     /** A boolean indicating if message content should be logged.
      *
      * Message content can contain sensitive user data, so this is disabled by default.

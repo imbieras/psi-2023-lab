@@ -20,5 +20,4 @@ public interface IUserService
     Task UserSeenAsync(UserId userId, UserId otherUserId);
     Task AddHobbiesToUserAsync(User user, List<string> hobbies);
     Task AddHobbiesToUserAsync(UserId userid, List<string> hobbies);
-
 }

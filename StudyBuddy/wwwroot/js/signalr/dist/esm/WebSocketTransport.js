@@ -1,9 +1,10 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-import { HeaderNames } from "./HeaderNames";
-import { LogLevel } from "./ILogger";
-import { TransferFormat } from "./ITransport";
-import { Arg, getDataDetail, getUserAgentHeader, Platform } from "./Utils";
+import {HeaderNames} from "./HeaderNames";
+import {LogLevel} from "./ILogger";
+import {TransferFormat} from "./ITransport";
+import {Arg, getDataDetail, getUserAgentHeader, Platform} from "./Utils";
+
 /** @private */
 export class WebSocketTransport {
     constructor(httpClient, accessTokenFactory, logger, logMessageContent, webSocketConstructor, headers) {
@@ -16,6 +17,7 @@ export class WebSocketTransport {
         this.onclose = null;
         this._headers = headers;
     }
+
     async connect(url, transferFormat) {
         Arg.isRequired(url, "url");
         Arg.isRequired(transferFormat, "transferFormat");
@@ -42,10 +44,9 @@ export class WebSocketTransport {
                 }
                 // Only pass headers when in non-browser environments
                 webSocket = new this._webSocketConstructor(url, undefined, {
-                    headers: { ...headers, ...this._headers },
+                    headers: {...headers, ...this._headers},
                 });
-            }
-            else {
+            } else {
                 if (token) {
                     url += (url.indexOf("?") < 0 ? "?" : "&") + `access_token=${encodeURIComponent(token)}`;
                 }
@@ -68,8 +69,7 @@ export class WebSocketTransport {
                 // ErrorEvent is a browser only type we need to check if the type exists before using it
                 if (typeof ErrorEvent !== "undefined" && event instanceof ErrorEvent) {
                     error = event.error;
-                }
-                else {
+                } else {
                     error = "There was an error with the transport";
                 }
                 this._logger.log(LogLevel.Information, `(WebSockets transport) ${error}.`);
@@ -79,8 +79,7 @@ export class WebSocketTransport {
                 if (this.onreceive) {
                     try {
                         this.onreceive(message.data);
-                    }
-                    catch (error) {
+                    } catch (error) {
                         this._close(error);
                         return;
                     }
@@ -91,14 +90,12 @@ export class WebSocketTransport {
                 // We'll reject the connect call instead
                 if (opened) {
                     this._close(event);
-                }
-                else {
+                } else {
                     let error = null;
                     // ErrorEvent is a browser only type we need to check if the type exists before using it
                     if (typeof ErrorEvent !== "undefined" && event instanceof ErrorEvent) {
                         error = event.error;
-                    }
-                    else {
+                    } else {
                         error = "WebSocket failed to connect. The connection could not be found on the server,"
                             + " either the endpoint may not be a SignalR endpoint,"
                             + " the connection ID is not present on the server, or there is a proxy blocking WebSockets."
@@ -109,6 +106,7 @@ export class WebSocketTransport {
             };
         });
     }
+
     send(data) {
         if (this._webSocket && this._webSocket.readyState === this._webSocketConstructor.OPEN) {
             this._logger.log(LogLevel.Trace, `(WebSockets transport) sending data. ${getDataDetail(data, this._logMessageContent)}.`);
@@ -117,6 +115,7 @@ export class WebSocketTransport {
         }
         return Promise.reject("WebSocket is not in the OPEN state");
     }
+
     stop() {
         if (this._webSocket) {
             // Manually invoke onclose callback inline so we know the HttpConnection was closed properly before returning
@@ -125,13 +124,17 @@ export class WebSocketTransport {
         }
         return Promise.resolve();
     }
+
     _close(event) {
         // webSocket will be null if the transport did not start successfully
         if (this._webSocket) {
             // Clear websocket handlers because we are considering the socket closed now
-            this._webSocket.onclose = () => { };
-            this._webSocket.onmessage = () => { };
-            this._webSocket.onerror = () => { };
+            this._webSocket.onclose = () => {
+            };
+            this._webSocket.onmessage = () => {
+            };
+            this._webSocket.onerror = () => {
+            };
             this._webSocket.close();
             this._webSocket = undefined;
         }
@@ -139,17 +142,17 @@ export class WebSocketTransport {
         if (this.onclose) {
             if (this._isCloseEvent(event) && (event.wasClean === false || event.code !== 1000)) {
                 this.onclose(new Error(`WebSocket closed with status code: ${event.code} (${event.reason || "no reason given"}).`));
-            }
-            else if (event instanceof Error) {
+            } else if (event instanceof Error) {
                 this.onclose(event);
-            }
-            else {
+            } else {
                 this.onclose();
             }
         }
     }
+
     _isCloseEvent(event) {
         return event && typeof event.wasClean === "boolean" && typeof event.code === "number";
     }
 }
+
 //# sourceMappingURL=WebSocketTransport.js.map

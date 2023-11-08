@@ -1,7 +1,8 @@
-import { HttpClient } from "./HttpClient";
-import { ILogger } from "./ILogger";
-import { ITransport, TransferFormat } from "./ITransport";
-import { IHttpConnectionOptions } from "./IHttpConnectionOptions";
+import {HttpClient} from "./HttpClient";
+import {ILogger} from "./ILogger";
+import {ITransport, TransferFormat} from "./ITransport";
+import {IHttpConnectionOptions} from "./IHttpConnectionOptions";
+
 /** @private */
 export declare class LongPollingTransport implements ITransport {
     private readonly _httpClient;
@@ -14,11 +15,18 @@ export declare class LongPollingTransport implements ITransport {
     private _closeError?;
     onreceive: ((data: string | ArrayBuffer) => void) | null;
     onclose: ((error?: Error) => void) | null;
+
     get pollAborted(): boolean;
+
     constructor(httpClient: HttpClient, logger: ILogger, options: IHttpConnectionOptions);
+
     connect(url: string, transferFormat: TransferFormat): Promise<void>;
+
     private _poll;
+
     send(data: any): Promise<void>;
+
     stop(): Promise<void>;
+
     private _raiseOnClose;
 }

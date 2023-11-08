@@ -1,8 +1,9 @@
 "use strict";
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.HttpClient = exports.HttpResponse = void 0;
+
 /** Represents an HTTP response. */
 class HttpResponse {
     constructor(statusCode, statusText, content) {
@@ -11,7 +12,9 @@ class HttpResponse {
         this.content = content;
     }
 }
+
 exports.HttpResponse = HttpResponse;
+
 /** Abstraction over an HTTP client.
  *
  * This class provides an abstraction over an HTTP client so that a different implementation can be provided on different platforms.
@@ -24,6 +27,7 @@ class HttpClient {
             url,
         });
     }
+
     post(url, options) {
         return this.send({
             ...options,
@@ -31,6 +35,7 @@ class HttpClient {
             url,
         });
     }
+
     delete(url, options) {
         return this.send({
             ...options,
@@ -38,6 +43,7 @@ class HttpClient {
             url,
         });
     }
+
     /** Gets all cookies that apply to the specified URL.
      *
      * @param url The URL that the cookies are valid for.
@@ -48,5 +54,6 @@ class HttpClient {
         return "";
     }
 }
+
 exports.HttpClient = HttpClient;
 //# sourceMappingURL=HttpClient.js.map

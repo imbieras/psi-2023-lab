@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 export class HeaderNames {
 }
+
 HeaderNames.Authorization = "Authorization";
 HeaderNames.Cookie = "Cookie";
 //# sourceMappingURL=HeaderNames.js.map

@@ -1,8 +1,9 @@
 "use strict";
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.AggregateErrors = exports.FailedToNegotiateWithServerError = exports.FailedToStartTransportError = exports.DisabledTransportError = exports.UnsupportedTransportError = exports.AbortError = exports.TimeoutError = exports.HttpError = void 0;
+
 /** Error thrown when an HTTP request fails. */
 class HttpError extends Error {
     /** Constructs a new instance of {@link @microsoft/signalr.HttpError}.
@@ -19,7 +20,9 @@ class HttpError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 exports.HttpError = HttpError;
+
 /** Error thrown when a timeout elapses. */
 class TimeoutError extends Error {
     /** Constructs a new instance of {@link @microsoft/signalr.TimeoutError}.
@@ -34,7 +37,9 @@ class TimeoutError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 exports.TimeoutError = TimeoutError;
+
 /** Error thrown when an action is aborted. */
 class AbortError extends Error {
     /** Constructs a new instance of {@link AbortError}.
@@ -49,7 +54,9 @@ class AbortError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 exports.AbortError = AbortError;
+
 /** Error thrown when the selected transport is unsupported by the browser. */
 /** @private */
 class UnsupportedTransportError extends Error {
@@ -68,7 +75,9 @@ class UnsupportedTransportError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 exports.UnsupportedTransportError = UnsupportedTransportError;
+
 /** Error thrown when the selected transport is disabled by the browser. */
 /** @private */
 class DisabledTransportError extends Error {
@@ -87,7 +96,9 @@ class DisabledTransportError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 exports.DisabledTransportError = DisabledTransportError;
+
 /** Error thrown when the selected transport cannot be started. */
 /** @private */
 class FailedToStartTransportError extends Error {
@@ -106,7 +117,9 @@ class FailedToStartTransportError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 exports.FailedToStartTransportError = FailedToStartTransportError;
+
 /** Error thrown when the negotiation with the server failed to complete. */
 /** @private */
 class FailedToNegotiateWithServerError extends Error {
@@ -123,7 +136,9 @@ class FailedToNegotiateWithServerError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 exports.FailedToNegotiateWithServerError = FailedToNegotiateWithServerError;
+
 /** Error thrown when multiple errors have occurred. */
 /** @private */
 class AggregateErrors extends Error {
@@ -141,5 +156,6 @@ class AggregateErrors extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 exports.AggregateErrors = AggregateErrors;
 //# sourceMappingURL=Errors.js.map

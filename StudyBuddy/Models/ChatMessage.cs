@@ -12,11 +12,13 @@ public class ChatMessage
 
     public ChatMessage(string content, DateTime timestamp, UserId senderUserId, Guid conversationId)
     {
-        this.Content = content;
-        this.Timestamp = timestamp;
-        this.SenderUserId = senderUserId;
-        this.ConversationId = conversationId;
+        Content = content;
+        Timestamp = timestamp;
+        SenderUserId = senderUserId;
+        ConversationId = conversationId;
     }
 
-    public ChatMessage(){}
+    public ChatMessage()
+    {
+    }
 }

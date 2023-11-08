@@ -18,6 +18,7 @@ export declare enum LogLevel {
     /** The highest possible log level. Used when configuring logging to indicate that no log messages should be emitted. */
     None = 6
 }
+
 /** An abstraction that provides a sink for diagnostic messages. */
 export interface ILogger {
     /** Called by the framework to emit a diagnostic message.

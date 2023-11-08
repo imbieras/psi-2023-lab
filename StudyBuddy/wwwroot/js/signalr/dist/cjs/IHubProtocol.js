@@ -1,7 +1,7 @@
 "use strict";
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.MessageType = void 0;
 /** Defines the type of a Hub Message. */
 var MessageType;

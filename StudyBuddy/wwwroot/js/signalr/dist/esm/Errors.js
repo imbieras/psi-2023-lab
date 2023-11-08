@@ -16,6 +16,7 @@ export class HttpError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 /** Error thrown when a timeout elapses. */
 export class TimeoutError extends Error {
     /** Constructs a new instance of {@link @microsoft/signalr.TimeoutError}.
@@ -30,6 +31,7 @@ export class TimeoutError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 /** Error thrown when an action is aborted. */
 export class AbortError extends Error {
     /** Constructs a new instance of {@link AbortError}.
@@ -44,6 +46,7 @@ export class AbortError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 /** Error thrown when the selected transport is unsupported by the browser. */
 /** @private */
 export class UnsupportedTransportError extends Error {
@@ -62,6 +65,7 @@ export class UnsupportedTransportError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 /** Error thrown when the selected transport is disabled by the browser. */
 /** @private */
 export class DisabledTransportError extends Error {
@@ -80,6 +84,7 @@ export class DisabledTransportError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 /** Error thrown when the selected transport cannot be started. */
 /** @private */
 export class FailedToStartTransportError extends Error {
@@ -98,6 +103,7 @@ export class FailedToStartTransportError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 /** Error thrown when the negotiation with the server failed to complete. */
 /** @private */
 export class FailedToNegotiateWithServerError extends Error {
@@ -114,6 +120,7 @@ export class FailedToNegotiateWithServerError extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 /** Error thrown when multiple errors have occurred. */
 /** @private */
 export class AggregateErrors extends Error {
@@ -131,4 +138,5 @@ export class AggregateErrors extends Error {
         this.__proto__ = trueProto;
     }
 }
+
 //# sourceMappingURL=Errors.js.map

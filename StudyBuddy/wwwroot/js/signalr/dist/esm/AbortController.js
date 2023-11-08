@@ -10,6 +10,7 @@ export class AbortController {
         this._isAborted = false;
         this.onabort = null;
     }
+
     abort() {
         if (!this._isAborted) {
             this._isAborted = true;
@@ -18,11 +19,14 @@ export class AbortController {
             }
         }
     }
+
     get signal() {
         return this;
     }
+
     get aborted() {
         return this._isAborted;
     }
 }
+
 //# sourceMappingURL=AbortController.js.map

@@ -14,7 +14,9 @@ if (!Uint8Array.prototype.slice) {
     Object.defineProperty(Uint8Array.prototype, "slice", {
         // wrap the slice in Uint8Array so it looks like a Uint8Array.slice call
         // eslint-disable-next-line object-shorthand
-        value: function (start, end) { return new Uint8Array(Array.prototype.slice.call(this, start, end)); },
+        value: function (start, end) {
+            return new Uint8Array(Array.prototype.slice.call(this, start, end));
+        },
         writable: true,
     });
 }

@@ -1,13 +1,13 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-import { AbortController } from "./AbortController";
-import { HttpError, TimeoutError } from "./Errors";
-import { HttpClient, HttpRequest } from "./HttpClient";
-import { ILogger, LogLevel } from "./ILogger";
-import { ITransport, TransferFormat } from "./ITransport";
-import { Arg, getDataDetail, getUserAgentHeader, sendMessage } from "./Utils";
-import { IHttpConnectionOptions } from "./IHttpConnectionOptions";
+import {AbortController} from "./AbortController";
+import {HttpError, TimeoutError} from "./Errors";
+import {HttpClient, HttpRequest} from "./HttpClient";
+import {ILogger, LogLevel} from "./ILogger";
+import {ITransport, TransferFormat} from "./ITransport";
+import {Arg, getDataDetail, getUserAgentHeader, sendMessage} from "./Utils";
+import {IHttpConnectionOptions} from "./IHttpConnectionOptions";
 
 // Not exported from 'index', this type is internal.
 /** @private */
@@ -58,7 +58,7 @@ export class LongPollingTransport implements ITransport {
         }
 
         const [name, value] = getUserAgentHeader();
-        const headers = { [name]: value, ...this._options.headers };
+        const headers = {[name]: value, ...this._options.headers};
 
         const pollOptions: HttpRequest = {
             abortSignal: this._pollAbort.signal,
@@ -166,12 +166,12 @@ export class LongPollingTransport implements ITransport {
             // Send DELETE to clean up long polling on the server
             this._logger.log(LogLevel.Trace, `(LongPolling transport) sending DELETE request to ${this._url}.`);
 
-            const headers: {[k: string]: string} = {};
+            const headers: { [k: string]: string } = {};
             const [name, value] = getUserAgentHeader();
             headers[name] = value;
 
             const deleteOptions: HttpRequest = {
-                headers: { ...headers, ...this._options.headers },
+                headers: {...headers, ...this._options.headers},
                 timeout: this._options.timeout,
                 withCredentials: this._options.withCredentials,
             };

@@ -16,30 +16,30 @@
             <input type="file" class="form-control" id="avatar" name="avatar" accept="image/png, image/jpeg">
         </div>
         <div class="mb-3">
-    <label for="birthdate" class="form-label">Birth Date <span class="text-danger">*</span></label>
-    <input type="date" max="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="birthdate" name="birthdate" required>
-</div>
+            <label for="birthdate" class="form-label">Birth Date <span class="text-danger">*</span></label>
+            <input type="date" max="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="birthdate" name="birthdate" required>
+        </div>
         <div class="mb-3">
             <label for="subject" class="form-label">Main Subject <span class="text-danger">*</span></label>
             <select class="form-select" id="subject" name="subject" required>
                 @foreach (var option in new List<string>
-                    {
-                        "Natural Sciences",
-                        "Health Sciences",
-                        "Engineering & Technology",
-                        "Social Sciences",
-                        "Humanities",
-                        "Business & Management",
-                        "Arts & Design",
-                        "Mathematical Sciences",
-                        "Bio Sciences",
-                        "Law & Legal Studies",
-                        "Education",
-                        "Agriculture & Forestry"
-                    })
-                    {
-                        <option>@option</option>
-                    }
+                {
+                    "Natural Sciences",
+                    "Health Sciences",
+                    "Engineering & Technology",
+                    "Social Sciences",
+                    "Humanities",
+                    "Business & Management",
+                    "Arts & Design",
+                    "Mathematical Sciences",
+                    "Bio Sciences",
+                    "Law & Legal Studies",
+                    "Education",
+                    "Agriculture & Forestry"
+                })
+                {
+                    <option>@option</option>
+                }
             </select>
         </div>
         <div class="mb-3">
