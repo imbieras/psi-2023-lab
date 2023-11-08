@@ -74,18 +74,22 @@ public class MatchingController : Controller
         IUser? randomUser = null;
         int counter = 0;
 
-        // Keep generating random users until an unmatched and unrequested user is found
-        while (randomUser == null || await _userService.IsUserSeenAsync(currentUser.Id, randomUser.Id))
+        int totalUserCount = (await _userService.GetAllUsersAsync()).Count();
+
+        while (true)
         {
             randomUser = _userService.GetRandomUser();
-            if (randomUser != null && randomUser.Id == currentUser.Id)
-            {
-                randomUser = null;
-                continue;
-            }
 
             counter++;
-            if (counter > (await _userService.GetAllUsersAsync()).Count())
+
+            if (randomUser == null || randomUser.Id == currentUser.Id ||
+                (counter > totalUserCount && randomUser.Id != currentUser.Id))
+            {
+                randomUser = null;
+                break;
+            }
+
+            if (!await _userService.IsUserSeenAsync(currentUser.Id, randomUser.Id))
             {
                 randomUser = null;
                 break;

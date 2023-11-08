@@ -5,9 +5,6 @@ using StudyBuddy.Data.Repositories.MatchRepository;
 using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Data.Repositories.ChatRepository;
-using StudyBuddy.Middlewares;
-using StudyBuddy.Services.MatchingService;
-using StudyBuddy.Services.UserService;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Controllers.ChatController;
@@ -28,20 +25,18 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 builder.Services.AddScoped<IMatchRequestRepository, MatchRequestRepository>();
-builder.Services.AddScoped<ChatRepository, ChatRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 builder.Services.AddScoped<IMatchingService, MatchingService>();
-builder.Services.AddScoped<ChatService, ChatService>();
-
+builder.Services.AddScoped<IChatService, ChatService>();
 
 // Registering implementations for DI
 builder.Services.AddScoped<FileManager>();
 builder.Services.AddDbContext<StudyBuddyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddMvc();
 builder.Services.AddSignalR();
 
