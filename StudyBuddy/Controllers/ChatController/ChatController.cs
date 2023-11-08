@@ -10,6 +10,7 @@ using StudyBuddy.Services;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.Services.MatchingService;
 using NuGet.Protocol.Plugins;
+using StudyBuddy.Data.Repositories.ChatRepository;
 
 namespace StudyBuddy.Controllers.ChatController
 {
@@ -20,16 +21,18 @@ namespace StudyBuddy.Controllers.ChatController
         private readonly IUserService _userService;
         private readonly IUserSessionService _userSessionService;
         private readonly IMatchingService _matchingService;
-        private readonly MessageService _messageService;
+        private readonly ChatRepository _chatRepository;
+        private readonly ChatService _chatService;
 
-        public ChatController(IHubContext<ChatHub> hubContext, IUserService userService, MessageService messageService,
-            IUserSessionService userSessionService, IMatchingService matchingService)
+        public ChatController(IHubContext<ChatHub> hubContext, IUserService userService, ChatRepository chatRepository,
+            IUserSessionService userSessionService, IMatchingService matchingService, ChatService chatService)
         {
             _hubContext = hubContext;
             _userService = userService;
-            _messageService = messageService;
+            _chatRepository = chatRepository;
             _userSessionService = userSessionService;
             _matchingService = matchingService;
+            _chatService = chatService;
 
         }
 
@@ -149,7 +152,13 @@ namespace StudyBuddy.Controllers.ChatController
                 }
 
             }
-            List<Models.Message> messageList = _messageService.GetMessages(groupName.ToString());
+            List<ChatMessage> messageList = (List<ChatMessage>)await _chatService.GetMessagesByConversationAsync(groupName);
+            Console.Out.WriteLine("\n\n" + messageList.Count());
+            foreach (var message in messageList)
+            {
+                await Console.Out.WriteLineAsync("\n\nmessage");
+                await Console.Out.WriteLineAsync(message.Content);
+            }
 
             // Pass both the current user and the other user to the view
             var viewModel = new ChatViewModel

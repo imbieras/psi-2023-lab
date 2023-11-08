@@ -46,17 +46,6 @@
                     <div class="col-12 col-lg-5 col-xl-3 border-end">
 
                         <ul class="list-group">
-                            <li class="list-group-item border border-0">
-                                <a href="#" class="text-decoration-none text-reset">
-                                    <div class="d-flex align-items-start">
-                                        <!-- Use the sender's avatar from your model -->
-                                        <img src="@Model.CurrentUser.Traits.AvatarPath" class="rounded-circle me-1" alt="@Model.CurrentUser.Name" width="40" height="40">
-                                        <div class="fw-bold flex-grow-1 ms-3">
-                                            @Model.CurrentUser.Name
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
                             @foreach (var user in Model.Matches)
                             {
                                 <li class="list-group-item border border-0">

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Data.Repositories.ChatRepository;
 using StudyBuddy.Models;
 using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
@@ -14,12 +15,15 @@ public class ChatHub : Hub
 
     private readonly IUserService _userService;
     private readonly MessageService _messageService;
+    private readonly ChatRepository _chatRepository;
+    private readonly ChatService _chatService;
 
 
-    public ChatHub(IUserService userService, MessageService messageService)
+    public ChatHub(IUserService userService, MessageService messageService, ChatRepository chatRepository)
     {
         _userService = userService;
         _messageService = messageService;
+        _chatRepository = chatRepository;
     }
 
 
@@ -29,6 +33,8 @@ public class ChatHub : Hub
         string receiver = httpContext.Request.Query["receiver"];
         string sender = httpContext.Request.Query["sender"];
 
+        UserId.TryParse(receiver, out UserId receiverId);
+        UserId.TryParse(sender, out UserId senderId);
 
 
         if (!string.IsNullOrEmpty(sender) && !string.IsNullOrEmpty(receiver))
@@ -51,6 +57,7 @@ public class ChatHub : Hub
             }
 
             Guid groupName = new Guid(bytes1);
+            Conversation conversation = new Conversation(senderId, receiverId);
 
 
             Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " + receiver + "\nGROUP_NAME: " + groupName);
@@ -63,7 +70,7 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
 
-    public Task SendMessageToGroup(Guid groupName, string message)
+    public async Task SendMessageToGroup(Guid groupName, string message)
     {
         HttpContext httpContext = Context.GetHttpContext();
 
@@ -72,19 +79,19 @@ public class ChatHub : Hub
 
 
         UserId.TryParse(httpContext.Request.Query["sender"], out UserId senderId);
+        UserId.TryParse(httpContext.Request.Query["receiver"], out UserId receiverId);
 
-        //ChatMessage chatMessage = new ChatMessage(message, DateTime.Now, senderId, groupName);
-        Message sentMessage = new Message();
-        sentMessage.SenderId = senderId;
-        sentMessage.Text = message;
-        sentMessage.Time = DateTime.UtcNow;
+        ChatMessage chatMessage = new ChatMessage(message, DateTime.UtcNow, senderId, groupName);
 
-        Console.WriteLine($"SENDING MESSAGE TO:{sender} TEXT:{message} GROUP NAME {groupName}");
+        Console.WriteLine($"SENDING MESSAGE TO:{sender} TEXT:{message} GROUP NAME {groupName.ToString()}");
 
-        _messageService.AddMessage(groupName.ToString(), sentMessage);
+
+
+        await _chatRepository.AddMessageAsync(chatMessage);
+
 
         // Broadcast the message to the conversation group
-        return Clients.Group(groupName.ToString()).SendAsync("ReceiveMessage", sender, message);
+        await Clients.Group(groupName.ToString()).SendAsync("ReceiveMessage", sender, message);
     }
 
 

@@ -4,6 +4,7 @@ using StudyBuddy.Data.Repositories;
 using StudyBuddy.Data.Repositories.MatchRepository;
 using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Managers.FileManager;
+using StudyBuddy.Data.Repositories.ChatRepository;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Services.MatchingService;
 using StudyBuddy.Services.UserService;
@@ -27,11 +28,13 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 builder.Services.AddScoped<IMatchRequestRepository, MatchRequestRepository>();
+builder.Services.AddScoped<ChatRepository, ChatRepository>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 builder.Services.AddScoped<IMatchingService, MatchingService>();
+builder.Services.AddScoped<ChatService, ChatService>();
 builder.Services.AddSingleton<MessageService>();
 
 // Registering implementations for DI
