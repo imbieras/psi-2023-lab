@@ -24,12 +24,11 @@ namespace StudyBuddy.Controllers.ChatController
         private readonly ChatRepository _chatRepository;
         private readonly ChatService _chatService;
 
-        public ChatController(IHubContext<ChatHub> hubContext, IUserService userService, ChatRepository chatRepository,
+        public ChatController(IHubContext<ChatHub> hubContext, IUserService userService,
             IUserSessionService userSessionService, IMatchingService matchingService, ChatService chatService)
         {
             _hubContext = hubContext;
             _userService = userService;
-            _chatRepository = chatRepository;
             _userSessionService = userSessionService;
             _matchingService = matchingService;
             _chatService = chatService;

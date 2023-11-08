@@ -14,15 +14,13 @@ public class ChatHub : Hub
 {
 
     private readonly IUserService _userService;
-    private readonly MessageService _messageService;
     private readonly ChatRepository _chatRepository;
     private readonly ChatService _chatService;
 
 
-    public ChatHub(IUserService userService, MessageService messageService, ChatRepository chatRepository)
+    public ChatHub(IUserService userService, ChatRepository chatRepository)
     {
         _userService = userService;
-        _messageService = messageService;
         _chatRepository = chatRepository;
     }
 
