@@ -91,7 +91,7 @@
                             @foreach (var message in Model.messages)
                             {
                                 var isCurrentUser = message.SenderUserId == Model.CurrentUser.Id;
-                                <div class="d-flex @(isCurrentUser ? "chat-message-left" : "chat-message-right") pb-4">
+                                <div class="@(isCurrentUser ? "chat-message-left" : "chat-message-right") pb-4">
                                     <div class="d-flex flex-shrink-1 @(isCurrentUser ? "ms-3" : "me-3")">
                                         <div>
                                             <img src="@(isCurrentUser ? Model.CurrentUser.Traits.AvatarPath : Model.OtherUser.Traits.AvatarPath)"

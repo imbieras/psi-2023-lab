@@ -93,15 +93,15 @@ public class ChatController : Controller
         // Retrieve the other user
         if (!Guid.TryParse(otherUserId, out Guid otherUserIdGuid))
         {
-            return View(LoginPath); //change later
+            return View("ChatError");
         }
 
         UserId parseOtherUserId = UserId.From(otherUserIdGuid);
         IUser? otherUser = await _userService.GetUserByIdAsync(parseOtherUserId);
 
-        if (otherUser == null)
+        if (otherUser == null || !await _matchingService.IsMatchedAsync(currentUser.Id, otherUser.Id))
         {
-            return View(LoginPath); //change later
+            return View("ChatError");
         }
 
         byte[] bytes1 = userIdGuid.ToByteArray();

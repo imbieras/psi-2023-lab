@@ -22,11 +22,6 @@ public class ChatHub : Hub
             Guid.TryParse(receiver, out Guid receiverGuid);
             Guid.TryParse(sender, out Guid senderGuid);
 
-            // Sort user IDs to ensure consistent group names regardless of user roles
-            List<string> userIds = new() { sender, receiver };
-            userIds.Sort();
-
-
             byte[] bytes1 = senderGuid.ToByteArray();
             byte[] bytes2 = receiverGuid.ToByteArray();
 
@@ -37,9 +32,6 @@ public class ChatHub : Hub
 
             Guid groupName = new(bytes1);
 
-
-            Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " +
-                              receiver + "\nGROUP_NAME: " + groupName);
             // Add the current connection to the conversation group
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName.ToString());
         }
@@ -57,9 +49,6 @@ public class ChatHub : Hub
         UserId.TryParse(sender, out UserId senderId);
 
         ChatMessage chatMessage = new(message, DateTime.UtcNow.AddHours(2), senderId, groupName);
-
-        Console.WriteLine($"SENDING MESSAGE TO:{sender} TEXT:{message} GROUP NAME {groupName.ToString()}");
-
 
         await _chatRepository.AddMessageAsync(chatMessage);
 
