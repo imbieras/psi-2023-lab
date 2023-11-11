@@ -20,7 +20,7 @@ public class MatchingService : IMatchingService
         if (await IsRequestedMatchAsync(requestedId, requesterId))
         {
             await _matchRepository.AddAsync(requesterId, requestedId);
-            await _matchRequestRepository.DeleteAsync(requestedId, requesterId);
+            await _matchRequestRepository.RemoveAsync(requestedId, requesterId);
         }
         else
         {
