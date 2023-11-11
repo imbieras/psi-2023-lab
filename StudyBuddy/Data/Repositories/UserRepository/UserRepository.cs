@@ -58,18 +58,19 @@ public class UserRepository : IUserRepository
         user.Hobbies?.Remove(hobby);
         return Task.CompletedTask;
     }
-
-    public Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId) =>
-        _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId && u.SeenUserId == otherUserId);
-
     public async Task UserSeenAsync(UserId userId, UserId otherUserId)
     {
         _context.UserSeenProfiles.Add(new UserSeenProfile(userId, otherUserId));
         await _context.SaveChangesAsync();
     }
 
-    public Task<bool> IsUserNotSeenAnyUserAsync(UserId userId) =>
-        _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
+    public Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId) =>
+        _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId && u.SeenUserId == otherUserId);
+
+    public async Task<bool> IsUserNotSeenAnyUserAsync(UserId userId)
+    {
+        return !await _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
+    }
 
     public Task<UserId> GetUltimateSeenUserAsync(UserId userId) =>
         _context.UserSeenProfiles

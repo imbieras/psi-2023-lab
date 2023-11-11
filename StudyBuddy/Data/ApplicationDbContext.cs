@@ -15,7 +15,6 @@ public class StudyBuddyDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<MatchRequest> MatchRequests { get; set; }
     public DbSet<Match> Matches { get; set; }
-    public DbSet<Conversation> Conversations { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
     public DbSet<UserSeenProfile> UserSeenProfiles { get; set; }
 
@@ -25,6 +24,7 @@ public class StudyBuddyDbContext : DbContext
 
         modelBuilder.UseValueConverterForType(typeof(UserId), UserIdConverter.UserIdToStringConverter);
         modelBuilder.UseValueConverterForType(typeof(Guid), GuidConverter.GuidToStringConverter);
+        modelBuilder.UseValueConverterForType(typeof(string[]), StringArrayConverter.StringArrayToStringConverter);
 
         // Configure Users
         modelBuilder.Entity<User>().OwnsOne(u => u.Traits);
@@ -54,13 +54,6 @@ public class StudyBuddyDbContext : DbContext
         modelBuilder.Entity<Match>()
             .HasIndex(m => new { m.User1Id, m.User2Id })
             .IsUnique();
-
-        // Configure the Conversation
-        modelBuilder.Entity<Conversation>()
-            .HasKey(c => c.Id);
-
-        modelBuilder.Entity<Conversation>()
-            .HasIndex(c => new { c.User1Id, c.User2Id }).IsUnique();
 
         // Configure the ChatMessage
         modelBuilder.Entity<ChatMessage>()
@@ -104,4 +97,11 @@ public static class GuidConverter
     public static readonly ValueConverter<Guid, string> GuidToStringConverter = new(
         v => v.ToString(),
         v => Guid.Parse(v));
+}
+
+public static class StringArrayConverter
+{
+    public static readonly ValueConverter<string[], string> StringArrayToStringConverter = new(
+        v => string.Join(',', v),
+        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 }
