@@ -20,7 +20,7 @@ public class UserRepositoryTests
 
         _dbContext = new StudyBuddyDbContext(options);
 
-        var users = GenerateUsers();
+        List<User> users = GenerateUsers();
 
         _sut = new UserRepository(_dbContext);
 
@@ -31,27 +31,27 @@ public class UserRepositoryTests
 
     private static List<User> GenerateUsers()
     {
-        var user1Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-111111111111"));
-        var user2Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-222222222222"));
-        var user3Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-333333333333"));
+        UserId user1Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-111111111111"));
+        UserId user2Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-222222222222"));
+        UserId user3Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-333333333333"));
 
-        var users = new List<User>
+        List<User> users = new()
         {
-            new(
+            new User(
             user1Id,
             "John",
             UserFlags.Registered,
             new UserTraits(DateTime.Today, "Natural Sciences", User.GenerateGravatarUrl(user1Id), "Hello", Coordinates.From((0, 0))),
             new List<string>()
             ),
-            new(
+            new User(
             user2Id,
             "Steve",
             UserFlags.Registered,
             new UserTraits(DateTime.Today.AddDays(-1), "Natural Sciences", User.GenerateGravatarUrl(user2Id), "Hello", Coordinates.From((0, 0))),
             new List<string> { "Natural Sciences", "Health Sciences" }
             ),
-            new(
+            new User(
             user3Id,
             "Peter",
             UserFlags.Registered,
@@ -320,11 +320,11 @@ public class UserRepositoryTests
     public async Task AddAsync_NonExistentUser_Adds_User()
     {
         User user = new(
-            UserId.From(Guid.NewGuid()),
-            "John",
-            UserFlags.Registered,
-            new UserTraits(DateTime.Today, "Natural Sciences", User.GenerateGravatarUrl(UserId.From(Guid.NewGuid())), "Hello", Coordinates.From((0, 0))),
-            new List<string>()
+        UserId.From(Guid.NewGuid()),
+        "John",
+        UserFlags.Registered,
+        new UserTraits(DateTime.Today, "Natural Sciences", User.GenerateGravatarUrl(UserId.From(Guid.NewGuid())), "Hello", Coordinates.From((0, 0))),
+        new List<string>()
         );
 
         await _sut.AddAsync(user);
