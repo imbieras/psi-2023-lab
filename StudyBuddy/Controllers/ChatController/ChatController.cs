@@ -93,6 +93,7 @@ public class ChatController : Controller
         // Retrieve the other user
         if (!Guid.TryParse(otherUserId, out Guid otherUserIdGuid))
         {
+            ViewBag.ErrorMessage = "Couldn't parse receivers ID.";
             return View("ChatError");
         }
 
@@ -101,6 +102,7 @@ public class ChatController : Controller
 
         if (otherUser == null || !await _matchingService.IsMatchedAsync(currentUser.Id, otherUser.Id))
         {
+            ViewBag.ErrorMessage = "Trying to chat with unmatched user.";
             return View("ChatError");
         }
 
