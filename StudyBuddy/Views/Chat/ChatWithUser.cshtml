@@ -50,9 +50,7 @@
         <div class="card">
             <div class="row ">
                 <div class="col-12 col-lg-5 col-xl-3 border-end">
-
                     <ul class="list-group">
-
                         @foreach (var user in Model.Matches)
                         {
                             <li class="list-group-item border border-0">
@@ -70,6 +68,7 @@
                         }
                     </ul>
                 </div>
+
                 <div class="col-12 col-lg-7 col-xl-9">
                     <div class="py-2 px-4 border-bottom d-none d-lg-block">
                         <div class="d-flex align-items-center py-1">
@@ -124,9 +123,7 @@
         window.onload = function () {
             document.getElementById('messageInput').focus();
         };
-    </script>
 
-    <script>
         // Function to handle the key press event
         document.getElementById('messageInput').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
@@ -134,8 +131,8 @@
                 document.getElementById('sendButton').click();
             }
         });
-    </script>
 
+    </script>
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/chat.js"></script>

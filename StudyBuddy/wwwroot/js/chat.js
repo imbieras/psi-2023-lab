@@ -6,9 +6,7 @@ var receiverId = document.getElementById("receiverId").value;
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/chat?receiver=" + document.getElementById("receiverId").value + "&sender=" + senderId) // Pass the receiver and sender parameter in the query string
     .build();
-console.log("Console result");
-console.log(document.getElementById("receiverId").value);
-console.log(document.getElementById("userId").value);
+
 //Disable send button until connection is established
 document.getElementById("sendButton").disabled = true;
 
@@ -98,8 +96,7 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     document.getElementById("messageInput").value = "";
 
     var groupName = document.getElementById("groupName").value;
-    console.log("groupName: " + groupName);
-    console.log("message:" + message);
+
     connection.invoke("SendMessageToGroup", groupName, message).catch(function (err) {
         return console.error(err.toString());
     });
