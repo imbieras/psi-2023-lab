@@ -24,13 +24,14 @@ public class StudyBuddyDbContext : DbContext
 
         modelBuilder.UseValueConverterForType(typeof(UserId), UserIdConverter.UserIdToStringConverter);
         modelBuilder.UseValueConverterForType(typeof(Guid), GuidConverter.GuidToStringConverter);
+        modelBuilder.UseValueConverterForType(typeof(List<string>), StringListConverter.StringListToStringConverter);
 
         // Configure Users
         modelBuilder.Entity<User>().OwnsOne(u => u.Traits);
 
-        modelBuilder.Entity<User>()
-            .Property(u => u.HobbiesArray)
-            .HasColumnName("HobbiesArray");
+        // modelBuilder.Entity<User>()
+        //     .Property(u => u.HobbiesArray)
+        //     .HasColumnName("HobbiesArray");
 
         // Configure Matches
         modelBuilder.Entity<MatchRequest>().HasKey(mr => new { mr.RequesterId, mr.RequestedId });
@@ -96,4 +97,11 @@ public static class GuidConverter
     public static readonly ValueConverter<Guid, string> GuidToStringConverter = new(
         v => v.ToString(),
         v => Guid.Parse(v));
+}
+
+public static class StringListConverter
+{
+    public static readonly ValueConverter<List<string>, string> StringListToStringConverter = new(
+        v => string.Join(",", v),
+        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
 }

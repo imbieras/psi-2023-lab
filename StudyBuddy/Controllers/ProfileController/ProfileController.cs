@@ -139,7 +139,9 @@ public class ProfileController : Controller
                 traits.Latitude = parsedLatitude;
             }
 
-            await _userService.RegisterUserAsync(profileDto.Name, flags, traits, profileDto.Hobbies);
+            UserId uid = await _userService.RegisterUserAsync(profileDto.Name, flags, traits, profileDto.Hobbies);
+
+            await _userService.BanUserAsync(uid);
 
             TempData["SuccessMessage"] = "Profile created successfully";
 

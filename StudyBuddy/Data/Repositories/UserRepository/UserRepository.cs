@@ -73,7 +73,15 @@ public class UserRepository : IUserRepository
 
     public async Task UpdateAsync(User user)
     {
-        _context.Users.Attach(user);
+        var local = _context.Set<User>()
+            .Local
+            .FirstOrDefault(entry => entry.Id.Equals(user.Id));
+
+        if (local != null)
+        {
+            _context.Entry(local).State = EntityState.Detached;
+        }
+
         _context.Entry(user).State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
