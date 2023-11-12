@@ -10,7 +10,7 @@ public class User : IUser, IEquatable<User>
     {
     } // Private parameterless constructor for EF
 
-    public User(UserId id, string name, UserFlags flags, UserTraits traits, List<string>? hobbies)
+    public User(UserId id, string name, UserFlags flags, UserTraits traits, List<string>? hobbies, string password)
     {
         Id = id;
         Name = name;
@@ -18,6 +18,7 @@ public class User : IUser, IEquatable<User>
         Traits = traits;
 
         Hobbies = hobbies;
+        Password = password;
     }
 
     public bool Equals(User? other)
@@ -41,6 +42,8 @@ public class User : IUser, IEquatable<User>
     public UserId Id { get; }
 
     public string Name { get; set; }
+
+    public string Password { get; set; }
 
     public UserFlags Flags { get; set; }
 

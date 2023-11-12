@@ -1,6 +1,7 @@
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Exceptions;
 using StudyBuddy.Models;
 using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
@@ -77,9 +78,12 @@ public class ProfileController : Controller
             UserId parseUserId = UserId.From(parsedGuid);
 
             IUser? user = await _userService.GetUserByIdAsync(parseUserId);
-            user.Hobbies = await _userService.GetHobbiesById(parseUserId);
+            if (user != null)
+            {
+                user.Hobbies = await _userService.GetHobbiesById(parseUserId);
 
-            return View("ViewFullProfile", user);
+                return View("ViewFullProfile", user);
+            }
         }
 
         ErrorViewModel errorModel = new() { ErrorMessage = "User not found or invalid ID." };
@@ -93,92 +97,115 @@ public class ProfileController : Controller
     {
         const UserFlags flags = UserFlags.Registered;
 
+        if (profileDto.Password != profileDto.ConfirmPassword)
+        {
+            TempData["ErrorMessage"] = "The password and confirmation password do not match.";
+            return View("CreateProfile");
+        }
+
+        string avatarPath;
         try
         {
-            string avatarPath = string.Empty;
-
-            if (profileDto.Avatar is { Length: > 0 })
-            {
-                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
-
-                // Check if the "avatars" folder exists, and create it if it doesn't
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                string uniqueFileName = Guid.NewGuid() + "_" + profileDto.Avatar.FileName;
-
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                await using FileStream fileStream = new(filePath, FileMode.Create);
-                await profileDto.Avatar.CopyToAsync(fileStream);
-
-                avatarPath = uniqueFileName;
-            }
-
-            string htmlContent = string.Empty;
-            if (profileDto.MarkdownContent != null)
-            {
-                // Convert Markdown to HTML
-                htmlContent = Markdown.ToHtml(profileDto.MarkdownContent);
-            }
-
-            UserTraits traits = new()
-            {
-                Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
-                Subject = profileDto.Subject,
-                AvatarPath = avatarPath,
-                Description = htmlContent
-            };
-
-            if (double.TryParse(profileDto.Longitude, out double parsedLongitude) &&
-                double.TryParse(profileDto.Latitude, out double parsedLatitude))
-            {
-                traits.Longitude = parsedLongitude;
-                traits.Latitude = parsedLatitude;
-            }
-
-            await _userService.RegisterUserAsync(profileDto.Name, flags, traits, profileDto.Hobbies);
-
-            TempData["SuccessMessage"] = "Profile created successfully";
-
-            return RedirectToAction("CreateProfile");
+            avatarPath = await SaveAvatarAsync(profileDto.Avatar);
         }
         catch (Exception ex)
         {
-            ErrorViewModel errorModel = new() { ErrorMessage = "Error uploading file: " + ex.Message };
-            return View("Error", errorModel);
+            TempData["ErrorMessage"] = "Error saving avatar: " + ex.Message;
+            return View("CreateProfile");
         }
+
+        string htmlContent = ConvertMarkdownToHtml(profileDto.MarkdownContent);
+        UserTraits traits = CreateUserTraits(profileDto, avatarPath, htmlContent);
+
+        try
+        {
+            await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits, profileDto.Hobbies);
+        }
+        catch (InvalidPasswordException ex)
+        {
+            // ("{8,}")
+            TempData["ErrorMessage"] = "Invalid password format. Password must be at least 8 characters long.";
+            return View("CreateProfile");
+        }
+        catch (InvalidUsernameException ex)
+        {
+            // ("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")
+            TempData["ErrorMessage"] = "Invalid username format. Username must be alphanumeric and can contain . _ -";
+            return View("CreateProfile");
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = "Error saving profile: " + ex.Message;
+            return View("CreateProfile");
+        }
+
+        TempData["SuccessMessage"] = "Profile created successfully";
+        return RedirectToAction("CreateProfile");
     }
 
-    public async Task<IActionResult> Login(string? userId)
+    private async Task<string> SaveAvatarAsync(IFormFile? avatar)
     {
-        UserId? currentUserId = _userSessionService.GetCurrentUserId();
+        if (avatar is null || avatar.Length == 0)
+        {
+            return string.Empty;
+        }
 
+        string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
+        Directory.CreateDirectory(uploadsFolder);
+
+        string uniqueFileName = Guid.NewGuid() + "_" + avatar.FileName;
+        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        await using FileStream fileStream = new(filePath, FileMode.Create);
+        await avatar.CopyToAsync(fileStream);
+
+        return uniqueFileName;
+    }
+
+    private string ConvertMarkdownToHtml(string? markdownContent)
+    {
+        return markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
+    }
+
+    private UserTraits CreateUserTraits(ProfileDto profileDto, string avatarPath, string htmlContent)
+    {
+        UserTraits traits = new()
+        {
+            Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
+            Subject = profileDto.Subject,
+            AvatarPath = avatarPath,
+            Description = htmlContent
+        };
+
+        if (double.TryParse(profileDto.Longitude, out double longitude) &&
+            double.TryParse(profileDto.Latitude, out double latitude))
+        {
+            traits.Longitude = longitude;
+            traits.Latitude = latitude;
+        }
+
+        return traits;
+    }
+
+    public async Task<IActionResult> Login(string? username, string? password)
+    {
+        // Check if the user is already logged in
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
         if (currentUserId != null && await _userService.GetUserByIdAsync(currentUserId.Value) != null)
         {
             return RedirectToAction("Index", "Home");
         }
 
-        if (string.IsNullOrEmpty(userId))
+        // Show the login view if the credentials are not provided
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            return View(userId);
+            return View();
         }
 
-        if (!Guid.TryParse(userId, out Guid userIdGuid))
+        // Authenticate the user
+        if (!await _userSessionService.AuthenticateUser(username, password))
         {
-            TempData["ErrorMessage"] = "Invalid user ID format";
-            return RedirectToAction("Login");
-        }
-
-        UserId parseUserId = UserId.From(userIdGuid);
-
-        IUser? user = await _userService.GetUserByIdAsync(parseUserId);
-
-        if (user == null)
-        {
-            TempData["ErrorMessage"] = "No such user found";
+            TempData["ErrorMessage"] = "Invalid username or password";
             return RedirectToAction("Login");
         }
 
@@ -190,8 +217,7 @@ public class ProfileController : Controller
             SameSite = SameSiteMode.Strict,
             Secure = true
         };
-
-        Response.Cookies.Append("UserId", userId, cookieOptions);
+        Response.Cookies.Append("UserId", _userSessionService.GetCurrentUserId().ToString()!, cookieOptions);
 
         return RedirectToAction("Index", "Home");
     }

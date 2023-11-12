@@ -13,4 +13,5 @@ public interface IUser
 
     UserTraits Traits { get; set; }
     public List<string>? Hobbies { get; set; }
+    public string Password { get; set; }
 }

@@ -52,7 +52,7 @@ public class FileManager
                     Birthdate = birthdate, Subject = subject, AvatarPath = avatarPath, Description = description
                 };
 
-                _userService.RegisterUserAsync(username, flags, traits, hobbies);
+                _userService.RegisterUserAsync(username, "password123",flags, traits, hobbies);
             }
 
             Console.WriteLine($"Loaded {records.Count} users from the CSV file.");

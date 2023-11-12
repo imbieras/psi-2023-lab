@@ -34,12 +34,15 @@ public partial class UserService : IUserService
         }
     }
 
-    public async Task<UserId> RegisterUserAsync(string username, UserFlags flags, UserTraits traits,
-        List<string> hobbies)
+    public async Task<UserId> RegisterUserAsync(string username, string password, UserFlags flags, UserTraits traits, List<string> hobbies)
     {
-        if (!MyRegex().IsMatch(username))
+        if (!UsernameRegex().IsMatch(username))
         {
-            throw new InvalidUsernameException("Invalid username format" + username);
+            throw new InvalidUsernameException("Invalid username format");
+        }
+        if (!PasswordRegex().IsMatch(password))
+        {
+            throw new InvalidPasswordException("Invalid password format");
         }
 
         UserId userId = UserId.From(Guid.NewGuid());
@@ -49,7 +52,9 @@ public partial class UserService : IUserService
             traits.AvatarPath = User.GenerateGravatarUrl(userId);
         }
 
-        User newUser = new(userId, username, flags, traits, hobbies);
+        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+
+        User newUser = new(userId, username, flags, traits, hobbies, hashedPassword);
         await _userRepository.AddAsync(newUser);
 
         return userId;
@@ -60,7 +65,6 @@ public partial class UserService : IUserService
         await _userRepository.AddHobbiesToUserAsync(user, hobbies);
 
 
-    // TODO: We can add a custom exception here
     public async Task AddHobbiesToUserAsync(UserId userId, List<string> hobbies)
     {
         User? user = await _userRepository.GetByIdAsync(userId);
@@ -102,5 +106,8 @@ public partial class UserService : IUserService
         await _userRepository.UserSeenAsync(userId, otherUserId);
 
     [GeneratedRegex("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")]
-    private static partial Regex MyRegex();
+    private static partial Regex UsernameRegex();
+
+    [GeneratedRegex(".{8,}")]
+    private static partial Regex PasswordRegex();
 }
