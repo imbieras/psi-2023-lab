@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Data.Repositories.ChatRepository;
 using StudyBuddy.Models;
+using StudyBuddy.Services.ChatService;
+using StudyBuddy.Utilities;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Hubs;
 
 public class ChatHub : Hub
 {
-    private readonly IChatRepository _chatRepository;
+    private readonly IChatService _chatService;
 
-    public ChatHub(IChatRepository chatRepository) => _chatRepository = chatRepository;
+    public ChatHub(IChatService chatService) => _chatService = chatService;
 
     public override async Task OnConnectedAsync()
     {
@@ -22,21 +24,7 @@ public class ChatHub : Hub
             Guid.TryParse(receiver, out Guid receiverGuid);
             Guid.TryParse(sender, out Guid senderGuid);
 
-            // Sort user IDs to ensure consistent group names regardless of user roles
-            List<string> userIds = new() { sender, receiver };
-            userIds.Sort();
-
-
-            byte[] bytes1 = senderGuid.ToByteArray();
-            byte[] bytes2 = receiverGuid.ToByteArray();
-
-            for (int i = 0; i < bytes1.Length; i++)
-            {
-                bytes1[i] = (byte)(bytes1[i] ^ bytes2[i]);
-            }
-
-            Guid groupName = new(bytes1);
-
+            Guid groupName = ConversationIdHelper.GetGroupId(senderGuid, receiverGuid);
 
             Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " +
                               receiver + "\nGROUP_NAME: " + groupName);
@@ -60,8 +48,7 @@ public class ChatHub : Hub
 
         Console.WriteLine($"SENDING MESSAGE TO:{sender} TEXT:{message} GROUP NAME {groupName.ToString()}");
 
-
-        await _chatRepository.AddMessageAsync(chatMessage);
+        await _chatService.AddMessageAsync(chatMessage);
 
         // Broadcast the message to the conversation group
         await Clients.Group(groupName.ToString()).SendAsync("ReceiveMessage", sender, message);

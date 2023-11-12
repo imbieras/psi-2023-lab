@@ -12,8 +12,6 @@ public class MatchRepository : IMatchRepository
 
     public async Task<IEnumerable<Match>> GetAllAsync() => await _context.Matches.ToListAsync();
 
-    public async Task<Match?> GetByIdAsync(int matchId) => await _context.Matches.FindAsync(matchId);
-
     public async Task AddAsync(UserId user1Id, UserId user2Id)
     {
         await _context.Matches.AddAsync(new Match(user1Id, user2Id));
@@ -31,6 +29,7 @@ public class MatchRepository : IMatchRepository
         if (match != null)
         {
             _context.Matches.Remove(match);
+            await _context.SaveChangesAsync();
         }
         else
         {

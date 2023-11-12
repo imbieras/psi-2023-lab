@@ -20,20 +20,6 @@ public class UserRepository : IUserRepository
         return user?.Hobbies;
     }
 
-    public async Task UpdateAsync(User user, List<string>? updatedHobbies = null)
-    {
-        _context.Users.Update(user);
-
-        if (updatedHobbies != null)
-        {
-            // Remove all hobbies from the user
-            user.Hobbies?.Clear();
-            await AddHobbiesToUserAsync(user, updatedHobbies);
-        }
-
-        await _context.SaveChangesAsync();
-    }
-
     public async Task DeleteAsync(UserId userId)
     {
         User? user = await _context.Users.FindAsync(userId);
@@ -46,30 +32,19 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> UserExistsAsync(UserId userId) => await _context.Users.AnyAsync(u => u.Id == userId);
 
-    public async Task AddHobbiesToUserAsync(User user, List<string> hobbies)
-    {
-        user.Hobbies ??= new List<string>();
-
-        await _context.SaveChangesAsync();
-    }
-
-    public Task RemoveHobbyFromUserAsync(User user, string hobby)
-    {
-        user.Hobbies?.Remove(hobby);
-        return Task.CompletedTask;
-    }
-
-    public Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId) =>
-        _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId && u.SeenUserId == otherUserId);
-
     public async Task UserSeenAsync(UserId userId, UserId otherUserId)
     {
         _context.UserSeenProfiles.Add(new UserSeenProfile(userId, otherUserId));
         await _context.SaveChangesAsync();
     }
 
-    public Task<bool> IsUserNotSeenAnyUserAsync(UserId userId) =>
-        _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
+    public Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId) =>
+        _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId && u.SeenUserId == otherUserId);
+
+    public async Task<bool> IsUserNotSeenAnyUserAsync(UserId userId)
+    {
+        return !await _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
+    }
 
     public Task<UserId> GetUltimateSeenUserAsync(UserId userId) =>
         _context.UserSeenProfiles
@@ -85,6 +60,21 @@ public class UserRepository : IUserRepository
             .Select(u => u.SeenUserId)
             .Skip(1)
             .FirstOrDefaultAsync();
+
+    public async Task UpdateAsync(User user)
+    {
+        var local = _context.Set<User>()
+            .Local
+            .FirstOrDefault(entry => entry.Id.Equals(user.Id));
+
+        if (local != null)
+        {
+            _context.Entry(local).State = EntityState.Detached;
+        }
+
+        _context.Entry(user).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+    }
 
     public async Task AddAsync(User user)
     {
