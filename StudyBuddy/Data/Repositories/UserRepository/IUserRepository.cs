@@ -9,7 +9,6 @@ public interface IUserRepository
     Task<IEnumerable<User>> GetAllAsync();
     Task<User?> GetByIdAsync(UserId userId);
     Task<List<string>?> GetHobbiesByIdAsync(UserId userId);
-    Task UpdateHobbiesAsync(UserId userId, List<string>? updatedHobbies);
     Task DeleteAsync(UserId userId);
     Task<bool> UserExistsAsync(UserId userId);
     Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId);

@@ -18,5 +18,5 @@ public interface IUserService
     Task<bool> IsUserNotSeenAnyUserAsync(UserId userId);
     Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId);
     Task UserSeenAsync(UserId userId, UserId otherUserId);
-    Task UpdateHobbiesAsync(UserId userid, List<string> hobbies);
+    Task UpdateAsync(IUser user);
 }

@@ -55,9 +55,13 @@ public partial class UserService : IUserService
         return userId;
     }
 
-    public async Task UpdateHobbiesAsync(UserId userId, List<string>? hobbies)
+    public async Task UpdateAsync(IUser user)
     {
-        await _userRepository.UpdateHobbiesAsync(userId, hobbies);
+        User? userToUpdate = await _userRepository.GetByIdAsync(user.Id);
+        if (userToUpdate != null)
+        {
+            await _userRepository.UpdateAsync(userToUpdate);
+        }
     }
 
     public IUser? GetRandomUser()

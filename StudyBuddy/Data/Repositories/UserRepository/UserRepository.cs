@@ -20,16 +20,6 @@ public class UserRepository : IUserRepository
         return user?.Hobbies;
     }
 
-    public async Task UpdateHobbiesAsync(UserId userId, List<string>? updatedHobbies)
-    {
-        User? user = await _context.Users.FindAsync(userId);
-        if (user != null)
-        {
-            user.Hobbies = updatedHobbies;
-            await _context.SaveChangesAsync();
-        }
-    }
-
     public async Task DeleteAsync(UserId userId)
     {
         User? user = await _context.Users.FindAsync(userId);
