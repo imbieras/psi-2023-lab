@@ -20,18 +20,14 @@ public class UserRepository : IUserRepository
         return user?.Hobbies;
     }
 
-    public async Task UpdateAsync(User user, List<string>? updatedHobbies = null)
+    public async Task UpdateHobbiesAsync(UserId userId, List<string>? updatedHobbies)
     {
-        _context.Users.Update(user);
-
-        if (updatedHobbies != null)
+        User? user = await _context.Users.FindAsync(userId);
+        if (user != null)
         {
-            // Remove all hobbies from the user
-            user.Hobbies?.Clear();
-            await AddHobbiesToUserAsync(user, updatedHobbies);
+            user.Hobbies = updatedHobbies;
+            await _context.SaveChangesAsync();
         }
-
-        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(UserId userId)
@@ -46,18 +42,6 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> UserExistsAsync(UserId userId) => await _context.Users.AnyAsync(u => u.Id == userId);
 
-    public async Task AddHobbiesToUserAsync(User user, List<string> hobbies)
-    {
-        user.Hobbies ??= new List<string>();
-
-        await _context.SaveChangesAsync();
-    }
-
-    public Task RemoveHobbyFromUserAsync(User user, string hobby)
-    {
-        user.Hobbies?.Remove(hobby);
-        return Task.CompletedTask;
-    }
     public async Task UserSeenAsync(UserId userId, UserId otherUserId)
     {
         _context.UserSeenProfiles.Add(new UserSeenProfile(userId, otherUserId));
@@ -86,6 +70,13 @@ public class UserRepository : IUserRepository
             .Select(u => u.SeenUserId)
             .Skip(1)
             .FirstOrDefaultAsync();
+
+    public async Task UpdateAsync(User user)
+    {
+        _context.Users.Attach(user);
+        _context.Entry(user).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+    }
 
     public async Task AddAsync(User user)
     {

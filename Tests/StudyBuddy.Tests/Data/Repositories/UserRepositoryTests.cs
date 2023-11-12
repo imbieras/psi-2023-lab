@@ -73,7 +73,6 @@ public class UserRepositoryTests
             }
             )
         };
-
         return users;
     }
 
@@ -186,37 +185,6 @@ public class UserRepositoryTests
         bool actual = await _sut.UserExistsAsync(UserId.From(Guid.NewGuid()));
 
         Assert.False(actual);
-    }
-
-    [Fact]
-    public async Task AddHobbiesToUserAsync_ExistingUser_Adds_Hobbies()
-    {
-        List<User> users = GenerateUsers();
-        User user = users[0];
-        List<string> hobbies = new() { "Natural Sciences", "Health Sciences" };
-
-        await _sut.AddHobbiesToUserAsync(user, hobbies);
-
-        User? actual = await _sut.GetByIdAsync(user.Id);
-
-        Assert.Equal(hobbies, actual?.Hobbies);
-    }
-
-    [Fact]
-    public async Task RemoveHobbyFromUserAsync_ExistingUser_Removes_Hobby()
-    {
-        List<User> users = GenerateUsers();
-        User user = users[1];
-        const string hobby = "Natural Sciences";
-
-        await _sut.RemoveHobbyFromUserAsync(user, hobby);
-
-        User? actual = await _sut.GetByIdAsync(user.Id);
-
-        if (actual?.Hobbies != null)
-        {
-            Assert.DoesNotContain(hobby, actual.Hobbies);
-        }
     }
 
     [Fact]

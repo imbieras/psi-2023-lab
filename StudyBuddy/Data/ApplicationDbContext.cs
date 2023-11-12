@@ -24,7 +24,6 @@ public class StudyBuddyDbContext : DbContext
 
         modelBuilder.UseValueConverterForType(typeof(UserId), UserIdConverter.UserIdToStringConverter);
         modelBuilder.UseValueConverterForType(typeof(Guid), GuidConverter.GuidToStringConverter);
-        modelBuilder.UseValueConverterForType(typeof(string[]), StringArrayConverter.StringArrayToStringConverter);
 
         // Configure Users
         modelBuilder.Entity<User>().OwnsOne(u => u.Traits);
@@ -97,11 +96,4 @@ public static class GuidConverter
     public static readonly ValueConverter<Guid, string> GuidToStringConverter = new(
         v => v.ToString(),
         v => Guid.Parse(v));
-}
-
-public static class StringArrayConverter
-{
-    public static readonly ValueConverter<string[], string> StringArrayToStringConverter = new(
-        v => string.Join(',', v),
-        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 }
