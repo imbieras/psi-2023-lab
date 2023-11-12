@@ -29,10 +29,6 @@ public class StudyBuddyDbContext : DbContext
         // Configure Users
         modelBuilder.Entity<User>().OwnsOne(u => u.Traits);
 
-        // modelBuilder.Entity<User>()
-        //     .Property(u => u.HobbiesArray)
-        //     .HasColumnName("HobbiesArray");
-
         // Configure Matches
         modelBuilder.Entity<MatchRequest>().HasKey(mr => new { mr.RequesterId, mr.RequestedId });
 
