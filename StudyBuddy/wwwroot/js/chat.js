@@ -1,14 +1,14 @@
 ﻿"use strict";
 
-var senderId = document.getElementById("senderInput").value;
-var receiverId = document.getElementById("receiverInput").value;
+var senderId = document.getElementById("userId").value;
+var receiverId = document.getElementById("receiverId").value;
 
 var connection = new signalR.HubConnectionBuilder()
-    .withUrl("/chat?receiver=" + document.getElementById("receiverInput").value + "&sender=" + senderId) // Pass the receiver and sender parameter in the query string
+    .withUrl("/chat?receiver=" + document.getElementById("receiverId").value + "&sender=" + senderId) // Pass the receiver and sender parameter in the query string
     .build();
 console.log("Console result");
-console.log(document.getElementById("receiverInput").value);
-console.log(document.getElementById("senderInput").value);
+console.log(document.getElementById("receiverId").value);
+console.log(document.getElementById("userId").value);
 //Disable send button until connection is established
 document.getElementById("sendButton").disabled = true;
 
@@ -92,8 +92,8 @@ connection.start().then(function () {
 });
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    var sender = document.getElementById("senderInput").value;
-    var receiver = document.getElementById("receiverInput").value;
+    var sender = document.getElementById("userId").value;
+    var receiver = document.getElementById("receiverId").value;
     var message = document.getElementById("messageInput").value;
     document.getElementById("messageInput").value = "";
 
