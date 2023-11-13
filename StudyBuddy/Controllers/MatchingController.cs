@@ -81,7 +81,7 @@ public class MatchingController : Controller
 
         while (true)
         {
-            randomUser = _userService.GetRandomUser();
+            randomUser = await _userService.GetRandomUserAsync();
 
             counter++;
 
