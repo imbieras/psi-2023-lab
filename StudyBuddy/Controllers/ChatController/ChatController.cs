@@ -141,7 +141,6 @@ public class ChatController : Controller
         List<ChatMessage> messageList =
             (List<ChatMessage>)await _chatService.GetMessagesByConversationAsync(groupName);
 
-        // Pass both the current user and the other user to the view
         ChatViewModel viewModel = new()
         {
             CurrentUser = currentUser,

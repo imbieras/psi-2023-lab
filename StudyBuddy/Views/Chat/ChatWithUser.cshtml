@@ -128,7 +128,10 @@
         document.getElementById('messageInput').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                document.getElementById('sendButton').click();
+                var message = document.getElementById('messageInput').value.trim(); // Check the message content
+                if (message !== '') {
+                    document.getElementById('sendButton').click();
+                }
             }
         });
 

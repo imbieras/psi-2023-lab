@@ -48,7 +48,7 @@ public class ChatHub : Hub
 
         UserId.TryParse(sender, out UserId senderId);
 
-        ChatMessage chatMessage = new(message, DateTime.UtcNow.AddHours(2), senderId, groupName);
+        ChatMessage chatMessage = new(message, DateTime.UtcNow, senderId, groupName);
 
         await _chatRepository.AddMessageAsync(chatMessage);
 
