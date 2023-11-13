@@ -28,14 +28,11 @@ connection.on("ReceiveMessage", function (user, message) {
     `;
 
     let textDiv = document.createElement("div");
-    textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", user === userId.value ? "me-3" : "ms-3");
+    textDiv.classList.add("text-break", "flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", user === userId.value ? "me-3" : "ms-3");
 
     let userLabel = document.createElement("div");
     userLabel.classList.add("fw-bold", "mb-1");
     userLabel.textContent = user === userId.value ? "You" : receiverName.value;
-
-    // Wrap the message at 80 characters
-    message = wrapText(message, 80);
 
     let messageText = document.createElement("div");
     messageText.textContent = message;
@@ -48,23 +45,6 @@ connection.on("ReceiveMessage", function (user, message) {
     messageList.appendChild(messageContainer);
     scrollToBottom();
 });
-
-// Function to wrap text at a specified character limit
-function wrapText(text, limit) {
-    let result = '';
-    while (text.length > limit) {
-        let chunk = text.slice(0, limit);
-        let lastSpace = chunk.lastIndexOf(' ');
-        if (lastSpace !== -1) {
-            result += chunk.slice(0, lastSpace + 1) + '\n';
-            text = text.slice(lastSpace + 1);
-        } else {
-            result += chunk + '\n';
-            text = text.slice(limit);
-        }
-    }
-    return result + text;
-}
 
 function scrollToBottom() {
     let chatMessages = document.getElementById("messagesList");

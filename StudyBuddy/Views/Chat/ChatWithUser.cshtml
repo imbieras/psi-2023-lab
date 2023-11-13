@@ -97,7 +97,7 @@
                                     </div>
                                     <div class="flex-shrink-1 bg-light rounded py-2 px-3 @(isCurrentUser ? "me-3" : "ms-3")">
                                         <div class="fw-bold mb-1">@(isCurrentUser ? "You" : Model.OtherUser.Name)</div>
-                                        <div>
+                                            <div class="text-break">
                                             @message.Content
                                         </div>
                                     </div>
