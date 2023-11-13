@@ -138,10 +138,17 @@ public class ChatController : Controller
             }
         }
 
-        List<ChatMessage> messageList =
-            (List<ChatMessage>)await _chatService.GetMessagesByConversationAsync(groupName);
+        List<ChatMessage> messageList = (List<ChatMessage>)await _chatService.GetMessagesByConversationAsync(groupName);
 
-        ChatViewModel viewModel = new()
+        TimeZoneInfo userTimeZone = TimeZoneInfo.Local;
+
+        // Convert UTC timestamps to the user's local time zone
+        foreach (var message in messageList)
+        {
+            message.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(message.Timestamp, userTimeZone);
+        }
+
+        ChatViewModel viewModel = new ChatViewModel
         {
             CurrentUser = currentUser,
             OtherUser = otherUser,

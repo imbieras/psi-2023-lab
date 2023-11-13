@@ -99,7 +99,7 @@ document.getElementById("sendButton").addEventListener("click", function (event)
             return console.error(err.toString());
         });
     }
-    messageInput.value = ""; // Irrespective of whether sent or not, clear the input field
+    messageInput.value = ""; // clear the input field
     event.preventDefault();
 });
 
