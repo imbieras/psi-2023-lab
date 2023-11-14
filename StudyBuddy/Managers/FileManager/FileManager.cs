@@ -9,7 +9,7 @@ namespace StudyBuddy.Managers.FileManager;
 
 public class FileManager
 {
-    private const string CsvDelimiter = ";";
+    public const string CsvDelimiter = ";";
     private readonly IUserService _userService;
 
     public FileManager(IUserService userService) => _userService = userService;

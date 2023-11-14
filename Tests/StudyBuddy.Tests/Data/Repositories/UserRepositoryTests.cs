@@ -49,7 +49,7 @@ public class UserRepositoryTests
             "Steve",
             UserFlags.Registered,
             new UserTraits(DateTime.Today.AddDays(-1), "Natural Sciences", User.GenerateGravatarUrl(user2Id), "Hello", Coordinates.From((0, 0))),
-            new List<string> { "Natural Sciences", "Health Sciences" }
+            new List<string> { "Playing an instrument", "Painting" }
             ),
             new User(
             user3Id,
@@ -58,18 +58,36 @@ public class UserRepositoryTests
             new UserTraits(DateTime.Today.AddDays(-2), "Natural Sciences", User.GenerateGravatarUrl(user3Id), "Hello", Coordinates.From((0, 0))),
             new List<string>
             {
-                "Natural Sciences",
-                "Health Sciences",
-                "Engineering & Technology",
-                "Social Sciences",
-                "Humanities",
-                "Business & Management",
-                "Arts & Design",
-                "Mathematical Sciences",
-                "Bio Sciences",
-                "Law & Legal Studies",
-                "Education",
-                "Agriculture & Forestry"
+                "Reading",
+                "Drawing",
+                "Playing an instrument",
+                "Painting",
+                "Cooking",
+                "Gardening",
+                "Photography",
+                "Writing",
+                "Hiking",
+                "Cycling",
+                "Singing",
+                "Dancing",
+                "Yoga",
+                "Meditation",
+                "Chess",
+                "Video gaming",
+                "Binge-watching",
+                "Crafting",
+                "Collecting",
+                "Baking",
+                "Fitness",
+                "Rock climbing",
+                "Skiing or snowboarding",
+                "Surfing",
+                "Scuba diving",
+                "Tabletop gaming",
+                "Birdwatching",
+                "Volunteering",
+                "Traveling",
+                "Auto mechanics"
             }
             )
         };

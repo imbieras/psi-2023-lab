@@ -12,7 +12,7 @@ public interface IUserService
     Task<IUser?> GetUserByUsernameAsync(string username);
     Task BanUserAsync(UserId userId);
     Task<UserId> RegisterUserAsync(string username, string password, UserFlags flags, UserTraits traits, List<string> hobbies);
-    IUser? GetRandomUser();
+    Task<IUser?> GetRandomUserAsync();
     Task<IUser?> GetUltimateSeenUserAsync(UserId userId);
     Task<IUser?> GetPenultimateSeenUserAsync(UserId userId);
     Task<bool> IsUserNotSeenAnyUserAsync(UserId userId);
