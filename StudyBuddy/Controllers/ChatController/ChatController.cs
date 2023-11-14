@@ -66,7 +66,7 @@ public class ChatController : Controller
         }
 
         // Pass both the current user and the other user to the view
-        ChatViewModel viewModel = new ChatViewModel { CurrentUser = currentUser, Matches = userList };
+        ChatViewModel viewModel = new() { CurrentUser = currentUser, Matches = userList };
 
 
         return View(viewModel);
@@ -148,7 +148,7 @@ public class ChatController : Controller
             message.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(message.Timestamp, userTimeZone);
         }
 
-        ChatViewModel viewModel = new ChatViewModel
+        ChatViewModel viewModel = new()
         {
             CurrentUser = currentUser,
             OtherUser = otherUser,

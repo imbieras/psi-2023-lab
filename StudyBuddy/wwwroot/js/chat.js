@@ -56,9 +56,7 @@ function getCurrentTime() {
     let date = new Date(currentUnixTimestamp * 1000)
     let hours = date.getHours();
     let minutes = "0" + date.getMinutes();
-    let formattedTime = hours + ':' + minutes.substr(-2);
-
-    return formattedTime;
+    return hours + ':' + minutes.slice(-2);
 }
 
 
