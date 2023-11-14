@@ -66,7 +66,7 @@ public class ChatController : Controller
         }
 
         // Pass both the current user and the other user to the view
-        ChatViewModel? viewModel = new ChatViewModel { CurrentUser = currentUser, Matches = userList };
+        ChatViewModel viewModel = new ChatViewModel { CurrentUser = currentUser, Matches = userList };
 
 
         return View(viewModel);
