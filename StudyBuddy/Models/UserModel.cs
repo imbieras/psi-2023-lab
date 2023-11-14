@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using StudyBuddy.Abstractions;
 using StudyBuddy.ValueObjects;
 

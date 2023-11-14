@@ -1,5 +1,4 @@
 using StudyBuddy.Abstractions;
-using StudyBuddy.Models;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 
@@ -23,7 +22,7 @@ public class UserSessionService : IUserSessionService
     public async Task<bool> AuthenticateUser(string username, string password)
     {
         IUser? user = await _userService.GetUserByUsernameAsync(username);
-        if (user == null || BCrypt.Net.BCrypt.Verify(password, user.Password))
+        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
         {
             return false;
         }

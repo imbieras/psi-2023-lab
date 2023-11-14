@@ -14,6 +14,7 @@
         <div class="mb-3">
             <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
             <input type="password" class="form-control" id="password" name="password" required>
+            <div id="passworderror" class="text-danger"></div>
         </div>
         <div class="mb-3">
             <label for="confirmpassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
@@ -208,8 +209,27 @@
         return true;
     }
 
+
+    function validatePassword() {
+        const passwordInput = document.getElementById('password');
+        const passwordConfirmInput = document.getElementById('confirmpassword');
+        const passwordError = document.getElementById('passwordError');
+
+        if (passwordInput.value.length < 8) {
+            passwordError.textContent = "Password must be at least 8 characters long";
+            passwordInput.scrollIntoView();
+            return false;
+        }
+
+        if (passwordInput.value !== passwordConfirmInput.value) {
+            passwordError.textContent = "Passwords do not match";
+            passwordInput.scrollIntoView();
+            return false;
+        }
+    }
+
     document.querySelector('form').addEventListener('submit', function (e) {
-        if (!validateUsername()) {
+        if (!validateUsername() || !validatePassword()) {
             e.preventDefault();
         }
     });
