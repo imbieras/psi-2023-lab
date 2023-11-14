@@ -34,8 +34,12 @@ public partial class UserService : IUserService
         }
     }
 
-    public async Task<UserId> RegisterUserAsync(string username, UserFlags flags, UserTraits traits,
-        List<string> hobbies)
+    public async Task<UserId> RegisterUserAsync(
+        string username,
+        UserFlags flags,
+        UserTraits traits,
+        List<string> hobbies
+    )
     {
         if (!MyRegex().IsMatch(username))
         {
@@ -64,11 +68,17 @@ public partial class UserService : IUserService
         }
     }
 
-    public IUser? GetRandomUser()
+    public async Task<IUser?> GetRandomUserAsync()
     {
-        IEnumerable<User> users = _userRepository.GetAllAsync().Result;
-        Random random = new();
+        IEnumerable<User> users = await _userRepository.GetAllAsync();
+
         IEnumerable<User> enumerable = users.ToList();
+        if (!enumerable.Any())
+        {
+            return null;
+        }
+
+        Random random = new();
         int randomIndex = random.Next(0, enumerable.Count());
         return enumerable.ElementAt(randomIndex);
     }
