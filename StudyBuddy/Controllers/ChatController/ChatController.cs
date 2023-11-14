@@ -66,7 +66,7 @@ public class ChatController : Controller
         }
 
         // Pass both the current user and the other user to the view
-        ChatViewModel? viewModel = new ChatViewModel { CurrentUser = currentUser, Matches = userList };
+        ChatViewModel viewModel = new() { CurrentUser = currentUser, Matches = userList };
 
 
         return View(viewModel);
@@ -93,15 +93,17 @@ public class ChatController : Controller
         // Retrieve the other user
         if (!Guid.TryParse(otherUserId, out Guid otherUserIdGuid))
         {
-            return View(LoginPath); //change later
+            ViewBag.ErrorMessage = "Couldn't parse receivers ID.";
+            return View("ChatError");
         }
 
         UserId parseOtherUserId = UserId.From(otherUserIdGuid);
         IUser? otherUser = await _userService.GetUserByIdAsync(parseOtherUserId);
 
-        if (otherUser == null)
+        if (otherUser == null || !await _matchingService.IsMatchedAsync(currentUser.Id, otherUser.Id))
         {
-            return View(LoginPath); //change later
+            ViewBag.ErrorMessage = "Trying to chat with unmatched user.";
+            return View("ChatError");
         }
 
         byte[] bytes1 = userIdGuid.ToByteArray();
@@ -136,10 +138,16 @@ public class ChatController : Controller
             }
         }
 
-        List<ChatMessage> messageList =
-            (List<ChatMessage>)await _chatService.GetMessagesByConversationAsync(groupName);
+        List<ChatMessage> messageList = (List<ChatMessage>)await _chatService.GetMessagesByConversationAsync(groupName);
 
-        // Pass both the current user and the other user to the view
+        TimeZoneInfo userTimeZone = TimeZoneInfo.Local;
+
+        // Convert UTC timestamps to the user's local time zone
+        foreach (var message in messageList)
+        {
+            message.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(message.Timestamp, userTimeZone);
+        }
+
         ChatViewModel viewModel = new()
         {
             CurrentUser = currentUser,

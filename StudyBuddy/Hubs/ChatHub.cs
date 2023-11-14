@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Data.Repositories.ChatRepository;
 using StudyBuddy.Models;
 using StudyBuddy.Services.ChatService;
@@ -26,12 +26,9 @@ public class ChatHub : Hub
 
             Guid groupName = ConversationIdHelper.GetGroupId(senderGuid, receiverGuid);
 
-            Console.WriteLine("Context.ConnectionId: " + Context.ConnectionId + "\nSENDER:" + sender + "\nRECEIVER " +
-                              receiver + "\nGROUP_NAME: " + groupName);
             // Add the current connection to the conversation group
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName.ToString());
         }
-
 
         await base.OnConnectedAsync();
     }
@@ -44,9 +41,7 @@ public class ChatHub : Hub
 
         UserId.TryParse(sender, out UserId senderId);
 
-        ChatMessage chatMessage = new(message, DateTime.UtcNow.AddHours(2), senderId, groupName);
-
-        Console.WriteLine($"SENDING MESSAGE TO:{sender} TEXT:{message} GROUP NAME {groupName.ToString()}");
+        ChatMessage chatMessage = new(message, DateTime.UtcNow, senderId, groupName);
 
         await _chatService.AddMessageAsync(chatMessage);
 
