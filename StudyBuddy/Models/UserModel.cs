@@ -16,7 +16,6 @@ public class User : IUser, IEquatable<User>
         Name = name;
         Flags = flags;
         Traits = traits;
-
         Hobbies = hobbies;
     }
 
@@ -30,13 +29,7 @@ public class User : IUser, IEquatable<User>
         return Id == other.Id;
     }
 
-    [NotMapped] public List<string>? Hobbies { get; set; } = new();
-
-    public string[]? HobbiesArray
-    {
-        get => Hobbies?.ToArray();
-        set => Hobbies = value.ToList();
-    }
+    public List<string>? Hobbies { get; set; } = new();
 
     public UserId Id { get; }
 

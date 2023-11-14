@@ -1,6 +1,6 @@
 using StudyBuddy.Extensions;
 
-namespace StudyBuddyTests;
+namespace StudyBuddyTests.Extensions;
 
 public class StringExtensionsTests
 {

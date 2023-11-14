@@ -55,19 +55,12 @@ public partial class UserService : IUserService
         return userId;
     }
 
-
-    public async Task AddHobbiesToUserAsync(User user, List<string> hobbies) =>
-        await _userRepository.AddHobbiesToUserAsync(user, hobbies);
-
-
-    // TODO: We can add a custom exception here
-    public async Task AddHobbiesToUserAsync(UserId userId, List<string> hobbies)
+    public async Task UpdateAsync(IUser user)
     {
-        User? user = await _userRepository.GetByIdAsync(userId);
-        if (user != null)
+        User? userToUpdate = await _userRepository.GetByIdAsync(user.Id);
+        if (userToUpdate != null)
         {
-            user.Hobbies = hobbies;
-            await _userRepository.AddAsync(user);
+            await _userRepository.UpdateAsync(userToUpdate);
         }
     }
 

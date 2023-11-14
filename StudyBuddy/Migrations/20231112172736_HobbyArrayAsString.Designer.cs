@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StudyBuddy.Data;
@@ -11,9 +12,11 @@ using StudyBuddy.Data;
 namespace StudyBuddy.Migrations
 {
     [DbContext(typeof(StudyBuddyDbContext))]
-    partial class StudyBuddyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231112172736_HobbyArrayAsString")]
+    partial class HobbyArrayAsString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,7 +98,7 @@ namespace StudyBuddy.Migrations
                     b.Property<byte>("Flags")
                         .HasColumnType("smallint");
 
-                    b.Property<string>("Hobbies")
+                    b.Property<string>("HobbiesArray")
                         .HasColumnType("text");
 
                     b.Property<string>("Name")

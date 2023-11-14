@@ -13,9 +13,6 @@ public class ChatService : IChatService
     public async Task<IEnumerable<ChatMessage>> GetMessagesByConversationAsync(Guid conversationId) =>
         await _chatRepository.GetMessagesByConversationAsync(conversationId);
 
-    public async Task<IEnumerable<ChatMessage>> GetMessagesByUserIdsAsync(UserId userId1, UserId userId2) =>
-        await _chatRepository.GetMessagesByUserIdsAsync(userId1, userId2);
-
     public async Task<ChatMessage> GetMessageByIdAsync(Guid messageId) =>
         await _chatRepository.GetMessageByIdAsync(messageId);
 
