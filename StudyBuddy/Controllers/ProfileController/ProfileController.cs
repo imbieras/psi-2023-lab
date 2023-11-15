@@ -100,7 +100,7 @@ public class ProfileController : Controller
         if (profileDto.Password != profileDto.ConfirmPassword)
         {
             TempData["ErrorMessage"] = "The password and confirmation password do not match.";
-            return View("CreateProfile");
+            return View("CreateProfile", profileDto);
         }
 
         string avatarPath;
@@ -111,7 +111,7 @@ public class ProfileController : Controller
         catch (Exception ex)
         {
             TempData["ErrorMessage"] = "Error saving avatar: " + ex.Message;
-            return View("CreateProfile");
+            return View("CreateProfile", profileDto);
         }
 
         string htmlContent = ConvertMarkdownToHtml(profileDto.MarkdownContent);
@@ -121,29 +121,29 @@ public class ProfileController : Controller
         {
             await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits, profileDto.Hobbies);
         }
-        catch (InvalidPasswordException ex)
+        catch (InvalidPasswordException)
         {
             // ("{8,}")
             TempData["ErrorMessage"] = "Invalid password format. Password must be at least 8 characters long.";
-            return View("CreateProfile");
+            return View("CreateProfile", profileDto);
         }
-        catch (InvalidUsernameException ex)
+        catch (InvalidUsernameException)
         {
             // ("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")
             TempData["ErrorMessage"] = "Invalid username format. Username must be alphanumeric and can contain . _ -";
-            return View("CreateProfile");
+            return View("CreateProfile", profileDto);
         }
         catch (Exception ex)
         {
             TempData["ErrorMessage"] = "Error saving profile: " + ex.Message;
-            return View("CreateProfile");
+            return View("CreateProfile", profileDto);
         }
 
         TempData["SuccessMessage"] = "Profile created successfully";
         return RedirectToAction("CreateProfile");
     }
 
-    private async Task<string> SaveAvatarAsync(IFormFile? avatar)
+    private static async Task<string> SaveAvatarAsync(IFormFile? avatar)
     {
         if (avatar is null || avatar.Length == 0)
         {
@@ -162,12 +162,12 @@ public class ProfileController : Controller
         return uniqueFileName;
     }
 
-    private string ConvertMarkdownToHtml(string? markdownContent)
+    private static string ConvertMarkdownToHtml(string? markdownContent)
     {
         return markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
     }
 
-    private UserTraits CreateUserTraits(ProfileDto profileDto, string avatarPath, string htmlContent)
+    private static UserTraits CreateUserTraits(ProfileDto profileDto, string avatarPath, string htmlContent)
     {
         UserTraits traits = new()
         {

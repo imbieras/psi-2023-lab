@@ -33,10 +33,10 @@ public partial class UserService : IUserService
             await _userRepository.UpdateAsync(user);
         }
     }
-    
+
     public async Task<UserId> RegisterUserAsync(
         string username,
-        string password
+        string password,
         UserFlags flags,
         UserTraits traits,
         List<string> hobbies
@@ -46,6 +46,7 @@ public partial class UserService : IUserService
         {
             throw new InvalidUsernameException("Invalid username format");
         }
+
         if (!PasswordRegex().IsMatch(password))
         {
             throw new InvalidPasswordException("Invalid password format");
@@ -60,7 +61,7 @@ public partial class UserService : IUserService
 
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
-        User newUser = new(userId, username, flags, traits, hobbies, hashedPassword);
+        User newUser = new(userId, username, hashedPassword, flags, traits, hobbies);
         await _userRepository.AddAsync(newUser);
 
         return userId;

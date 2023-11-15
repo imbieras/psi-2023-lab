@@ -7,6 +7,10 @@ namespace StudyBuddy.Services.UserSessionService;
 public class UserSessionService : IUserSessionService
 {
     private UserId? _currentUserId;
+    public UserSessionService(IUserService userService)
+    {
+        _userService = userService;
+    }
 
     public UserId? GetCurrentUserId() => _currentUserId;
 
@@ -14,15 +18,10 @@ public class UserSessionService : IUserSessionService
 
     private readonly IUserService _userService;
 
-    public UserSessionService(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     public async Task<bool> AuthenticateUser(string username, string password)
     {
         IUser? user = await _userService.GetUserByUsernameAsync(username);
-        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
+        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
         {
             return false;
         }
