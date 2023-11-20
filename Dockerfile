@@ -12,7 +12,9 @@ RUN dotnet restore ./Tests/StudyBuddy.Tests/StudyBuddy.Tests.csproj
 COPY ./StudyBuddy/libman.json ./StudyBuddy/
 RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli
 ENV PATH="${PATH}:/root/.dotnet/tools"
+WORKDIR /app/StudyBuddy/
 RUN libman restore
+WORKDIR /app
 
 # Copy the whole application and publish
 COPY ./StudyBuddy/ ./StudyBuddy/

@@ -214,8 +214,9 @@
         const passwordInput = document.getElementById('password');
         const passwordConfirmInput = document.getElementById('confirmpassword');
         const passwordError = document.getElementById('passwordError');
+        const passwordRegex = /.{8,}/;
 
-        if (passwordInput.value.length < 8) {
+        if (!passwordRegex.test(passwordInput.value)) {
             passwordError.textContent = "Password must be at least 8 characters long";
             passwordInput.scrollIntoView();
             return false;
@@ -226,6 +227,9 @@
             passwordInput.scrollIntoView();
             return false;
         }
+
+        passwordError.textContent = "";
+        return true;
     }
 
     document.querySelector('form').addEventListener('submit', function (e) {
