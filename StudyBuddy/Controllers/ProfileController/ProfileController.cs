@@ -14,11 +14,13 @@ public class ProfileController : Controller
 {
     private readonly IUserSessionService _userSessionService;
     private readonly IUserService _userService;
+    private readonly ILogger<ProfileController> _logger;
 
-    public ProfileController(IUserService userService, IUserSessionService userSessionService)
+    public ProfileController(IUserService userService, IUserSessionService userSessionService, ILogger<ProfileController> logger)
     {
         _userService = userService;
         _userSessionService = userSessionService;
+        _logger = logger;
     }
 
     public async Task<IActionResult> UserProfile(string id)
@@ -74,28 +76,31 @@ public class ProfileController : Controller
 
         try
         {
-            await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits,
-                profileDto.Hobbies);
+            await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits, profileDto.Hobbies);
+            _logger.LogInformation("User registered successfully: {UserName}", profileDto.Name);
         }
         catch (InvalidPasswordException)
         {
             // ("{8,}")
+            _logger.LogWarning("Invalid password format for user: {UserName}", profileDto.Name);
             TempData["ErrorMessage"] = "Invalid password format. Password must be at least 8 characters long.";
             return View("CreateProfile", profileDto);
         }
         catch (InvalidUsernameException)
         {
             // ("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")
-            TempData["ErrorMessage"] = "Invalid username format. Username must be at least 3 characters long and " +
-                                        "can only contain alphanumeric characters, underscores, dashes, and periods.";
+            _logger.LogWarning("Invalid username format for user: {UserName}", profileDto.Name);
+            TempData["ErrorMessage"] = "Invalid username format. Username must be alphanumeric and can contain . _ -";
             return View("CreateProfile", profileDto);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error saving profile for user: {UserName}", profileDto.Name);
             TempData["ErrorMessage"] = "Error saving profile: " + ex.Message;
             return View("CreateProfile", profileDto);
         }
 
+        _logger.LogInformation("Profile created successfully for user: {UserName}", profileDto.Name);
         TempData["SuccessMessage"] = "Profile created successfully";
         return RedirectToAction("CreateProfile");
     }
@@ -107,12 +112,7 @@ public class ProfileController : Controller
 
     private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
     {
-        UserTraits traits = new()
-        {
-            Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
-            Subject = profileDto.Subject,
-            Description = htmlContent
-        };
+        UserTraits traits = new() { Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(), Subject = profileDto.Subject, Description = htmlContent };
 
         if (!double.TryParse(profileDto.Longitude, out double longitude) ||
             !double.TryParse(profileDto.Latitude, out double latitude))

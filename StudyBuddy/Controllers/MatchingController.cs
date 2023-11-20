@@ -11,17 +11,18 @@ namespace StudyBuddy.Controllers;
 [CustomAuthorize]
 public class MatchingController : Controller
 {
-    private const string LoginPath = "~/Views/Profile/Login.cshtml";
     private readonly IMatchingService _matchingService;
     private readonly IUserService _userService;
     private readonly IUserSessionService _userSessionService;
+    private readonly ILogger _logger;
 
     public MatchingController(IUserService userService, IMatchingService matchingService,
-        IUserSessionService userSessionService)
+        IUserSessionService userSessionService, ILogger logger)
     {
         _userService = userService;
         _matchingService = matchingService;
         _userSessionService = userSessionService;
+        _logger = logger;
     }
 
     public async Task<IActionResult> CurrentRandomUserProfile()
@@ -133,7 +134,7 @@ public class MatchingController : Controller
         }
         catch (Exception ex)
         {
-            // Log the exception
+            _logger.LogError($"An error occurred while matching user {currentUser} to {otherUser}");
             TempData["ErrorMessage"] = "An error occurred while matching users. " + ex.Message;
         }
 
