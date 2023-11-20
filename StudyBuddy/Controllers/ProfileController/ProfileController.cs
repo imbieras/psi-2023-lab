@@ -14,11 +14,13 @@ public class ProfileController : Controller
 {
     private readonly IUserSessionService _userSessionService;
     private readonly IUserService _userService;
+    private readonly ILogger<ProfileController> _logger;
 
-    public ProfileController(IUserService userService, IUserSessionService userSessionService)
+    public ProfileController(IUserService userService, IUserSessionService userSessionService, ILogger<ProfileController> logger)
     {
         _userService = userService;
         _userSessionService = userSessionService;
+        _logger = logger;
     }
 
     public async Task<IActionResult> DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
@@ -64,7 +66,7 @@ public class ProfileController : Controller
         }
         catch (Exception ex)
         {
-            // Log the exception
+            _logger.LogError(ex, "An error occurred while retrieving user profiles. ");
             ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
             return View(new List<IUser>()); // Provide an empty list
         }
@@ -110,6 +112,7 @@ public class ProfileController : Controller
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, $"Error saving avatar: {profileDto.Avatar}");
             TempData["ErrorMessage"] = "Error saving avatar: " + ex.Message;
             return View("CreateProfile", profileDto);
         }
@@ -120,25 +123,30 @@ public class ProfileController : Controller
         try
         {
             await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits, profileDto.Hobbies);
+            _logger.LogInformation($"User registered successfully: {profileDto.Name}");
         }
         catch (InvalidPasswordException)
         {
             // ("{8,}")
+            _logger.LogWarning("Invalid password format for user: {UserName}", profileDto.Name);
             TempData["ErrorMessage"] = "Invalid password format. Password must be at least 8 characters long.";
             return View("CreateProfile", profileDto);
         }
         catch (InvalidUsernameException)
         {
             // ("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")
+            _logger.LogWarning("Invalid username format for user: {UserName}", profileDto.Name);
             TempData["ErrorMessage"] = "Invalid username format. Username must be alphanumeric and can contain . _ -";
             return View("CreateProfile", profileDto);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error saving profile for user: {UserName}", profileDto.Name);
             TempData["ErrorMessage"] = "Error saving profile: " + ex.Message;
             return View("CreateProfile", profileDto);
         }
 
+        _logger.LogInformation("Profile created successfully for user: {UserName}", profileDto.Name);
         TempData["SuccessMessage"] = "Profile created successfully";
         return RedirectToAction("CreateProfile");
     }
