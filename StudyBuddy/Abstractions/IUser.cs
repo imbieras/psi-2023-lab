@@ -9,8 +9,9 @@ public interface IUser
 
     string Name { get; }
 
+    string PasswordHash { get; set; }
     UserFlags Flags { get; }
 
     UserTraits Traits { get; set; }
-    public List<string>? Hobbies { get; set; }
+    List<string>? Hobbies { get; set; }
 }

@@ -26,16 +26,14 @@ public class FileManager
         {
             using StreamReader reader = new(filePath);
             using CsvReader csv = new(reader,
-                new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower()
-                });
+            new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = CsvDelimiter, PrepareHeaderForMatch = args => args.Header.ToLower() });
 
             List<UserCsvRecord> records = csv.GetRecords<UserCsvRecord>().ToList();
 
             foreach (UserCsvRecord? record in records)
             {
                 string username = record.Username;
+                string password = record.Password;
                 UserFlags flags = Enum.TryParse(record.Flags, out UserFlags parsedFlags)
                     ? parsedFlags
                     : UserFlags.Registered;
@@ -47,12 +45,9 @@ public class FileManager
                     .Select(hobby => hobby.Trim())
                     .ToList();
 
-                UserTraits traits = new()
-                {
-                    Birthdate = birthdate, Subject = subject, AvatarPath = avatarPath, Description = description
-                };
+                UserTraits traits = new() { Birthdate = birthdate, Subject = subject, AvatarPath = avatarPath, Description = description };
 
-                _userService.RegisterUserAsync(username, flags, traits, hobbies);
+                _userService.RegisterUserAsync(username, password, flags, traits, hobbies);
             }
 
             Console.WriteLine($"Loaded {records.Count} users from the CSV file.");
@@ -66,6 +61,7 @@ public class FileManager
 
 public record UserCsvRecord(
     string Username,
+    string Password,
     string Flags,
     DateTime Birthdate,
     string Subject,
@@ -75,6 +71,8 @@ public record UserCsvRecord(
 )
 {
     public string Username { get; } = Username;
+
+    public string Password { get; } = Password;
 
     public string Flags { get; } = Flags;
 

@@ -1,3 +1,5 @@
+using NSubstitute;
+using StudyBuddy.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.ValueObjects;
 
@@ -5,7 +7,13 @@ namespace StudyBuddyTests.Services;
 
 public class UserSessionServiceTests
 {
-    private readonly UserSessionService _sut = new();
+    private readonly UserSessionService _sut;
+
+    public UserSessionServiceTests()
+    {
+        IUserService userService = Substitute.For<IUserService>();
+        _sut = new UserSessionService(userService);
+    }
 
     [Fact]
     public void GetCurrentUserId_NoUserSet_Returns_Null()

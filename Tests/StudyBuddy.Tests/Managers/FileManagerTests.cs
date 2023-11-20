@@ -28,6 +28,7 @@ public class FileManagerTests
         {
             new(
             "Test1_Test1",
+            "LCwo7cc*NALmtXq&F**PWu#",
             "Registered",
             DateTime.Parse("2008-09-14"),
             "Arts & Design",
@@ -40,6 +41,7 @@ public class FileManagerTests
         _sut.LoadUsersFromCsv(filePath);
 
         _userService.Received().RegisterUserAsync(
+        Arg.Any<string>(),
         Arg.Any<string>(),
         Arg.Any<UserFlags>(),
         Arg.Any<UserTraits>(),
@@ -57,6 +59,7 @@ public class FileManagerTests
         {
             new(
             "Test1_Test1",
+            "LCwo7cc*NALmtXq&F**PWu#",
             "Registered",
             DateTime.Parse("2008-09-14"),
             "Arts & Design",
@@ -66,6 +69,7 @@ public class FileManagerTests
             ),
             new(
             "Test2_Test2",
+            "HQkA*NMvtnbwVz6iB#r^v7%",
             "Registered",
             DateTime.Parse("2007-09-05"),
             "Natural Sciences",
@@ -75,6 +79,7 @@ public class FileManagerTests
             ),
             new(
             "Test3_Test3",
+            "5RooF5o8b3YCvUgr$^p#FQZ",
             "Registered",
             DateTime.Parse("2006-08-28"),
             "Law & Legal Studies",
@@ -87,6 +92,7 @@ public class FileManagerTests
         _sut.LoadUsersFromCsv(filePath);
 
         _userService.Received(3).RegisterUserAsync(
+        Arg.Any<string>(),
         Arg.Any<string>(),
         Arg.Any<UserFlags>(),
         Arg.Any<UserTraits>(),
@@ -104,6 +110,7 @@ public class FileManagerTests
         _sut.LoadUsersFromCsv(filePath);
 
         _userService.DidNotReceive().RegisterUserAsync(
+        Arg.Any<string>(),
         Arg.Any<string>(),
         Arg.Any<UserFlags>(),
         Arg.Any<UserTraits>(),

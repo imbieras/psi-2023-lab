@@ -6,4 +6,5 @@ public interface IUserSessionService
 {
     UserId? GetCurrentUserId();
     void SetCurrentUser(UserId userId);
+    Task<bool> AuthenticateUser(string username, string password);
 }
