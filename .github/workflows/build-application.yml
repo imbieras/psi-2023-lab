@@ -23,7 +23,7 @@ jobs:
         with:
           dotnet-version: 7.0.x
 
-      - name: Restore NuGet packages
+      - name: Restore
         run: dotnet restore ./StudyBuddy/
 
       - name: Build
@@ -31,4 +31,3 @@ jobs:
 
       - name: Test StudyBuddy
         run: dotnet test ./Tests/StudyBuddy.Tests/
-        working-directory: ./StudyBuddy/
