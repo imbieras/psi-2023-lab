@@ -75,7 +75,6 @@ public class GenericFilterServiceTests
             }
             )
         };
-
         _users = users;
     }
 
