@@ -88,7 +88,6 @@ public class MatchingController : Controller
             if (randomUser == null || randomUser.Id == currentUser.Id ||
                 (counter > totalUserCount && randomUser.Id != currentUser.Id))
             {
-                randomUser = null;
                 break;
             }
 
