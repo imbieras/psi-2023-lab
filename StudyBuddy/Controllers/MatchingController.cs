@@ -14,10 +14,10 @@ public class MatchingController : Controller
     private readonly IMatchingService _matchingService;
     private readonly IUserService _userService;
     private readonly IUserSessionService _userSessionService;
-    private readonly ILogger _logger;
+    private readonly ILogger<MatchingController> _logger;
 
     public MatchingController(IUserService userService, IMatchingService matchingService,
-        IUserSessionService userSessionService, ILogger logger)
+        IUserSessionService userSessionService, ILogger<MatchingController> logger)
     {
         _userService = userService;
         _matchingService = matchingService;

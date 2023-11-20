@@ -7,8 +7,13 @@ namespace StudyBuddy.Data.Repositories.MatchRepository;
 public class MatchRepository : IMatchRepository
 {
     private readonly StudyBuddyDbContext _context;
+    private readonly ILogger<MatchRepository> _logger;
 
-    public MatchRepository(StudyBuddyDbContext context) => _context = context;
+    public MatchRepository(StudyBuddyDbContext context, ILogger<MatchRepository> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
 
     public async Task<IEnumerable<Match>> GetAllAsync() => await _context.Matches.ToListAsync();
 
@@ -33,6 +38,7 @@ public class MatchRepository : IMatchRepository
         }
         else
         {
+            _logger.LogWarning($"Match does not exist between {user1Id} and {user2Id}");
             throw new ArgumentException("Match does not exist");
         }
     }
