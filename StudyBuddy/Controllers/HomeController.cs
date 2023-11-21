@@ -12,6 +12,11 @@ public class HomeController : Controller
 
     public IActionResult Index() => View();
 
+    public IActionResult Counter()
+    {
+        int totalUsers = UserCounter.TotalUsers;
+        return View(totalUsers);
+    }
     public IActionResult Privacy() => View();
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
