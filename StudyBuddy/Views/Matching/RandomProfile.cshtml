@@ -41,7 +41,7 @@
                                 <strong>Favorite Subject:</strong> @Model.Traits.Subject
                             </li>
                             <li class="list-group-item">
-                                <strong>UID:</strong> @Model.Id.ToString()
+                                <a href="@Url.Action("UserProfile", "Profile", new { id = Model.Id })" class="btn btn-primary mt-3">View Profile</a>
                             </li>
                         </ul>
                     </div>
