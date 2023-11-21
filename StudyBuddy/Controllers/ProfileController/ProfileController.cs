@@ -40,7 +40,17 @@ public class ProfileController : Controller
         return View("Error", errorModel);
     }
 
-    public IActionResult CreateProfile() => View();
+    [CustomAuthorize]
+    public IActionResult CreateProfile()
+    {
+        // Don't let the user access this page if they are already logged in
+        if (_userSessionService.GetCurrentUserId() != null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        return View();
+    }
 
     [HttpPost]
     public async Task<IActionResult> SaveProfile(ProfileDto profileDto)
@@ -189,5 +199,32 @@ public class ProfileController : Controller
         Response.Cookies.Delete("UserId");
 
         return RedirectToAction("Index", "Home");
+    }
+
+    [CustomAuthorize]
+    public async Task<IActionResult> EditProfile()
+    {
+        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
+
+        IUser user = (await _userService.GetUserByIdAsync(currentUserId))!;
+
+        return View(user);
+    }
+
+    [CustomAuthorize]
+    public async Task<IActionResult> UpdateProfile(ProfileDto profileDto)
+    {
+        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
+
+        IUser user = (await _userService.GetUserByIdAsync(currentUserId))!;
+
+        user.Traits.Subject = profileDto.Subject;
+        user.Hobbies = profileDto.Hobbies;
+        user.Traits.Description = ConvertMarkdownToHtml(profileDto.MarkdownContent);
+
+        await _userService.UpdateAsync(user);
+
+        TempData["SuccessMessage"] = "Profile updated successfully";
+        return RedirectToAction("EditProfile");
     }
 }

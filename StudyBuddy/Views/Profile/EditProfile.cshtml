@@ -1,0 +1,168 @@
+﻿@model StudyBuddy.Abstractions.IUser
+
+@{
+    ViewBag.Title = "Edit profile";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <h2>Edit your profile</h2>
+
+    <form method="post" action="UpdateProfile" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label for="subject" class="form-label">Main Subject <span class="text-danger">*</span></label>
+            <select class="form-select" id="subject" name="subject" required>
+                @foreach (var option in new List<string>
+                {
+                    "Natural Sciences",
+                    "Health Sciences",
+                    "Engineering & Technology",
+                    "Social Sciences",
+                    "Humanities",
+                    "Business & Management",
+                    "Arts & Design",
+                    "Mathematical Sciences",
+                    "Bio Sciences",
+                    "Law & Legal Studies",
+                    "Education",
+                    "Agriculture & Forestry"
+                })
+                {
+                    <option>@option</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Hobbies or Interests</label>
+            <div class="btn-group-toggle" role="group">
+                @{
+                    var hobbies = new List<string>
+                    {
+                        "Reading", "Drawing", "Playing an instrument", "Painting",
+                        "Cooking", "Gardening", "Photography", "Writing",
+                        "Hiking", "Cycling", "Singing", "Dancing",
+                        "Yoga", "Meditation", "Chess", "Video gaming",
+                        "Binge-watching", "Crafting", "Collecting", "Baking",
+                        "Fitness", "Rock climbing", "Skiing or snowboarding", "Surfing",
+                        "Scuba diving", "Tabletop gaming", "Birdwatching", "Volunteering",
+                        "Traveling", "Auto mechanics"
+                    };
+                }
+
+                @foreach (var hobby in hobbies)
+                {
+                    <label for="@hobby" class="btn btn-secondary mr-2 mb-2">
+                        <input type="checkbox" id="@hobby" name="hobbies[]" value="@hobby" @(Model.Hobbies.Contains(hobby) ? "checked" : "")>@hobby
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="markdownButtons" class="form-label">Insert Markdown Elements</label>
+            <div class="btn-mb-3" id="markdownButtons">
+                <div class="btn-group mr-2 mb-2">
+                    <button type="button" class="btn btn-outline-secondary" onclick="insertText('# Heading 1')">
+                        <i class="fas fa-heading"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" onclick="insertText('# Heading 1')">Heading 1</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" onclick="insertText('## Heading 2')">Heading 2</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" onclick="insertText('### Heading 3')">Heading 3</a>
+                        </li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('**Bold Text**')">
+                    <i class="fas fa-bold"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('*Italic Text*')">
+                    <i class="fas fa-italic"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('~~Strikethrough~~')">
+                    <i class="fas fa-strikethrough"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('- List Item')">
+                    <i class="fas fa-list-ul"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('1. List Item')">
+                    <i class="fas fa-list-ol"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('- [ ] Checklist Item')">
+                    <i class="fa-regular fa-square"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('- [x] Completed Item')">
+                    <i class="fas fa-check-square"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('&gt; Blockquote')">
+                    <i class="fas fa-quote-right"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('`Inline Code`')">
+                    <i class="fas fa-code"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('```code block\n\n```')">
+                    <i class="fas fa-code"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('[Link Text](link-url)')">
+                    <i class="fas fa-link"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('![Alt Text](image-url)')">
+                    <i class="fas fa-image"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary mr-2 mb-2" onclick="insertText('---')">
+                    —
+                </button>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="markdownContent" class="form-label">Markdown Content</label>
+            <textarea class="form-control" id="markdownContent" name="markdownContent" rows="6">@Model.Traits.Description</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="htmlPreview" class="form-label">HTML Preview</label>
+            <div class="form-control" id="htmlPreview"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    function updateHtmlPreview() {
+        let markdownContent = document.getElementById('markdownContent').value;
+        let htmlPreview = document.getElementById('htmlPreview');
+        htmlPreview.innerHTML = marked.parse(markdownContent);
+    }
+
+    document.getElementById('markdownContent').addEventListener('input', updateHtmlPreview);
+
+    updateHtmlPreview();
+
+    function insertText(text) {
+        let textarea = document.getElementById('markdownContent');
+        let start = textarea.selectionStart;
+        let end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(end);
+        // Set the cursor position after the inserted text
+        textarea.selectionStart = start + text.length;
+        textarea.selectionEnd = start + text.length;
+        textarea.focus();
+        updateHtmlPreview();
+    }
+
+    document.getElementById('subject').value = '@Model.Traits.Subject';
+
+    let hobbies = @Json.Serialize(Model.Hobbies);
+    hobbies.forEach(function (hobby) {
+        document.getElementById(hobby).checked = true;
+    });
+</script>
