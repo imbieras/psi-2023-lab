@@ -10,12 +10,10 @@ public class HomeController : Controller
 
     public HomeController(ILogger<HomeController> logger) => _logger = logger;
 
-    public IActionResult Index() => View();
-
-    public IActionResult Counter()
+    public IActionResult Index()
     {
         int totalUsers = UserCounter.TotalUsers;
-        return View(totalUsers);
+        return View("Index", totalUsers);
     }
     public IActionResult Privacy() => View();
 

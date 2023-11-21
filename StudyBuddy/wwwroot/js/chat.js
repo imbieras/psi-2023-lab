@@ -14,37 +14,73 @@ document.getElementById("sendButton").disabled = true;
 connection.on("ReceiveMessage", function (user, message) {
     let messageList = document.getElementById("messagesList");
 
-    let messageContainer = document.createElement("div");
-    messageContainer.classList.add(user === userId.value ? "chat-message-left" : "chat-message-right", "pb-4");
+    let messageContainer = createMessageContainer(user);
 
-    let messageContent = document.createElement("div");
-    messageContent.classList.add("d-flex");
+    let messageContent = createMessageContent(user);
 
-    let avatarDiv = document.createElement("div");
-    avatarDiv.innerHTML = `
-        <img src="${user === userId.value ? senderAvatar.value : receiverAvatar.value}"
-            class="rounded-circle me-1" alt="${user === userId.value ? userName.value : receiverName.value}" width="40" height="40">
-        <div class="text-muted small text-nowrap mt-2">${getCurrentTime()}</div>
-    `;
+    let avatarDiv = createAvatarDiv(user);
 
-    let textDiv = document.createElement("div");
-    textDiv.classList.add("text-break", "flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", user === userId.value ? "me-3" : "ms-3");
+    let textDiv = createTextDiv(user, message);
 
-    let userLabel = document.createElement("div");
-    userLabel.classList.add("fw-bold", "mb-1");
-    userLabel.textContent = user === userId.value ? "You" : receiverName.value;
+    let userLabel = createUserLabel(user);
 
-    let messageText = document.createElement("div");
-    messageText.textContent = message;
+    let messageText = createMessageText(message);
 
     textDiv.appendChild(userLabel);
     textDiv.appendChild(messageText);
-    messageContent.appendChild(avatarDiv);
-    messageContent.appendChild(textDiv);
+    // Check if the message is from the current user
+    if (user === userId.value) {
+        messageContent.appendChild(textDiv); // Append text first for the current user
+        messageContent.appendChild(avatarDiv);
+    } else {
+        messageContent.appendChild(avatarDiv); // Append avatar first for other users
+        messageContent.appendChild(textDiv);
+    }
     messageContainer.appendChild(messageContent);
     messageList.appendChild(messageContainer);
     scrollToBottom();
 });
+
+function createMessageContainer(user) {
+    let messageContainer = document.createElement("div");
+    messageContainer.classList.add(user === userId.value ? "chat-message-right" : "chat-message-left", "pb-4");
+    return messageContainer;
+}
+
+function createMessageContent(user) {
+    let messageContent = document.createElement("div");
+    messageContent.classList.add("d-flex");
+    return messageContent;
+}
+
+function createAvatarDiv(user) {
+    let avatarDiv = document.createElement("div");
+    avatarDiv.innerHTML = `
+        <img src="${user === userId.value ? senderAvatar.value : receiverAvatar.value}"
+            class="rounded-circle ${user === userId.value ? "me-1" : "ms-1"}" alt="${user === userId.value ? userName.value : receiverName.value}" width="40" height="40">
+        <div class="text-muted small text-nowrap mt-2">${getCurrentTime()}</div>
+    `;
+    return avatarDiv;
+}
+
+function createTextDiv(user, message) {
+    let textDiv = document.createElement("div");
+    textDiv.classList.add("text-break", "flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", user === userId.value ? "me-3" : "ms-3");
+    return textDiv;
+}
+
+function createUserLabel(user) {
+    let userLabel = document.createElement("div");
+    userLabel.classList.add("fw-bold", "mb-1");
+    userLabel.textContent = user === userId.value ? "You" : receiverName.value;
+    return userLabel;
+}
+
+function createMessageText(message) {
+    let messageText = document.createElement("div");
+    messageText.textContent = message;
+    return messageText;
+}
 
 function scrollToBottom() {
     let chatMessages = document.getElementById("messagesList");
@@ -80,5 +116,3 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     messageInput.value = ""; // clear the input field
     event.preventDefault();
 });
-
-

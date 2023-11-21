@@ -21,13 +21,9 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Profile" asp-action="CreateProfile">Profile Creation</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Profile" asp-action="DisplayProfiles">Explore</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-success" asp-area="" asp-controller="Matching" asp-action="RandomProfile">Find a friend!</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Matching" asp-action="RandomProfile">Find a friend!</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Chat" asp-action="Chat">Chat</a>
@@ -38,7 +34,7 @@
             </div>
         </nav>
     </header>
-    <section>
+    <section class="main-content">
         <div class="container mb-4">
             <main role="main">
                 <div class="container">
@@ -58,23 +54,25 @@
                         </div>
                     }
                 </div>
+
                 @RenderBody()
+
             </main>
         </div>
     </section>
-</div>
-<div class="sticky-bottom container">
-    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-        <p class="col-md-4 mb-0 text-body-secondary">© @DateTime.Now.Year - StudyBuddy</p>
+    <footer class="footer d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
+        <div class="container d-flex justify-content-between align-items-center">
+            <p class="mb-0 text-body-secondary">© @DateTime.Now.Year - StudyBuddy</p>
 
-        <ul class="nav col-md-4 justify-content-end">
-            <li class="nav-item">
-                <a class="nav-link px-2 text-body-secondary" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link px-2 text-body-secondary" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            </li>
-        </ul>
+            <ul class="nav justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-body-secondary" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-body-secondary" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </li>
+            </ul>
+        </div>
     </footer>
 </div>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
