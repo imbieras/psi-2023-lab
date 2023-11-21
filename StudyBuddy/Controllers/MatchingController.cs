@@ -16,8 +16,12 @@ public class MatchingController : Controller
     private readonly IUserSessionService _userSessionService;
     private readonly ILogger<MatchingController> _logger;
 
-    public MatchingController(IUserService userService, IMatchingService matchingService,
-        IUserSessionService userSessionService, ILogger<MatchingController> logger)
+    public MatchingController(
+        IUserService userService,
+        IMatchingService matchingService,
+        IUserSessionService userSessionService,
+        ILogger<MatchingController> logger
+    )
     {
         _userService = userService;
         _matchingService = matchingService;
@@ -134,7 +138,7 @@ public class MatchingController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError($"An error occurred while matching user {currentUser} to {otherUser}");
+            _logger.LogError("An error occurred while matching user {currentUser} to {otherUser}", currentUser, otherUser);
             TempData["ErrorMessage"] = "An error occurred while matching users. " + ex.Message;
         }
 
