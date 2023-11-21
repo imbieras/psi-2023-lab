@@ -1,6 +1,7 @@
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Attributes;
 using StudyBuddy.Exceptions;
 using StudyBuddy.Models;
 using StudyBuddy.Services.UserService;
@@ -181,6 +182,7 @@ public class ProfileController : Controller
         return RedirectToAction("RandomProfile", "Matching");
     }
 
+    [CustomAuthorize]
     [HttpPost]
     public IActionResult Logout()
     {
