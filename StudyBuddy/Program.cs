@@ -7,6 +7,7 @@ using StudyBuddy.Hubs;
 using StudyBuddy.Data.Repositories.MatchRepository;
 using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Data.Repositories.ChatRepository;
+using StudyBuddy.Models;
 using StudyBuddy.Services.ChatService;
 using StudyBuddy.Services.MatchingService;
 using StudyBuddy.Services.UserService;
@@ -49,6 +50,10 @@ builder.Services.AddControllersWithViews();
 
 WebApplication app = builder.Build();
 
+using var scope = app.Services.CreateScope();
+var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+await UserCounter.InitializeAsync(userService);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -60,7 +65,7 @@ if (!app.Environment.IsDevelopment())
 // Add middleware to the HTTP request pipeline.
 app.UseMiddleware<AuthenticationMiddleware>();
 
-app.UseWebSockets(); // for SignalR
+app.UseWebSockets();// for SignalR
 
 app.UseHttpsRedirection();
 
@@ -71,14 +76,12 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints => { endpoints.MapHub<ChatHub>("/chat"); });
 
-
 app.MapControllerRoute(
-    "default",
-    "{controller=Home}/{action=Index}/{id?}");
-
+"default",
+"{controller=Home}/{action=Index}/{id?}");
 
 // Retrieve the FileManager singleton and execute LoadUsersFromCsv
 // FileManager fileManager = app.Services.GetRequiredService<FileManager>();
 // fileManager.LoadUsersFromCsv("test.csv");
 
-app.Run();
+await app.RunAsync();

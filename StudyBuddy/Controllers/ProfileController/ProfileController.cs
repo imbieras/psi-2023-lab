@@ -86,7 +86,8 @@ public class ProfileController : Controller
         catch (InvalidUsernameException)
         {
             // ("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")
-            TempData["ErrorMessage"] = "Invalid username format. Username must be alphanumeric and can contain . _ -";
+            TempData["ErrorMessage"] = "Invalid username format. Username must be at least 3 characters long and " +
+                                        "can only contain alphanumeric characters, underscores, dashes, and periods.";
             return View("CreateProfile", profileDto);
         }
         catch (Exception ex)

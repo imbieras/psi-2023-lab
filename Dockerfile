@@ -4,9 +4,7 @@ WORKDIR /app
 
 # Copy .csproj files and restore dependencies
 COPY ./StudyBuddy/StudyBuddy.csproj ./StudyBuddy/
-COPY ./Tests/StudyBuddy.Tests/StudyBuddy.Tests.csproj ./Tests/StudyBuddy.Tests/
 RUN dotnet restore ./StudyBuddy/StudyBuddy.csproj
-RUN dotnet restore ./Tests/StudyBuddy.Tests/StudyBuddy.Tests.csproj
 
 # Copy libman.json and restore client-side libraries
 COPY ./StudyBuddy/libman.json ./StudyBuddy/

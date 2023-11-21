@@ -61,6 +61,8 @@ public partial class UserService : IUserService
         User newUser = new(userId, username, hashedPassword, flags, traits, hobbies);
         await _userRepository.AddAsync(newUser);
 
+        UserCounter.AddUser(newUser.Id);
+
         return userId;
     }
 
