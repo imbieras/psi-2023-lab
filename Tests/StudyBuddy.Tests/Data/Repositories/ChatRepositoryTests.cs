@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using StudyBuddy.Data;
 using StudyBuddy.Data.Repositories.ChatRepository;
 using StudyBuddy.Models;
@@ -11,6 +12,7 @@ namespace StudyBuddyTests.Data.Repositories;
 public class ChatRepositoryTests
 {
     private StudyBuddyDbContext _dbContext;
+    private readonly ILogger<ChatRepository> _logger;
     private readonly ChatRepository _sut;
 
     public ChatRepositoryTests()
@@ -20,10 +22,11 @@ public class ChatRepositoryTests
             .Options;
 
         _dbContext = new StudyBuddyDbContext(options);
+        _logger = new Logger<ChatRepository>(new LoggerFactory());
 
         IEnumerable<ChatMessage> messages = GenerateChatMessages();
 
-        _sut = new ChatRepository(_dbContext);
+        _sut = new ChatRepository(_dbContext, _logger);
 
         _dbContext.ChatMessages.AddRange(messages);
 

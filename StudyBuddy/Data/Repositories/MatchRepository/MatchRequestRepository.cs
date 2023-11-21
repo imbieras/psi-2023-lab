@@ -7,8 +7,13 @@ namespace StudyBuddy.Data.Repositories.MatchRepository;
 public class MatchRequestRepository : IMatchRequestRepository
 {
     private readonly StudyBuddyDbContext _context;
+    private readonly ILogger<MatchRequestRepository> _logger;
 
-    public MatchRequestRepository(StudyBuddyDbContext context) => _context = context;
+    public MatchRequestRepository(StudyBuddyDbContext context, ILogger<MatchRequestRepository> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
 
     public async Task<IEnumerable<MatchRequest>> GetAllAsync() => await _context.MatchRequests.ToListAsync();
 
@@ -35,6 +40,7 @@ public class MatchRequestRepository : IMatchRequestRepository
         }
         else
         {
+            _logger.LogWarning($"Match request does not exist from {requesterId} to {requestedId}");
             throw new ArgumentException("Match request does not exist");
         }
     }

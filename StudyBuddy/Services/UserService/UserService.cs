@@ -5,13 +5,19 @@ using StudyBuddy.Exceptions;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
+
 namespace StudyBuddy.Services.UserService;
 
 public partial class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly ILogger<UserService> _logger;
 
-    public UserService(IUserRepository userRepository) => _userRepository = userRepository;
+    public UserService(IUserRepository userRepository, ILogger<UserService> logger)
+    {
+        _userRepository = userRepository;
+        _logger = logger;
+    }
 
     public async Task<IEnumerable<IUser>> GetAllUsersAsync() => await _userRepository.GetAllAsync();
     public async Task<IUser?> GetUserByIdAsync(UserId userId) => await _userRepository.GetByIdAsync(userId);
@@ -44,11 +50,13 @@ public partial class UserService : IUserService
     {
         if (!UsernameRegex().IsMatch(username))
         {
+            _logger.LogWarning($"Invalid username format: {username}");
             throw new InvalidUsernameException("Invalid username format");
         }
 
         if (!PasswordRegex().IsMatch(password))
         {
+            _logger.LogWarning($"Invalid password format");
             throw new InvalidPasswordException("Invalid password format");
         }
 

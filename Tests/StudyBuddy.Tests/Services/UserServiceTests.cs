@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Data.Repositories.UserRepository;
@@ -11,12 +12,15 @@ namespace StudyBuddyTests.Services;
 public class UserServiceTests
 {
     private readonly IUserRepository _userRepository;
+    private readonly ILogger<UserService> _logger;
     private readonly UserService _sut;
 
     public UserServiceTests()
     {
         _userRepository = Substitute.For<IUserRepository>();
-        _sut = new UserService(_userRepository);
+        _logger = Substitute.For<ILogger<UserService>>();
+
+        _sut = new UserService(_userRepository, _logger);
     }
 
     private static List<User> GenerateUsers()
