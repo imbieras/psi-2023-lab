@@ -79,7 +79,7 @@ public class MatchingController : Controller
 
         if (unseenUsers.Any())
         {
-            Random rnd = new Random();
+            Random rnd = new();
             randomUser = unseenUsers[rnd.Next(unseenUsers.Count)];
             await _userService.UserSeenAsync(currentUser.Id, randomUser.Id);
         }
@@ -193,7 +193,6 @@ public class MatchingController : Controller
         return redirectAction switch
         {
             "RandomProfile" => RedirectToAction("RandomProfile", "Matching"),
-            "DisplayProfiles" => RedirectToAction("DisplayProfiles", "Profile"),
             "CurrentRandomUserProfile" => RedirectToAction("CurrentRandomUserProfile", "Matching"),
             _ => RedirectToAction("Index", "Home")
         };

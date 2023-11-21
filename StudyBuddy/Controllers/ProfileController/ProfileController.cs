@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
 using StudyBuddy.Exceptions;
 using StudyBuddy.Models;
-using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.ValueObjects;
@@ -20,56 +19,6 @@ public class ProfileController : Controller
         _userService = userService;
         _userSessionService = userSessionService;
     }
-
-    public async Task<IActionResult> DisplayProfiles([FromQuery] ProfileFilterModel filterModel)
-    {
-        try
-        {
-            // Get the current user's ID from UserService if not null, otherwise use a default value
-            UserId? currentUserId = _userSessionService.GetCurrentUserId();
-
-            List<IUser> userList = (await _userService.GetAllUsersAsync()).ToList();
-
-            // Pass the current user's ID to the view
-            if (currentUserId != null)
-            {
-                ViewBag.CurrentUserId = currentUserId;
-            }
-
-
-            // Year filter
-            if (filterModel.StartYear == 0)
-            {
-                filterModel.StartYear = 1900;
-            }
-
-            if (filterModel.EndYear == 0)
-            {
-                filterModel.EndYear = DateTime.Now.Year;
-            }
-
-            userList = GenericFilterService<IUser>.FilterByPredicate(userList,
-                u => u.Traits.Birthdate.Year >= filterModel.StartYear &&
-                     u.Traits.Birthdate.Year <= filterModel.EndYear);
-
-            // Subject filter
-            if (!string.IsNullOrEmpty(filterModel.Subject))
-            {
-                // Input is assumed to be safe since it's coming from the model property
-                userList = GenericFilterService<IUser>.FilterByPredicate(userList,
-                    u => u.Traits.Subject.Equals(filterModel.Subject));
-            }
-
-            return View(userList);
-        }
-        catch (Exception ex)
-        {
-            // Log the exception
-            ViewBag.ErrorMessage = "An error occurred while retrieving user profiles. " + ex.Message;
-            return View(new List<IUser>()); // Provide an empty list
-        }
-    }
-
 
     public async Task<IActionResult> UserProfile(string id)
     {
@@ -95,13 +44,20 @@ public class ProfileController : Controller
     [HttpPost]
     public async Task<IActionResult> SaveProfile(ProfileDto profileDto)
     {
-        const UserFlags flags = UserFlags.Registered;
+        IUser? existingUser = await _userService.GetUserByUsernameAsync(profileDto.Name);
+        if (existingUser != null)
+        {
+            TempData["ErrorMessage"] = "Username is already taken..";
+            return View("CreateProfile", profileDto);
+        }
 
         if (profileDto.Password != profileDto.ConfirmPassword)
         {
             TempData["ErrorMessage"] = "The password and confirmation password do not match.";
             return View("CreateProfile", profileDto);
         }
+
+        const UserFlags flags = UserFlags.Registered;
 
         string avatarPath;
         try
@@ -119,7 +75,8 @@ public class ProfileController : Controller
 
         try
         {
-            await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits, profileDto.Hobbies);
+            await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits,
+                profileDto.Hobbies);
         }
         catch (InvalidPasswordException)
         {
@@ -177,12 +134,14 @@ public class ProfileController : Controller
             Description = htmlContent
         };
 
-        if (double.TryParse(profileDto.Longitude, out double longitude) &&
-            double.TryParse(profileDto.Latitude, out double latitude))
+        if (!double.TryParse(profileDto.Longitude, out double longitude) ||
+            !double.TryParse(profileDto.Latitude, out double latitude))
         {
-            traits.Longitude = longitude;
-            traits.Latitude = latitude;
+            return traits;
         }
+
+        traits.Longitude = longitude;
+        traits.Latitude = latitude;
 
         return traits;
     }
@@ -219,7 +178,7 @@ public class ProfileController : Controller
         };
         Response.Cookies.Append("UserId", _userSessionService.GetCurrentUserId().ToString()!, cookieOptions);
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("RandomProfile", "Matching");
     }
 
     [HttpPost]
