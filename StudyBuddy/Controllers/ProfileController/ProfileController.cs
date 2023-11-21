@@ -78,6 +78,7 @@ public class ProfileController : Controller
         {
             await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits,
                 profileDto.Hobbies);
+            _logger.LogInformation("User registered successfully {UserName}", profileDto.Name);
         }
         catch (InvalidPasswordException)
         {
