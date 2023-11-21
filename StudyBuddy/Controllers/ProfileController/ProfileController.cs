@@ -1,9 +1,9 @@
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Attributes;
 using StudyBuddy.Exceptions;
 using StudyBuddy.Models;
+using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.ValueObjects;
@@ -92,26 +92,12 @@ public class ProfileController : Controller
         return View("Error", errorModel);
     }
 
-    public IActionResult CreateProfile()
-    {
-        // Don't let the user access this page if they are already logged in
-        if (_userSessionService.GetCurrentUserId() != null)
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
-        return View();
-    }
+    public IActionResult CreateProfile() => View();
 
     [HttpPost]
     public async Task<IActionResult> SaveProfile(ProfileDto profileDto)
     {
-        IUser? existingUser = await _userService.GetUserByUsernameAsync(profileDto.Name);
-        if (existingUser != null)
-        {
-            TempData["ErrorMessage"] = "Username is already taken..";
-            return View("CreateProfile", profileDto);
-        }
+        const UserFlags flags = UserFlags.Registered;
 
         if (profileDto.Password != profileDto.ConfirmPassword)
         {
@@ -130,10 +116,9 @@ public class ProfileController : Controller
             TempData["ErrorMessage"] = "Error saving avatar: " + ex.Message;
             return View("CreateProfile", profileDto);
         }
-        const UserFlags flags = UserFlags.Registered;
 
         string htmlContent = ConvertMarkdownToHtml(profileDto.MarkdownContent);
-        UserTraits traits = CreateUserTraits(profileDto, htmlContent);
+        UserTraits traits = CreateUserTraits(profileDto, avatarPath, htmlContent);
 
         try
         {
@@ -166,28 +151,46 @@ public class ProfileController : Controller
         return RedirectToAction("CreateProfile");
     }
 
+    private static async Task<string> SaveAvatarAsync(IFormFile? avatar)
+    {
+        if (avatar is null || avatar.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
+        Directory.CreateDirectory(uploadsFolder);
+
+        string uniqueFileName = Guid.NewGuid() + "_" + avatar.FileName;
+        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        await using FileStream fileStream = new(filePath, FileMode.Create);
+        await avatar.CopyToAsync(fileStream);
+
+        return uniqueFileName;
+    }
+
     private static string ConvertMarkdownToHtml(string? markdownContent)
     {
         return markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
     }
 
-    private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
+    private static UserTraits CreateUserTraits(ProfileDto profileDto, string avatarPath, string htmlContent)
     {
         UserTraits traits = new()
         {
             Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
             Subject = profileDto.Subject,
+            AvatarPath = avatarPath,
             Description = htmlContent
         };
 
-        if (!double.TryParse(profileDto.Longitude, out double longitude) ||
-            !double.TryParse(profileDto.Latitude, out double latitude))
+        if (double.TryParse(profileDto.Longitude, out double longitude) &&
+            double.TryParse(profileDto.Latitude, out double latitude))
         {
-            return traits;
+            traits.Longitude = longitude;
+            traits.Latitude = latitude;
         }
-
-        traits.Longitude = longitude;
-        traits.Latitude = latitude;
 
         return traits;
     }
@@ -224,42 +227,14 @@ public class ProfileController : Controller
         };
         Response.Cookies.Append("UserId", _userSessionService.GetCurrentUserId().ToString()!, cookieOptions);
 
-        return RedirectToAction("RandomProfile", "Matching");
+        return RedirectToAction("Index", "Home");
     }
 
-    [CustomAuthorize]
     [HttpPost]
     public IActionResult Logout()
     {
         Response.Cookies.Delete("UserId");
 
         return RedirectToAction("Index", "Home");
-    }
-
-    [CustomAuthorize]
-    public async Task<IActionResult> EditProfile()
-    {
-        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
-
-        IUser user = (await _userService.GetUserByIdAsync(currentUserId))!;
-
-        return View(user);
-    }
-
-    [CustomAuthorize]
-    public async Task<IActionResult> UpdateProfile(ProfileDto profileDto)
-    {
-        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
-
-        IUser user = (await _userService.GetUserByIdAsync(currentUserId))!;
-
-        user.Traits.Subject = profileDto.Subject;
-        user.Hobbies = profileDto.Hobbies;
-        user.Traits.Description = ConvertMarkdownToHtml(profileDto.MarkdownContent);
-
-        await _userService.UpdateAsync(user);
-
-        TempData["SuccessMessage"] = "Profile updated successfully";
-        return RedirectToAction("EditProfile");
     }
 }

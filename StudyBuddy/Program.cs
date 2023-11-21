@@ -1,6 +1,5 @@
 using StudyBuddy.Data;
 using Microsoft.EntityFrameworkCore;
-using StudyBuddy.Attributes;
 using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Hubs;
@@ -35,7 +34,6 @@ builder.Services.AddScoped<IChatService, ChatService>();
 
 // Registering implementations for DI
 builder.Services.AddScoped<FileManager>();
-builder.Services.AddScoped<CustomAuthorizeAttribute>();
 builder.Services.AddDbContext<StudyBuddyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddMvc();

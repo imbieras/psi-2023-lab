@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Abstractions;
-using StudyBuddy.Attributes;
 using StudyBuddy.Services.MatchingService;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
@@ -8,7 +7,6 @@ using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Controllers;
 
-[CustomAuthorize]
 public class MatchingController : Controller
 {
     private const string LoginPath = "~/Views/Profile/Login.cshtml";
@@ -28,9 +26,20 @@ public class MatchingController : Controller
 
     public async Task<IActionResult> CurrentRandomUserProfile()
     {
-        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        {
+            return View(LoginPath);
+        }
 
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
+
+        if (currentUser == null)
+        {
+            return View(LoginPath);
+        }
 
         IUser? currentRandomUser = await _userService.GetUltimateSeenUserAsync(currentUser.Id);
         ViewBag.ShowMatchRequestMessage = true;
@@ -40,30 +49,65 @@ public class MatchingController : Controller
 
     public async Task<IActionResult> RandomProfile()
     {
-        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
+        // Pass the current user's ID to the view
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
-        ViewBag.CurrentUserId = currentUserId;
-        ViewBag.ShowMatchRequestMessage = false;
-
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
-
-        // Prepare ViewBag for 'Go back!' button
-        ViewBag.ViewedFirstProfile = await _userService.IsUserNotSeenAnyUserAsync(currentUser.Id);
-
-        var allUsers = (await _userService.GetAllUsersAsync()).Where(u => u.Id != currentUser.Id).ToList();
-
-        var unseenUsers = allUsers.Where(u => !_userService.IsUserSeenAsync(currentUser.Id, u.Id).Result).ToList();
-
-        IUser? randomUser = null;
-
-        if (unseenUsers.Any())
+        if (currentUserId != null)
         {
-            Random rnd = new();
-            randomUser = unseenUsers[rnd.Next(unseenUsers.Count)];
-            await _userService.UserSeenAsync(currentUser.Id, randomUser.Id);
+            ViewBag.CurrentUserId = currentUserId;
+            ViewBag.ShowMatchRequestMessage = false;
+        }
+
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        {
+            return View(LoginPath);
+        }
+
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
+
+        ViewBag.ViewedFirstProfile =
+            currentUser != null &&
+            await _userService.IsUserNotSeenAnyUserAsync(currentUser.Id); // For 'Go back!' button
+
+        if (currentUser == null)
+        {
+            return View(LoginPath);
+        }
+
+        IUser? randomUser;
+        int counter = 0;
+
+        int totalUserCount = (await _userService.GetAllUsersAsync()).Count();
+
+        while (true)
+        {
+            randomUser = await _userService.GetRandomUserAsync();
+
+            counter++;
+
+            if (randomUser == null || randomUser.Id == currentUser.Id ||
+                (counter > totalUserCount && randomUser.Id != currentUser.Id))
+            {
+                break;
+            }
+
+            if (!await _userService.IsUserSeenAsync(currentUser.Id, randomUser.Id))
+            {
+                randomUser = null;
+                break;
+            }
         }
 
         TempData.Remove("HideGoBackButton");
+
+        if (randomUser != null)
+        {
+            await _userService.UserSeenAsync(currentUser.Id, randomUser.Id);
+        }
+
+
         return View("RandomProfile", randomUser);
     }
 
@@ -76,12 +120,27 @@ public class MatchingController : Controller
     public async Task<IActionResult> PenultimateProfile()
     {
         // Pass the current user's ID to the view
-        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
-        ViewBag.CurrentUserId = currentUserId;
-        ViewBag.ShowMatchRequestMessage = false;
+        if (currentUserId != null)
+        {
+            ViewBag.CurrentUserId = currentUserId;
+            ViewBag.ShowMatchRequestMessage = false;
+        }
 
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        {
+            return View(LoginPath);
+        }
+
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
+
+        if (currentUser == null)
+        {
+            return View(LoginPath);
+        }
 
         IUser? previousUser = await _userService.GetPenultimateSeenUserAsync(currentUser.Id);
 
@@ -94,12 +153,27 @@ public class MatchingController : Controller
     public async Task<IActionResult> UltimateProfile()
     {
         // Pass the current user's ID to the view
-        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
+        UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
-        ViewBag.CurrentUserId = currentUserId;
-        ViewBag.ShowMatchRequestMessage = false;
+        if (currentUserId != null)
+        {
+            ViewBag.CurrentUserId = currentUserId;
+            ViewBag.ShowMatchRequestMessage = false;
+        }
 
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
+        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
+        {
+            return View(LoginPath);
+        }
+
+        UserId parseUserId = UserId.From(userIdGuid);
+
+        IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
+
+        if (currentUser == null)
+        {
+            return View(LoginPath);
+        }
 
         IUser? previousUser = await _userService.GetUltimateSeenUserAsync(currentUser.Id);
 
@@ -142,6 +216,7 @@ public class MatchingController : Controller
         return redirectAction switch
         {
             "RandomProfile" => RedirectToAction("RandomProfile", "Matching"),
+            "DisplayProfiles" => RedirectToAction("DisplayProfiles", "Profile"),
             "CurrentRandomUserProfile" => RedirectToAction("CurrentRandomUserProfile", "Matching"),
             _ => RedirectToAction("Index", "Home")
         };
