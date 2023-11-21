@@ -1,32 +1,31 @@
 using System.Collections.Concurrent;
 using StudyBuddy.Services.UserService;
-using System.Threading.Tasks;
+using StudyBuddy.ValueObjects;
 
-namespace StudyBuddy.Models
+namespace StudyBuddy.Models;
+
+public static class UserCounter
 {
-    public static class UserCounter
+    private static readonly ConcurrentBag<UserId> s_activeUsers = new();
+
+    public static int TotalUsers => s_activeUsers.Count;
+
+    public static void AddUser(UserId userId)
     {
-        private static readonly ConcurrentDictionary<Guid, bool> ActiveUsers = new ConcurrentDictionary<Guid, bool>();
+        s_activeUsers.Add(userId);
+    }
 
-        public static int TotalUsers => ActiveUsers.Count;
+    public static void RemoveUser(UserId userId)
+    {
+        s_activeUsers.TryTake(out userId);
+    }
 
-        public static void AddUser(Guid userId)
+    public static async Task InitializeAsync(IUserService userService)
+    {
+        var allUsers = await userService.GetAllUsersAsync(); // Assuming this method exists and returns all users
+        foreach (var user in allUsers)
         {
-            ActiveUsers.TryAdd(userId, true);
-        }
-
-        public static void RemoveUser(Guid userId)
-        {
-            ActiveUsers.TryRemove(userId, out bool _);
-        }
-
-        public static async Task InitializeAsync(IUserService userService)
-        {
-            var allUsers = await userService.GetAllUsersAsync(); // Assuming this method exists and returns all users
-            foreach (var user in allUsers)
-            {
-                ActiveUsers.TryAdd((Guid)user.Id, true);
-            }
+            s_activeUsers.Add(user.Id);
         }
     }
 }

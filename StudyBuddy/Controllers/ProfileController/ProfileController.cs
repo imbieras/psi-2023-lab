@@ -83,10 +83,11 @@ public class ProfileController : Controller
             TempData["ErrorMessage"] = "Invalid password format. Password must be at least 8 characters long.";
             return View("CreateProfile", profileDto);
         }
-        catch (InvalidUsernameException e)
+        catch (InvalidUsernameException)
         {
             // ("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")
-            TempData["ErrorMessage"] = e.Message;
+            TempData["ErrorMessage"] = "Invalid username format. Username must be at least 3 characters long and " +
+                                        "can only contain alphanumeric characters, underscores, dashes, and periods.";
             return View("CreateProfile", profileDto);
         }
         catch (Exception ex)
