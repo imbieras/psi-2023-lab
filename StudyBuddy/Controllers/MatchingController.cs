@@ -47,7 +47,6 @@ public class MatchingController : Controller
 
     public async Task<IActionResult> RandomProfile()
     {
-        // Pass the current user's ID to the view
         UserId? currentUserId = _userSessionService.GetCurrentUserId();
 
         if (currentUserId != null)
@@ -62,50 +61,30 @@ public class MatchingController : Controller
         }
 
         UserId parseUserId = UserId.From(userIdGuid);
-
         IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
-
-        ViewBag.ViewedFirstProfile =
-            currentUser != null &&
-            await _userService.IsUserNotSeenAnyUserAsync(currentUser.Id); // For 'Go back!' button
 
         if (currentUser == null)
         {
             return View(LoginPath);
         }
 
-        IUser? randomUser;
-        int counter = 0;
+        // Prepare ViewBag for 'Go back!' button
+        ViewBag.ViewedFirstProfile = await _userService.IsUserNotSeenAnyUserAsync(currentUser.Id);
 
-        int totalUserCount = (await _userService.GetAllUsersAsync()).Count();
+        var allUsers = (await _userService.GetAllUsersAsync()).Where(u => u.Id != currentUser.Id).ToList();
 
-        while (true)
+        var unseenUsers = allUsers.Where(u => !_userService.IsUserSeenAsync(currentUser.Id, u.Id).Result).ToList();
+
+        IUser? randomUser = null;
+
+        if (unseenUsers.Any())
         {
-            randomUser = await _userService.GetRandomUserAsync();
-
-            counter++;
-
-            if (randomUser == null || randomUser.Id == currentUser.Id ||
-                (counter > totalUserCount && randomUser.Id != currentUser.Id))
-            {
-                break;
-            }
-
-            if (!await _userService.IsUserSeenAsync(currentUser.Id, randomUser.Id))
-            {
-                randomUser = null;
-                break;
-            }
-        }
-
-        TempData.Remove("HideGoBackButton");
-
-        if (randomUser != null)
-        {
+            Random rnd = new Random();
+            randomUser = unseenUsers[rnd.Next(unseenUsers.Count)];
             await _userService.UserSeenAsync(currentUser.Id, randomUser.Id);
         }
 
-
+        TempData.Remove("HideGoBackButton");
         return View("RandomProfile", randomUser);
     }
 
