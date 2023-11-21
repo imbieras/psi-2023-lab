@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using StudyBuddy.Data;
 using StudyBuddy.Data.Repositories.MatchRepository;
 using StudyBuddy.Models;
@@ -10,6 +11,7 @@ namespace StudyBuddyTests.Data.Repositories;
 public class MatchRequestRepositoryTests
 {
     private StudyBuddyDbContext _dbContext;
+    private readonly ILogger<MatchRequestRepository> _logger;
     private readonly MatchRequestRepository _sut;
 
     public MatchRequestRepositoryTests()
@@ -19,10 +21,11 @@ public class MatchRequestRepositoryTests
             .Options;
 
         _dbContext = new StudyBuddyDbContext(options);
+        _logger = new Logger<MatchRequestRepository>(new LoggerFactory());
 
         List<MatchRequest> matchRequests = GenerateMatchRequests();
 
-        _sut = new MatchRequestRepository(_dbContext);
+        _sut = new MatchRequestRepository(_dbContext, _logger);
 
         _dbContext.MatchRequests.AddRange(matchRequests);
 
