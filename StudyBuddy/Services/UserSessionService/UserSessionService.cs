@@ -7,10 +7,7 @@ namespace StudyBuddy.Services.UserSessionService;
 public class UserSessionService : IUserSessionService
 {
     private UserId? _currentUserId;
-    public UserSessionService(IUserService userService)
-    {
-        _userService = userService;
-    }
+    public UserSessionService(IUserService userService) => _userService = userService;
 
     public UserId? GetCurrentUserId() => _currentUserId;
 

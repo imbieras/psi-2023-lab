@@ -1,17 +1,13 @@
 using StudyBuddy.Data;
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Attributes;
+using StudyBuddy.Data.Repositories;
 using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Hubs;
-using StudyBuddy.Data.Repositories.MatchRepository;
-using StudyBuddy.Data.Repositories.UserRepository;
-using StudyBuddy.Data.Repositories.ChatRepository;
 using StudyBuddy.Models;
-using StudyBuddy.Services.ChatService;
-using StudyBuddy.Services.MatchingService;
+using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
-using StudyBuddy.Services.UserSessionService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -23,16 +19,10 @@ if (builder.Environment.IsDevelopment())
 }
 
 // Register repositories
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IMatchRepository, MatchRepository>();
-builder.Services.AddScoped<IMatchRequestRepository, MatchRequestRepository>();
-builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddRepositories();
 
 // Register services
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserSessionService, UserSessionService>();
-builder.Services.AddScoped<IMatchingService, MatchingService>();
-builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddServices();
 
 // Registering implementations for DI
 builder.Services.AddScoped<FileManager>();
@@ -50,8 +40,8 @@ builder.Services.AddControllersWithViews();
 
 WebApplication app = builder.Build();
 
-using var scope = app.Services.CreateScope();
-var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+using IServiceScope scope = app.Services.CreateScope();
+IUserService userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 await UserCounter.InitializeAsync(userService);
 
 // Configure the HTTP request pipeline.
@@ -74,7 +64,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints => { endpoints.MapHub<ChatHub>("/chat"); });
+app.MapHub<ChatHub>("/chat");
 
 app.MapControllerRoute(
 "default",

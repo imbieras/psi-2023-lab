@@ -4,11 +4,7 @@ namespace StudyBuddy.Models;
 
 public class ChatMessage
 {
-    public Guid Id { get; set; }
-    public string Content { get; set; }
-    public DateTime Timestamp { get; set; }
-    public UserId SenderUserId { get; set; }
-    public Guid ConversationId { get; set; }
+    public ChatMessage() {}
 
     public ChatMessage(string content, DateTime timestamp, UserId senderUserId, Guid conversationId)
     {
@@ -18,7 +14,13 @@ public class ChatMessage
         ConversationId = conversationId;
     }
 
-    public ChatMessage()
-    {
-    }
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+    public string Content { get; set; } = string.Empty;
+
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+
+    public UserId SenderUserId { get; set; }
+
+    public Guid ConversationId { get; set; } = Guid.NewGuid();
 }

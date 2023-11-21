@@ -3,11 +3,7 @@ using Vogen;
 namespace StudyBuddy.ValueObjects;
 
 [ValueObject<Guid>]
-public partial struct UserId
-{
-}
+public partial struct UserId {}
 
 [ValueObject(typeof((double, double)))]
-public partial struct Coordinates
-{
-}
+public partial struct Coordinates {}

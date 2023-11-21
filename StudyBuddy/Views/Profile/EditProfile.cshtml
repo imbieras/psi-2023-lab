@@ -54,7 +54,7 @@
                 @foreach (var hobby in hobbies)
                 {
                     <label for="@hobby" class="btn btn-secondary mr-2 mb-2">
-                        <input type="checkbox" id="@hobby" name="hobbies[]" value="@hobby" @(Model.Hobbies.Contains(hobby) ? "checked" : "")>@hobby
+                        <input type="checkbox" id="@hobby" name="hobbies[]" value="@hobby" @(Model.Hobbies!.Contains(hobby) ? "checked" : "")>@hobby
                     </label>
                 }
             </div>

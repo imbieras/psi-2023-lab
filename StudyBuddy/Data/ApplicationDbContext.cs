@@ -8,15 +8,17 @@ namespace StudyBuddy.Data;
 
 public class StudyBuddyDbContext : DbContext
 {
-    public StudyBuddyDbContext(DbContextOptions<StudyBuddyDbContext> options) : base(options)
-    {
-    }
+    public StudyBuddyDbContext(DbContextOptions<StudyBuddyDbContext> options) : base(options) {}
 
-    public DbSet<User> Users { get; set; }
-    public DbSet<MatchRequest> MatchRequests { get; set; }
-    public DbSet<Match> Matches { get; set; }
-    public DbSet<ChatMessage> ChatMessages { get; set; }
-    public DbSet<UserSeenProfile> UserSeenProfiles { get; set; }
+    public DbSet<User> Users { get; set; } = null!;
+
+    public DbSet<MatchRequest> MatchRequests { get; set; } = null!;
+
+    public DbSet<Match> Matches { get; set; } = null!;
+
+    public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
+
+    public DbSet<UserSeenProfile> UserSeenProfiles { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -84,20 +86,20 @@ public class StudyBuddyDbContext : DbContext
 public static class UserIdConverter
 {
     public static readonly ValueConverter<UserId, string> UserIdToStringConverter = new(
-        v => v.ToString() ?? string.Empty,
-        v => (UserId)Guid.Parse(v));
+    v => v.ToString() ?? string.Empty,
+    v => (UserId)Guid.Parse(v));
 }
 
 public static class GuidConverter
 {
     public static readonly ValueConverter<Guid, string> GuidToStringConverter = new(
-        v => v.ToString(),
-        v => Guid.Parse(v));
+    v => v.ToString(),
+    v => Guid.Parse(v));
 }
 
 public static class StringListConverter
 {
     public static readonly ValueConverter<List<string>, string> StringListToStringConverter = new(
-        v => string.Join(",", v),
-        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+    v => string.Join(",", v),
+    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
 }

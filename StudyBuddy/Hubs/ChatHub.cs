@@ -15,14 +15,22 @@ public class ChatHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        HttpContext httpContext = Context.GetHttpContext();
-        string receiver = httpContext.Request.Query["receiver"];
-        string sender = httpContext.Request.Query["sender"];
+        HttpContext? httpContext = Context.GetHttpContext();
+
+        if (httpContext is null)
+        {
+            throw new NullReferenceException("HttpContext is null");
+        }
+
+        string receiver = httpContext.Request.Query["receiver"]!;
+        string sender = httpContext.Request.Query["sender"]!;
 
         if (!string.IsNullOrEmpty(sender) && !string.IsNullOrEmpty(receiver))
         {
-            Guid.TryParse(receiver, out Guid receiverGuid);
-            Guid.TryParse(sender, out Guid senderGuid);
+            if (!Guid.TryParse(receiver, out Guid receiverGuid) || !Guid.TryParse(sender, out Guid senderGuid))
+            {
+                throw new ArgumentException("Invalid Guid");
+            }
 
             Guid groupName = ConversationIdHelper.GetGroupId(senderGuid, receiverGuid);
 
@@ -35,11 +43,19 @@ public class ChatHub : Hub
 
     public async Task SendMessageToGroup(Guid groupName, string message)
     {
-        HttpContext httpContext = Context.GetHttpContext();
+        HttpContext? httpContext = Context.GetHttpContext();
 
-        string sender = httpContext.Request.Query["sender"];
+        if (httpContext is null)
+        {
+            throw new NullReferenceException("HttpContext is null");
+        }
 
-        UserId.TryParse(sender, out UserId senderId);
+        string sender = httpContext.Request.Query["sender"]!;
+
+        if (!UserId.TryParse(sender, out UserId senderId))
+        {
+            throw new ArgumentException("Invalid Guid");
+        }
 
         ChatMessage chatMessage = new(message, DateTime.UtcNow, senderId, groupName);
 

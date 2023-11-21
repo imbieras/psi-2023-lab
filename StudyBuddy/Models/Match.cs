@@ -5,6 +5,8 @@ namespace StudyBuddy.Models;
 
 public class Match
 {
+    public Match() {}
+
     public Match(UserId user1Id, UserId user2Id)
     {
         if (user1Id.CompareTo(user2Id) < 0)
@@ -22,13 +24,12 @@ public class Match
         IsActive = true;
     }
 
-    public Match()
-    {
-    }
 
     [ForeignKey("UserId")] public UserId User1Id { get; set; }
+
     [ForeignKey("UserId")] public UserId User2Id { get; set; }
 
     public DateTime MatchDate { get; set; }
+
     public bool IsActive { get; set; }
 }

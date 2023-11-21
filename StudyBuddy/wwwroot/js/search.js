@@ -1,5 +1,4 @@
-﻿
-let userList = document.getElementById("userList");
+﻿let userList = document.getElementById("userList");
 let searchInput = document.getElementById("searchInput");
 
 searchInput.addEventListener("input", function () {

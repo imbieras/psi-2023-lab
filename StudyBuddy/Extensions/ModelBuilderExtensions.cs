@@ -10,8 +10,11 @@ public static class ModelBuilderExtensions
     public static ModelBuilder UseValueConverterForType<T>(this ModelBuilder modelBuilder, ValueConverter converter) =>
         modelBuilder.UseValueConverterForType(typeof(T), converter);
 
-    public static ModelBuilder UseValueConverterForType(this ModelBuilder modelBuilder, Type type,
-        ValueConverter converter)
+    public static ModelBuilder UseValueConverterForType(
+        this ModelBuilder modelBuilder,
+        Type type,
+        ValueConverter converter
+    )
     {
         foreach (IMutableEntityType? entityType in modelBuilder.Model.GetEntityTypes())
         {
