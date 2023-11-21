@@ -21,6 +21,7 @@ public class GenericFilterServiceTests
             new User(
             user1Id,
             "John",
+            "$2y$10$MEGlkKcLY0nUK3XKZo05nuokVQJsmaxmC9wOlgpMgybAYzZgLUlvu",
             UserFlags.Registered,
             new UserTraits(DateTime.Today, "Education", User.GenerateGravatarUrl(user1Id), "Hello", Coordinates.From((0, 0))),
             new List<string>()
@@ -28,6 +29,7 @@ public class GenericFilterServiceTests
             new User(
             user2Id,
             "Steve",
+            "$2y$10$jEk3cJTygnRbTLeDr3bYQes32f.Y81sO4VRBDZUPLfuOPz9DDXoxu",
             UserFlags.Registered,
             new UserTraits(DateTime.Today.AddDays(-1), "Natural Sciences", User.GenerateGravatarUrl(user2Id), "Hello", Coordinates.From((0, 0))),
             new List<string> { "Playing an instrument", "Painting" }
@@ -35,6 +37,7 @@ public class GenericFilterServiceTests
             new User(
             user3Id,
             "Peter",
+            "$2y$10$olmb4AU5bN0fSt75mWTw9OwTDvrtpj5fNSI01zsYHSGjQEy1QVZT6",
             UserFlags.Registered,
             new UserTraits(DateTime.Today.AddDays(-2), "Natural Sciences", User.GenerateGravatarUrl(user3Id), "Hello", Coordinates.From((0, 0))),
             new List<string>
@@ -72,7 +75,6 @@ public class GenericFilterServiceTests
             }
             )
         };
-
         _users = users;
     }
 

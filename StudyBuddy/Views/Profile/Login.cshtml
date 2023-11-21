@@ -11,8 +11,12 @@
             <h2 class="card-title text-center">Login</h2>
             <form method="post" asp-controller="Profile" asp-action="Login">
                 <div class="mb-3">
-                    <label for="userId" class="form-label">User ID</label>
-                    <input type="text" class="form-control" id="userId" name="userId" value="@Model">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 py-2">Log In</button>
             </form>
