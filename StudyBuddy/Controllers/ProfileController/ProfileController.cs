@@ -40,7 +40,6 @@ public class ProfileController : Controller
         return View("Error", errorModel);
     }
 
-    [CustomAuthorize]
     public IActionResult CreateProfile()
     {
         // Don't let the user access this page if they are already logged in
@@ -70,19 +69,8 @@ public class ProfileController : Controller
 
         const UserFlags flags = UserFlags.Registered;
 
-        string avatarPath;
-        try
-        {
-            avatarPath = await SaveAvatarAsync(profileDto.Avatar);
-        }
-        catch (Exception ex)
-        {
-            TempData["ErrorMessage"] = "Error saving avatar: " + ex.Message;
-            return View("CreateProfile", profileDto);
-        }
-
         string htmlContent = ConvertMarkdownToHtml(profileDto.MarkdownContent);
-        UserTraits traits = CreateUserTraits(profileDto, avatarPath, htmlContent);
+        UserTraits traits = CreateUserTraits(profileDto, htmlContent);
 
         try
         {
@@ -111,37 +99,17 @@ public class ProfileController : Controller
         return RedirectToAction("CreateProfile");
     }
 
-    private static async Task<string> SaveAvatarAsync(IFormFile? avatar)
-    {
-        if (avatar is null || avatar.Length == 0)
-        {
-            return string.Empty;
-        }
-
-        string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
-        Directory.CreateDirectory(uploadsFolder);
-
-        string uniqueFileName = Guid.NewGuid() + "_" + avatar.FileName;
-        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-        await using FileStream fileStream = new(filePath, FileMode.Create);
-        await avatar.CopyToAsync(fileStream);
-
-        return uniqueFileName;
-    }
-
     private static string ConvertMarkdownToHtml(string? markdownContent)
     {
         return markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
     }
 
-    private static UserTraits CreateUserTraits(ProfileDto profileDto, string avatarPath, string htmlContent)
+    private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
     {
         UserTraits traits = new()
         {
             Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
             Subject = profileDto.Subject,
-            AvatarPath = avatarPath,
             Description = htmlContent
         };
 
