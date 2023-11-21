@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Attributes;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 using StudyBuddy.Hubs;
@@ -11,9 +12,9 @@ using StudyBuddy.Services.MatchingService;
 
 namespace StudyBuddy.Controllers.ChatController;
 
+[CustomAuthorize]
 public class ChatController : Controller
 {
-    private const string LoginPath = "~/Views/Profile/Login.cshtml";
     private readonly IHubContext<ChatHub> _hubContext;
     private readonly IUserService _userService;
     private readonly IUserSessionService _userSessionService;
@@ -30,32 +31,20 @@ public class ChatController : Controller
         _chatService = chatService;
     }
 
-
     public async Task<IActionResult> ChatAsync()
     {
-        UserId? currentUserId = _userSessionService.GetCurrentUserId();
-        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
-        {
-            return View(LoginPath);
-        }
+        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        UserId parseUserId = UserId.From(userIdGuid);
-
-        IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
-
-        if (currentUser == null)
-        {
-            return View(LoginPath);
-        }
+        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
 
         //Show list of matched users
-        List<Match> matches = (List<Match>)await _matchingService.GetMatchHistoryAsync(currentUser.Id);
+        List<Match> matches = (List<Match>)await _matchingService.GetMatchHistoryAsync(currentUserId);
 
         List<IUser?> userList = new();
 
         foreach (Match? match in matches)
         {
-            if (match.User1Id == currentUser.Id)
+            if (match.User1Id == currentUserId)
             {
                 userList.Add(await _userService.GetUserByIdAsync(match.User2Id));
             }
@@ -74,21 +63,9 @@ public class ChatController : Controller
 
     public async Task<IActionResult> ChatWithUserAsync(string otherUserId)
     {
-        // Retrieve the current user
-        UserId? currentUserId = _userSessionService.GetCurrentUserId();
+        UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        if (!Guid.TryParse(currentUserId.ToString(), out Guid userIdGuid))
-        {
-            return View(LoginPath);
-        }
-
-        UserId parseUserId = UserId.From(userIdGuid);
-        IUser? currentUser = await _userService.GetUserByIdAsync(parseUserId);
-
-        if (currentUser == null)
-        {
-            return View(LoginPath);
-        }
+        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
 
         // Retrieve the other user
         if (!Guid.TryParse(otherUserId, out Guid otherUserIdGuid))
@@ -106,7 +83,7 @@ public class ChatController : Controller
             return View("ChatError");
         }
 
-        byte[] bytes1 = userIdGuid.ToByteArray();
+        byte[] bytes1 = Guid.Parse(currentUser.Id.ToString()!).ToByteArray();
         byte[] bytes2 = otherUserIdGuid.ToByteArray();
 
         for (int i = 0; i < bytes1.Length; i++)

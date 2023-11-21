@@ -54,10 +54,7 @@ public partial class UserService : IUserService
 
         UserId userId = UserId.From(Guid.NewGuid());
 
-        if (string.IsNullOrEmpty(traits.AvatarPath))
-        {
-            traits.AvatarPath = User.GenerateGravatarUrl(userId);
-        }
+        traits.AvatarPath = User.GenerateGravatarUrl(userId);
 
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
