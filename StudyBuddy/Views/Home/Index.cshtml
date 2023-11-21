@@ -1,4 +1,4 @@
-﻿@using StudyBuddy.Abstractions
+@using StudyBuddy.Abstractions
 @using StudyBuddy.Services.UserService
 @using StudyBuddy.Services.UserSessionService
 @inject IUserService UserService
@@ -15,21 +15,32 @@
     }
 }
 
-<div class="text-center">
-    @if (user != null)
-    {
-        <h1 class="display-4">Welcome, @user.Name!</h1>
-        <p>What would you like to do today?</p>
-        <br/>
-        <a class="btn btn-outline-primary" asp-area="" asp-controller="Profile" asp-action="CreateProfile">Create a profile</a>
-        <a class="btn btn-outline-primary" asp-area="" asp-controller="Profile" asp-action="DisplayProfiles">Explore</a>
-    }
-    else
-    {
-        <h1 class="display-4">Welcome</h1>
-        <h2>Total Users: @Model</h2>
-        <p>
-            It seems you are new here! <a asp-area="" asp-controller="Profile" asp-action="CreateProfile">Create a profile!</a>
-        </p>
-    }
+<div class="container">
+    <div class="text-center mt-5">
+        @if (user != null)
+        {
+            <h1 class="display-4">Welcome, @user.Name!</h1>
+
+            <div class="mt-3">
+                <h5>Your Study Interests</h5>
+                @if (user.Hobbies != null && user.Hobbies.Any())
+                {
+                    <div class="mb-3">
+                        @foreach (var hobby in user.Hobbies)
+                        {
+                            <span class="badge bg-secondary me-2">@hobby</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <h1 class="display-4">Welcome</h1>
+            <p>
+                It seems you are new here! Join the other <b>@Model</b> users now! <a asp-area="" asp-controller="Profile" asp-action="CreateProfile">Sign up now!</a>
+            </p>
+        }
+    </div>
 </div>
+

@@ -1,29 +1,15 @@
+﻿@model StudyBuddy.Abstractions.IUser
+
 @{
-    ViewBag.Title = "Profile creation";
+    ViewBag.Title = "Edit profile";
     Layout = "_Layout";
 }
 
 <div class="container">
-    <h2>Profile Creation Page</h2>
-    <form method="post" action="SaveProfile" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="name" name="name" required>
-            <div id="nameerror" class="text-danger"></div>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-            <input type="password" class="form-control" id="password" name="password" required>
-            <div id="passworderror" class="text-danger"></div>
-        </div>
-        <div class="mb-3">
-            <label for="confirmpassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
-            <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" required>
-        </div>
-        <div class="mb-3">
-            <label for="birthdate" class="form-label">Birth Date <span class="text-danger">*</span></label>
-            <input type="date" max="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="birthdate" name="birthdate" required>
-        </div>
+    <h2>Edit your profile</h2>
+
+    <form method="post" action="UpdateProfile" enctype="multipart/form-data">
+
         <div class="mb-3">
             <label for="subject" class="form-label">Main Subject <span class="text-danger">*</span></label>
             <select class="form-select" id="subject" name="subject" required>
@@ -47,6 +33,7 @@
                 }
             </select>
         </div>
+
         <div class="mb-3">
             <label class="form-label">Hobbies or Interests</label>
             <div class="btn-group-toggle" role="group">
@@ -67,11 +54,12 @@
                 @foreach (var hobby in hobbies)
                 {
                     <label for="@hobby" class="btn btn-secondary mr-2 mb-2">
-                        <input type="checkbox" id="@hobby" name="hobbies[]" value="@hobby">@hobby
+                        <input type="checkbox" id="@hobby" name="hobbies[]" value="@hobby" @(Model.Hobbies.Contains(hobby) ? "checked" : "")>@hobby
                     </label>
                 }
             </div>
         </div>
+
         <div class="mb-3">
             <label for="markdownButtons" class="form-label">Insert Markdown Elements</label>
             <div class="btn-mb-3" id="markdownButtons">
@@ -137,18 +125,13 @@
         </div>
         <div class="mb-3">
             <label for="markdownContent" class="form-label">Markdown Content</label>
-            <textarea class="form-control" id="markdownContent" name="markdownContent" rows="6"></textarea>
+            <textarea class="form-control" id="markdownContent" name="markdownContent" rows="6">@Model.Traits.Description</textarea>
         </div>
         <div class="mb-3">
             <label for="htmlPreview" class="form-label">HTML Preview</label>
             <div class="form-control" id="htmlPreview"></div>
         </div>
-        <div class="mb-3">
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
-            <button type="button" class="btn btn-secondary" onclick="getLocation()">Add Location</button>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
     </form>
 </div>
 
@@ -176,75 +159,10 @@
         updateHtmlPreview();
     }
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, showError);
-        } else {
-            alert("Geolocation is not supported by this browser.");
-        }
-    }
+    document.getElementById('subject').value = '@Model.Traits.Subject';
 
-    function showPosition(position) {
-        document.getElementById("latitude").value = position.coords.latitude;
-        document.getElementById("longitude").value = position.coords.longitude;
-        alert('Location added successfully!');
-    }
-
-    function validateUsername() {
-        const nameInput = document.getElementById('name');
-        const nameError = document.getElementById('nameError');
-        const nameRegex = /^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$/;
-
-        if (!nameRegex.test(nameInput.value)) {
-            nameError.textContent = "Name must contain at least one letter or number and can contain only letters, numbers, underscores, dashes and dots";
-            nameInput.scrollIntoView();
-            return false;
-        }
-
-        nameError.textContent = "";
-        return true;
-    }
-
-
-    function validatePassword() {
-        const passwordInput = document.getElementById('password');
-        const passwordConfirmInput = document.getElementById('confirmpassword');
-        const passwordError = document.getElementById('passwordError');
-        const passwordRegex = /.{8,}/;
-
-        if (!passwordRegex.test(passwordInput.value)) {
-            passwordError.textContent = "Password must be at least 8 characters long";
-            passwordInput.scrollIntoView();
-            return false;
-        }
-
-        if (passwordInput.value !== passwordConfirmInput.value) {
-            passwordError.textContent = "Passwords do not match";
-            passwordInput.scrollIntoView();
-            return false;
-        }
-
-        passwordError.textContent = "";
-        return true;
-    }
-
-    document.querySelector('form').addEventListener('submit', function (e) {
-        if (!validateUsername() || !validatePassword()) {
-            e.preventDefault();
-        }
+    let hobbies = @Json.Serialize(Model.Hobbies);
+    hobbies.forEach(function (hobby) {
+        document.getElementById(hobby).checked = true;
     });
-
-    function showError(error) {
-        switch (error.code) {
-            case error.PERMISSION_DENIED:
-                alert("User denied the request for Geolocation.");
-                break;
-            case error.POSITION_UNAVAILABLE:
-                alert("Location information is unavailable.");
-                break;
-            case error.TIMEOUT:
-                alert("The request to get user location timed out.");
-                break;
-        }
-    }
 </script>
