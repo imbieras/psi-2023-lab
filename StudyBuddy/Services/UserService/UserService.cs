@@ -11,7 +11,10 @@ public partial class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
 
-    public UserService(IUserRepository userRepository) => _userRepository = userRepository;
+    public UserService(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
 
     public async Task<IEnumerable<IUser>> GetAllUsersAsync() => await _userRepository.GetAllAsync();
     public async Task<IUser?> GetUserByIdAsync(UserId userId) => await _userRepository.GetByIdAsync(userId);
@@ -75,7 +78,7 @@ public partial class UserService : IUserService
         User newUser = new(userId, username, hashedPassword, flags, traits, hobbies);
         await _userRepository.AddAsync(newUser);
 
-        UserCounter.AddUser(userId.Value);
+        UserCounter.AddUser((Guid)newUser.Id);
 
         return userId;
     }

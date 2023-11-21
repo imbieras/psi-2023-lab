@@ -6,6 +6,7 @@ using StudyBuddy.Hubs;
 using StudyBuddy.Data.Repositories.MatchRepository;
 using StudyBuddy.Data.Repositories.UserRepository;
 using StudyBuddy.Data.Repositories.ChatRepository;
+using StudyBuddy.Models;
 using StudyBuddy.Services.ChatService;
 using StudyBuddy.Services.MatchingService;
 using StudyBuddy.Services.UserService;
@@ -47,6 +48,9 @@ builder.Services.AddControllersWithViews();
 
 WebApplication app = builder.Build();
 
+// Synchronously block for UserCounter initialization
+InitializeUserCounter(app.Services).GetAwaiter().GetResult();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -80,3 +84,10 @@ app.MapControllerRoute(
 // fileManager.LoadUsersFromCsv("test.csv");
 
 app.Run();
+
+async Task InitializeUserCounter(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+    await UserCounter.InitializeAsync(userService);
+}

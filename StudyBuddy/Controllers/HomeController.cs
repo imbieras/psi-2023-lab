@@ -13,7 +13,7 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         int totalUsers = UserCounter.TotalUsers;
-        return View("Index", totalUsers);
+        return View("Index",totalUsers);
     }
     public IActionResult Privacy() => View();
 
