@@ -53,9 +53,9 @@ public class MatchingController : Controller
         // Prepare ViewBag for 'Go back!' button
         ViewBag.ViewedFirstProfile = await _userService.IsUserNotSeenAnyUserAsync(currentUser.Id);
 
-        var allUsers = (await _userService.GetAllUsersAsync()).Where(u => u.Id != currentUser.Id).ToList();
+        List<IUser> allUsers = (await _userService.GetAllUsersAsync()).Where(u => u.Id != currentUser.Id).ToList();
 
-        var unseenUsers = allUsers.Where(u => !_userService.IsUserSeenAsync(currentUser.Id, u.Id).Result).ToList();
+        List<IUser> unseenUsers = allUsers.Where(u => !_userService.IsUserSeenAsync(currentUser.Id, u.Id).Result).ToList();
 
         IUser? randomUser = null;
 

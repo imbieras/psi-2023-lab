@@ -4,20 +4,7 @@ namespace StudyBuddy.Models;
 
 public class UserTraits
 {
-    public DateTime Birthdate { get; set; }
-
-    public string Subject { get; set; }
-
-    public string AvatarPath { get; set; }
-
-    public string Description { get; set; }
-
-    public double Latitude { get; set; }
-    public double Longitude { get; set; }
-
-    public UserTraits()
-    {
-    } // Parameterless constructor for EF
+    public UserTraits() {}
 
     public UserTraits(
         DateTime birthdate,
@@ -34,4 +21,16 @@ public class UserTraits
         Latitude = location.Value.Item1;
         Longitude = location.Value.Item2;
     }
+
+    public DateTime Birthdate { get; set; } = DateTime.UtcNow;
+
+    public string Subject { get; set; } = string.Empty;
+
+    public string AvatarPath { get; set; } = string.Empty;
+
+    public string Description { get; set; } = string.Empty;
+
+    public double Latitude { get; set; }
+
+    public double Longitude { get; set; }
 }

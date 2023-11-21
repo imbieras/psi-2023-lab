@@ -2,7 +2,5 @@
 
 public class InvalidUsernameException : Exception
 {
-    public InvalidUsernameException(string message) : base(message)
-    {
-    }
+    public InvalidUsernameException(string message) : base(message) {}
 }

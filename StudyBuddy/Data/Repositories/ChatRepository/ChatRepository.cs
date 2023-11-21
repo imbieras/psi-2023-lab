@@ -21,7 +21,7 @@ public class ChatRepository : IChatRepository
 
     public async Task<ChatMessage> GetMessageByIdAsync(Guid messageId)
     {
-        var chatMessage = await _context.ChatMessages.Where(m => m.Id == messageId).FirstOrDefaultAsync();
+        ChatMessage? chatMessage = await _context.ChatMessages.Where(m => m.Id == messageId).FirstOrDefaultAsync();
 
         if (chatMessage != null)
         {

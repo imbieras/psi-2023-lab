@@ -31,7 +31,7 @@
                         {
                             <li class="list-group-item border border-0 user-list-item">
                                 <div class="d-flex align-items-start">
-                                    <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user.Id })">
+                                    <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user!.Id })">
                                         <img src="@user.Traits.AvatarPath" class="rounded-circle me-1" alt="@user.Name" width="40" height="40">
                                     </a>
                                     <div class="fw-bold flex-grow-1 ms-3 user-name">
@@ -66,7 +66,7 @@
                 <div class="position-relative d-flex flex-column flex-grow-1">
                     <div class="chat-messages p-4 flex-grow-1" id="messagesList">
                         <!-- Messages will be added here using JavaScript -->
-                        @foreach (var message in Model.messages)
+                        @foreach (var message in Model.Messages)
                         {
                             var isCurrentUser = message.SenderUserId == Model.CurrentUser.Id;
                             <div class="@(isCurrentUser ? "chat-message-right" : "chat-message-left") pb-4">

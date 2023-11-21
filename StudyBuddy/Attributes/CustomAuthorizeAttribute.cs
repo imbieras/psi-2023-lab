@@ -6,18 +6,13 @@ namespace StudyBuddy.Attributes;
 
 public class CustomAuthorizeAttribute : TypeFilterAttribute
 {
-    public CustomAuthorizeAttribute() : base(typeof(CustomAuthorizeFilter))
-    {
-    }
+    public CustomAuthorizeAttribute() : base(typeof(CustomAuthorizeFilter)) {}
 
     private class CustomAuthorizeFilter : IAuthorizationFilter
     {
         private readonly IUserSessionService _userSessionService;
 
-        public CustomAuthorizeFilter(IUserSessionService userSessionService)
-        {
-            _userSessionService = userSessionService;
-        }
+        public CustomAuthorizeFilter(IUserSessionService userSessionService) => _userSessionService = userSessionService;
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {

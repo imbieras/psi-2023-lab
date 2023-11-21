@@ -23,7 +23,7 @@
                         {
                             <li class="list-group-item border border-0 user-list-item">
                                 <div class="d-flex align-items-start">
-                                    <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user.Id })">
+                                    <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user!.Id })">
                                         <img src="@user.Traits.AvatarPath" class="rounded-circle me-1" alt="@user.Name" width="40" height="40">
                                     </a>
                                     <div class="fw-bold flex-grow-1 ms-3 user-name">

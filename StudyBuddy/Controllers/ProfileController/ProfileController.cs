@@ -105,10 +105,7 @@ public class ProfileController : Controller
         return RedirectToAction("CreateProfile");
     }
 
-    private static string ConvertMarkdownToHtml(string? markdownContent)
-    {
-        return markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
-    }
+    private static string ConvertMarkdownToHtml(string? markdownContent) => markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
 
     private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
     {

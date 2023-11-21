@@ -5,7 +5,7 @@ public static class ConversationIdHelper
     public static Guid GetGroupId(Guid senderGuid, Guid receiverGuid)
     {
         // Sort user IDs to ensure consistent group names regardless of user roles
-        var guids = senderGuid.CompareTo(receiverGuid) < 0
+        (Guid, Guid) guids = senderGuid.CompareTo(receiverGuid) < 0
             ? (senderGuid, receiverGuid)
             : (receiverGuid, senderGuid);
 

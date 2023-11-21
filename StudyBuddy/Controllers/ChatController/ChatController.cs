@@ -21,8 +21,13 @@ public class ChatController : Controller
     private readonly IMatchingService _matchingService;
     private readonly IChatService _chatService;
 
-    public ChatController(IHubContext<ChatHub> hubContext, IUserService userService,
-        IUserSessionService userSessionService, IMatchingService matchingService, IChatService chatService)
+    public ChatController(
+        IHubContext<ChatHub> hubContext,
+        IUserService userService,
+        IUserSessionService userSessionService,
+        IMatchingService matchingService,
+        IChatService chatService
+    )
     {
         _hubContext = hubContext;
         _userService = userService;
@@ -120,7 +125,7 @@ public class ChatController : Controller
         TimeZoneInfo userTimeZone = TimeZoneInfo.Local;
 
         // Convert UTC timestamps to the user's local time zone
-        foreach (var message in messageList)
+        foreach (ChatMessage message in messageList)
         {
             message.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(message.Timestamp, userTimeZone);
         }
@@ -130,7 +135,7 @@ public class ChatController : Controller
             CurrentUser = currentUser,
             OtherUser = otherUser,
             Matches = matchList,
-            messages = messageList,
+            Messages = messageList,
             GroupName = groupName
         };
 
