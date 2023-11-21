@@ -28,7 +28,19 @@
 </ul>
 @if (user != null)
 {
-    <form class="d-flex" method="post" asp-controller="Profile" asp-action="Logout">
-        <button type="submit" class="btn btn-danger">Logout</button>
-    </form>
+    <div class="btn-group">
+        <form method="post" asp-controller="Profile" asp-action="Logout">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+        <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <form method="get" asp-controller="Profile" asp-action="EditProfile">
+                    <button type="submit" class="dropdown-item">Edit Profile</button>
+                </form>
+            </li>
+        </ul>
+    </div>
 }
