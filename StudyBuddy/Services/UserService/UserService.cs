@@ -34,6 +34,12 @@ public partial class UserService : IUserService
         }
     }
 
+    public async Task<bool> IsUserNameTaken(string username)
+    {
+        IEnumerable<User> users = await _userRepository.GetAllAsync();
+        return users.Any(u => u.Name == username);
+    }
+
     public async Task<UserId> RegisterUserAsync(
         string username,
         string password,
@@ -45,6 +51,11 @@ public partial class UserService : IUserService
         if (!UsernameRegex().IsMatch(username))
         {
             throw new InvalidUsernameException("Invalid username format");
+        }
+
+        if (await IsUserNameTaken(username))
+        {
+            throw new InvalidUsernameException("Username is already taken");
         }
 
         if (!PasswordRegex().IsMatch(password))
@@ -63,6 +74,8 @@ public partial class UserService : IUserService
 
         User newUser = new(userId, username, hashedPassword, flags, traits, hobbies);
         await _userRepository.AddAsync(newUser);
+
+        UserCounter.AddUser(userId.Value);
 
         return userId;
     }
