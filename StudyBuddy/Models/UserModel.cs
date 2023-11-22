@@ -1,9 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using StudyBuddy.Abstractions;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Models;
 
-public class User : IUser, IEquatable<User>
+public class User : IUser, IEquatable<User>, IValidatableObject
 {
     private User() {}
 
@@ -38,6 +39,45 @@ public class User : IUser, IEquatable<User>
 
         return Id == other.Id;
     }
+
+    public bool Equals(IUser? other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        return Id == other.Id;
+    }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (string.IsNullOrWhiteSpace(Name))
+        {
+            yield return new ValidationResult("Name cannot be empty", new[] { nameof(Name) });
+        }
+
+        if (string.IsNullOrWhiteSpace(PasswordHash))
+        {
+            yield return new ValidationResult("Password hash cannot be empty", new[] { nameof(PasswordHash) });
+        }
+
+        if ((Flags & UserFlags.Inactive) != 0 || (Flags & UserFlags.Admin) != 0)
+        {
+            yield return new ValidationResult("User cannot be inactive or admin", new[] { nameof(Flags) });
+        }
+
+        if (Traits.Birthdate > DateTime.UtcNow)
+        {
+            yield return new ValidationResult("Birthdate cannot be in the future", new[] { "Traits.Birthdate" });
+        }
+
+        if (string.IsNullOrWhiteSpace(Traits.Subject))
+        {
+            yield return new ValidationResult("Subject cannot be empty", new[] { "Traits.Subject" });
+        }
+    }
+
 
     public static string GenerateGravatarUrl(UserId userId) =>
         // Logic to create Gravatar URL based on user's unique identifier
