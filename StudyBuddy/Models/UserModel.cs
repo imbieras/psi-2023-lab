@@ -52,27 +52,27 @@ public class User : IUser, IEquatable<User>, IValidatableObject
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (string.IsNullOrWhiteSpace(this.Name))
+        if (string.IsNullOrWhiteSpace(Name))
         {
-            yield return new ValidationResult("Name cannot be empty", new[] { nameof(this.Name) });
+            yield return new ValidationResult("Name cannot be empty", new[] { nameof(Name) });
         }
 
-        if (string.IsNullOrWhiteSpace(this.PasswordHash))
+        if (string.IsNullOrWhiteSpace(PasswordHash))
         {
-            yield return new ValidationResult("Password hash cannot be empty", new[] { nameof(this.PasswordHash) });
+            yield return new ValidationResult("Password hash cannot be empty", new[] { nameof(PasswordHash) });
         }
 
-        if ((this.Flags & UserFlags.Inactive) != 0 || (this.Flags & UserFlags.Admin) != 0)
+        if ((Flags & UserFlags.Inactive) != 0 || (Flags & UserFlags.Admin) != 0)
         {
-            yield return new ValidationResult("User cannot be inactive or admin", new[] { nameof(this.Flags) });
+            yield return new ValidationResult("User cannot be inactive or admin", new[] { nameof(Flags) });
         }
 
-        if (this.Traits.Birthdate > DateTime.UtcNow)
+        if (Traits.Birthdate > DateTime.UtcNow)
         {
             yield return new ValidationResult("Birthdate cannot be in the future", new[] { "Traits.Birthdate" });
         }
 
-        if (string.IsNullOrWhiteSpace(this.Traits.Subject))
+        if (string.IsNullOrWhiteSpace(Traits.Subject))
         {
             yield return new ValidationResult("Subject cannot be empty", new[] { "Traits.Subject" });
         }
