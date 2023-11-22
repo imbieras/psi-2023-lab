@@ -1,9 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using StudyBuddy.Models;
 using StudyBuddy.ValueObjects;
 
 namespace StudyBuddy.Abstractions;
 
-public interface IUser
+public interface IUser : IEquatable<IUser>, IValidatableObject
 {
     UserId Id { get; }
 

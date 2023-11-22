@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using StudyBuddy.Abstractions;
+using StudyBuddy.Services;
 using StudyBuddy.Services.UserService;
 using StudyBuddy.ValueObjects;
 
@@ -17,8 +18,14 @@ public static class UserCounter
 
     public static async Task InitializeAsync(IUserService userService)
     {
-        IEnumerable<IUser> allUsers = await userService.GetAllUsersAsync();// Assuming this method exists and returns all users
-        foreach (IUser? user in allUsers)
+        IEnumerable<IUser> allUsers = await userService.GetAllUsersAsync();
+
+        Func<IUser, bool> isActiveUserDelegate = user =>
+            (user.Flags & UserFlags.Banned) == 0 && (user.Flags & UserFlags.Admin) == 0;
+
+        IEnumerable<IUser> activeUsers = GenericFilterService<IUser>.FilterByPredicate(allUsers, isActiveUserDelegate);
+
+        foreach (IUser? user in activeUsers)
         {
             s_activeUsers.Add(user.Id);
         }
