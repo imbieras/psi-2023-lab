@@ -1,7 +1,5 @@
-﻿@using StudyBuddy.Abstractions
-@using StudyBuddy.Services.UserService
-@using StudyBuddy.Services.UserSessionService
-@inject IUserService UserService
+﻿@using StudyBuddy.Services.UserSessionService
+@using StudyBuddy.Shared.Abstractions
 @inject IUserSessionService UserSessionService
 
 @{
@@ -11,7 +9,13 @@
 
     if (currentUserId != null)
     {
-        user = await UserService.GetUserByIdAsync(currentUserId.Value);
+         var httpClient = new HttpClient();
+         var response = await httpClient.GetAsync($"api/v1/user/{currentUserId.Value}");
+
+         if (response.IsSuccessStatusCode)
+         {
+             user = await response.Content.ReadFromJsonAsync<IUser>();
+         }
     }
 }
 
@@ -19,7 +23,7 @@
     <div class="text-center mt-5">
         @if (user != null)
         {
-            <h1 class="display-4">Welcome, @user.Name!</h1>
+            <h1 class="display-4">Welcome, @user.Username!</h1>
 
             <div class="mt-3">
                 <h5>Your Study Interests</h5>

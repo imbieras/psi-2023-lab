@@ -1,13 +1,7 @@
-using StudyBuddy.Data;
-using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Attributes;
-using StudyBuddy.Data.Repositories;
-using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Hubs;
-using StudyBuddy.Models;
-using StudyBuddy.Services;
-using StudyBuddy.Services.UserService;
+using StudyBuddy.Services.UserSessionService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -18,17 +12,10 @@ if (builder.Environment.IsDevelopment())
     mvcBuilder.AddRazorRuntimeCompilation();
 }
 
-// Register repositories
-builder.Services.AddRepositories();
+builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 
-// Register services
-builder.Services.AddServices();
-
-// Registering implementations for DI
-builder.Services.AddScoped<FileManager>();
 builder.Services.AddScoped<CustomAuthorizeAttribute>();
-builder.Services.AddDbContext<StudyBuddyDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddMvc();
 builder.Services.AddSignalR();
 
@@ -39,10 +26,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 
 WebApplication app = builder.Build();
-
-using IServiceScope scope = app.Services.CreateScope();
-IUserService userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-await UserCounter.InitializeAsync(userService);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -69,9 +52,5 @@ app.MapHub<ChatHub>("/chat");
 app.MapControllerRoute(
 "default",
 "{controller=Home}/{action=Index}/{id?}");
-
-// Retrieve the FileManager singleton and execute LoadUsersFromCsv
-// FileManager fileManager = app.Services.GetRequiredService<FileManager>();
-// fileManager.LoadUsersFromCsv("test.csv");
 
 await app.RunAsync();

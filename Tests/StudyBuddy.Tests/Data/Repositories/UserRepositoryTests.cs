@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using StudyBuddy.Abstractions;
-using StudyBuddy.Data;
-using StudyBuddy.Data.Repositories.UserRepository;
-using StudyBuddy.Models;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.API.Data;
+using StudyBuddy.API.Data.Repositories.UserRepository;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddyTests.Data.Repositories;
 
@@ -150,7 +150,7 @@ public class UserRepositoryTests
     {
         List<User> users = GenerateUsers();
         User user = users[0];
-        user.Name = "John Doe";
+        user.Username = "John Doe";
         user.Traits.Birthdate = DateTime.Today.AddDays(-5);
 
         await _sut.UpdateAsync(user);
@@ -165,7 +165,7 @@ public class UserRepositoryTests
     {
         List<User> users = GenerateUsers();
         User user = users[0];
-        user.Name = "John Doe";
+        user.Username = "John Doe";
         user.Traits.Birthdate = DateTime.Today.AddDays(-5);
         user.Hobbies = new List<string> { "Natural Sciences", "Health Sciences" };
 

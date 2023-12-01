@@ -27,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\StudyBuddy.API\StudyBuddy.API.csproj" />
         <ProjectReference Include="..\..\StudyBuddy\StudyBuddy.csproj"/>
     </ItemGroup>
 

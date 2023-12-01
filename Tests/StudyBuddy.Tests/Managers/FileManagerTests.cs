@@ -2,10 +2,10 @@ using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 using NSubstitute;
-using StudyBuddy.Abstractions;
-using StudyBuddy.Managers.FileManager;
-using StudyBuddy.Models;
-using StudyBuddy.Services.UserService;
+using StudyBuddy.API.Managers.FileManager;
+using StudyBuddy.API.Services.UserService;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
 
 namespace StudyBuddyTests.Managers;
 
@@ -27,14 +27,14 @@ public class FileManagerTests
         CreateCsvFile(filePath, new List<UserCsvRecord>
         {
             new(
-            "Test1_Test1",
-            "LCwo7cc*NALmtXq&F**PWu#",
-            "Registered",
+            (string)"Test1_Test1",
+            (string)"LCwo7cc*NALmtXq&F**PWu#",
+            (string)"Registered",
             DateTime.Parse("2008-09-14"),
-            "Arts & Design",
-            "https://img.freepik.com/premium-photo/male-werewolf-with-head-wolf-dark-foggy-forest-generative-ai-illustration_118086-7239.jpg",
-            "Hello hehe",
-            "Photography"
+            (string)"Arts & Design",
+            (string)"https://img.freepik.com/premium-photo/male-werewolf-with-head-wolf-dark-foggy-forest-generative-ai-illustration_118086-7239.jpg",
+            (string)"Hello hehe",
+            (string)"Photography"
             )
         });
 
@@ -58,34 +58,34 @@ public class FileManagerTests
         CreateCsvFile(filePath, new List<UserCsvRecord>
         {
             new(
-            "Test1_Test1",
-            "LCwo7cc*NALmtXq&F**PWu#",
-            "Registered",
+            (string)"Test1_Test1",
+            (string)"LCwo7cc*NALmtXq&F**PWu#",
+            (string)"Registered",
             DateTime.Parse("2008-09-14"),
-            "Arts & Design",
-            "https://img.freepik.com/premium-photo/male-werewolf-with-head-wolf-dark-foggy-forest-generative-ai-illustration_118086-7239.jpg",
-            "Hello hehe",
-            "Photography"
+            (string)"Arts & Design",
+            (string)"https://img.freepik.com/premium-photo/male-werewolf-with-head-wolf-dark-foggy-forest-generative-ai-illustration_118086-7239.jpg",
+            (string)"Hello hehe",
+            (string)"Photography"
             ),
             new(
-            "Test2_Test2",
-            "HQkA*NMvtnbwVz6iB#r^v7%",
-            "Registered",
+            (string)"Test2_Test2",
+            (string)"HQkA*NMvtnbwVz6iB#r^v7%",
+            (string)"Registered",
             DateTime.Parse("2007-09-05"),
-            "Natural Sciences",
-            "https://cdnb.artstation.com/p/assets/images/images/063/783/949/large/antonio-j-manzanedo-werewolf-manzanedo-3.jpg?1686332788",
-            "aaaaaa",
-            "Gardening, Cooking"
+            (string)"Natural Sciences",
+            (string)"https://cdnb.artstation.com/p/assets/images/images/063/783/949/large/antonio-j-manzanedo-werewolf-manzanedo-3.jpg?1686332788",
+            (string)"aaaaaa",
+            (string)"Gardening, Cooking"
             ),
             new(
-            "Test3_Test3",
-            "5RooF5o8b3YCvUgr$^p#FQZ",
-            "Registered",
+            (string)"Test3_Test3",
+            (string)"5RooF5o8b3YCvUgr$^p#FQZ",
+            (string)"Registered",
             DateTime.Parse("2006-08-28"),
-            "Law & Legal Studies",
-            "https://cdn.images.express.co.uk/img/dynamic/80/590x/Werewolf-1056224.jpg?r=1544355660150",
-            "fskjdnfksjdnf",
-            "Dancing, Cooking"
+            (string)"Law & Legal Studies",
+            (string)"https://cdn.images.express.co.uk/img/dynamic/80/590x/Werewolf-1056224.jpg?r=1544355660150",
+            (string)"fskjdnfksjdnf",
+            (string)"Dancing, Cooking"
             )
         });
 

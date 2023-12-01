@@ -1,0 +1,30 @@
+﻿name: StudyBuddy MVC Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'StudyBuddy/**'
+      - '*.sln'
+  pull_request:
+    paths:
+      - 'StudyBuddy/**'
+      - '*.sln'
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Restore MVC
+        run: dotnet restore ./StudyBuddy/
+
+      - name: Build MVC
+        run: dotnet build -c Release --no-restore ./StudyBuddy/

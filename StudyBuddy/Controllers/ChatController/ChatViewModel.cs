@@ -1,5 +1,5 @@
-﻿using StudyBuddy.Abstractions;
-using StudyBuddy.Models;
+﻿using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
 
 namespace StudyBuddy.Controllers.ChatController;
 

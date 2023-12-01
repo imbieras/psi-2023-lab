@@ -1,8 +1,8 @@
 using NSubstitute;
-using StudyBuddy.Data.Repositories.MatchRepository;
-using StudyBuddy.Models;
-using StudyBuddy.Services.MatchingService;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.API.Data.Repositories.MatchRepository;
+using StudyBuddy.API.Services.MatchingService;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddyTests.Services;
 

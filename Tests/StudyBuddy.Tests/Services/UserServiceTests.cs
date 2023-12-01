@@ -1,11 +1,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using StudyBuddy.Abstractions;
-using StudyBuddy.Data.Repositories.UserRepository;
-using StudyBuddy.Models;
-using StudyBuddy.Services.UserService;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.API.Data.Repositories.UserRepository;
+using StudyBuddy.API.Services.UserService;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddyTests.Services;
 
@@ -152,7 +152,7 @@ public class UserServiceTests
         List<User> expected = GenerateUsers();
         _userRepository.GetAllAsync().Returns(expected);
 
-        var actual = await _sut.GetUserByUsernameAsync(expected[0].Name);
+        var actual = await _sut.GetUserByUsernameAsync(expected[0].Username);
 
         Assert.Equal(expected[0], actual);
     }
@@ -197,7 +197,7 @@ public class UserServiceTests
     {
         List<User> users = GenerateUsers();
         User user = users[0];
-        user.Name = "John Doe";
+        user.Username = "John Doe";
         _userRepository.GetByIdAsync(user.Id).Returns(user);
 
         await _sut.UpdateAsync(user);
@@ -210,7 +210,7 @@ public class UserServiceTests
     {
         List<User> users = GenerateUsers();
         User user = users[0];
-        user.Name = "John Doe";
+        user.Username = "John Doe";
         _userRepository.GetByIdAsync(user.Id).Returns((User?)null);
 
         await _sut.UpdateAsync(user);

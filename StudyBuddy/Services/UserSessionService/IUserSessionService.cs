@@ -1,4 +1,4 @@
-using StudyBuddy.ValueObjects;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Services.UserSessionService;
 

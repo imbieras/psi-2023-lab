@@ -1,26 +1,27 @@
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
-using StudyBuddy.Abstractions;
 using StudyBuddy.Attributes;
-using StudyBuddy.Exceptions;
 using StudyBuddy.Models;
-using StudyBuddy.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Exceptions;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Controllers.ProfileController;
 
 public class ProfileController : Controller
 {
-    private readonly IUserSessionService _userSessionService;
-    private readonly IUserService _userService;
     private readonly ILogger<ProfileController> _logger;
+    private readonly IUserSessionService _userSessionService;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public ProfileController(IUserService userService, IUserSessionService userSessionService, ILogger<ProfileController> logger)
+    public ProfileController(ILogger<ProfileController> logger, IUserSessionService userSessionService,
+        IHttpClientFactory clientFactory)
     {
-        _userService = userService;
-        _userSessionService = userSessionService;
         _logger = logger;
+        _userSessionService = userSessionService;
+        _clientFactory = clientFactory;
     }
 
     public async Task<IActionResult> UserProfile(string id)
@@ -29,10 +30,18 @@ public class ProfileController : Controller
         {
             UserId parseUserId = UserId.From(parsedGuid);
 
-            IUser? user = await _userService.GetUserByIdAsync(parseUserId);
+            var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+            var responseUser = await httpClient.GetAsync($"api/v1/user/{parseUserId}");
+            responseUser.EnsureSuccessStatusCode();
+
+            var user = await responseUser.Content.ReadFromJsonAsync<IUser>();
+
             if (user != null)
             {
-                user.Hobbies = await _userService.GetHobbiesById(parseUserId);
+                var responseUserHobbies = await httpClient.GetAsync($"api/v1/user/{parseUserId}/hobbies");
+                responseUserHobbies.EnsureSuccessStatusCode();
+
+                user.Hobbies = await responseUserHobbies.Content.ReadFromJsonAsync<List<string>>();
 
                 return View("ViewFullProfile", user);
             }
@@ -56,7 +65,11 @@ public class ProfileController : Controller
     [HttpPost]
     public async Task<IActionResult> SaveProfile(ProfileDto profileDto)
     {
-        IUser? existingUser = await _userService.GetUserByUsernameAsync(profileDto.Name);
+        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        var responseUser = await httpClient.GetAsync($"api/v1/user/{profileDto.Name}");
+        responseUser.EnsureSuccessStatusCode();
+
+        var existingUser = await responseUser.Content.ReadFromJsonAsync<IUser>();
         if (existingUser != null)
         {
             TempData["ErrorMessage"] = "Username is already taken..";
@@ -76,7 +89,17 @@ public class ProfileController : Controller
 
         try
         {
-            await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits, profileDto.Hobbies);
+            var responseRegisterUser = await httpClient.PostAsJsonAsync("api/v1/user",
+                new
+                {
+                    profileDto.Name,
+                    profileDto.Password,
+                    Flags = flags,
+                    Traits = traits,
+                    profileDto.Hobbies
+                });
+
+            responseRegisterUser.EnsureSuccessStatusCode();
             _logger.LogInformation("User registered successfully: {UserName}", profileDto.Name);
         }
         catch (InvalidPasswordException)
@@ -105,11 +128,17 @@ public class ProfileController : Controller
         return RedirectToAction("CreateProfile");
     }
 
-    private static string ConvertMarkdownToHtml(string? markdownContent) => markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
+    private static string ConvertMarkdownToHtml(string? markdownContent) =>
+        markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
 
     private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
     {
-        UserTraits traits = new() { Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(), Subject = profileDto.Subject, Description = htmlContent };
+        UserTraits traits = new()
+        {
+            Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
+            Subject = profileDto.Subject,
+            Description = htmlContent
+        };
 
         if (!double.TryParse(profileDto.Longitude, out double longitude) ||
             !double.TryParse(profileDto.Latitude, out double latitude))
@@ -127,7 +156,15 @@ public class ProfileController : Controller
     {
         // Check if the user is already logged in
         UserId? currentUserId = _userSessionService.GetCurrentUserId();
-        if (currentUserId != null && await _userService.GetUserByIdAsync(currentUserId.Value) != null)
+
+        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+
+        var responseUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseUser.EnsureSuccessStatusCode();
+
+        var user = await responseUser.Content.ReadFromJsonAsync<IUser>();
+
+        if (currentUserId != null && user != null)
         {
             return RedirectToAction("Index", "Home");
         }
@@ -172,7 +209,11 @@ public class ProfileController : Controller
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        IUser user = (await _userService.GetUserByIdAsync(currentUserId))!;
+        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseCurrentUser.EnsureSuccessStatusCode();
+
+        var user = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
 
         return View(user);
     }
@@ -182,13 +223,18 @@ public class ProfileController : Controller
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        IUser user = (await _userService.GetUserByIdAsync(currentUserId))!;
+        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseCurrentUser.EnsureSuccessStatusCode();
+
+        var user = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
 
         user.Traits.Subject = profileDto.Subject;
         user.Hobbies = profileDto.Hobbies;
         user.Traits.Description = ConvertMarkdownToHtml(profileDto.MarkdownContent);
 
-        await _userService.UpdateAsync(user);
+        var responseUpdateUser = await httpClient.PutAsJsonAsync($"api/v1/user/{currentUserId}", user);
+        responseUpdateUser.EnsureSuccessStatusCode();
 
         TempData["SuccessMessage"] = "Profile updated successfully";
         return RedirectToAction("EditProfile");

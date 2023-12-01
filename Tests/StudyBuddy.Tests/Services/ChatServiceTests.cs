@@ -1,10 +1,10 @@
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using StudyBuddy.Data.Repositories.ChatRepository;
-using StudyBuddy.Models;
-using StudyBuddy.Services.ChatService;
-using StudyBuddy.Utilities;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.API.Data.Repositories.ChatRepository;
+using StudyBuddy.API.Services.ChatService;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.Utilities;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddyTests.Services;
 

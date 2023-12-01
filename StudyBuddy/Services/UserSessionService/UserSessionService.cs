@@ -1,28 +1,32 @@
-using StudyBuddy.Abstractions;
-using StudyBuddy.Services.UserService;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Services.UserSessionService;
 
 public class UserSessionService : IUserSessionService
 {
+    private readonly HttpClient _httpClient;
+
     private UserId? _currentUserId;
-    public UserSessionService(IUserService userService) => _userService = userService;
+
+    public UserSessionService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
 
     public UserId? GetCurrentUserId() => _currentUserId;
 
     public void SetCurrentUser(UserId userId) => _currentUserId = userId;
 
-    private readonly IUserService _userService;
-
     public async Task<bool> AuthenticateUser(string username, string password)
     {
-        IUser? user = await _userService.GetUserByUsernameAsync(username);
+        var response = await _httpClient.GetAsync($"api/v1/user/username/{username}");
+        response.EnsureSuccessStatusCode();
+        IUser? user = await response.Content.ReadFromJsonAsync<IUser>();
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
         {
             return false;
         }
-
         SetCurrentUser(user.Id);
         return true;
     }

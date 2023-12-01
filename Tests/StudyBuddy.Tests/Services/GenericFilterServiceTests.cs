@@ -1,8 +1,8 @@
 using FluentAssertions;
-using StudyBuddy.Abstractions;
-using StudyBuddy.Models;
-using StudyBuddy.Services;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.API.Services;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddyTests.Services;
 

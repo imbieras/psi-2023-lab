@@ -1,10 +1,10 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using StudyBuddy.Data;
-using StudyBuddy.Data.Repositories.MatchRepository;
-using StudyBuddy.Models;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.API.Data;
+using StudyBuddy.API.Data.Repositories.MatchRepository;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddyTests.Data.Repositories;
 

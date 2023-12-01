@@ -6,6 +6,17 @@ services:
     ports:
       - "8000:80"
     depends_on:
+      - api
+    env_file:
+      - .env
+    environment:
+      ASPNETCORE_URLS: "http://*:80"
+
+  api:
+    build: ./StudyBuddy.API
+    ports:
+      - "8001:80"
+    depends_on:
       - db
     env_file:
       - .env
