@@ -30,7 +30,9 @@ public class AuthenticationMiddleware
         if (userSessionService.GetCurrentUserId() == null)
         {
             // Make a request to the API to get user details
-            var response = await httpClient.GetAsync($"api/v1/user/{UserId.From(userIdGuid)}");
+            UserId userId = UserId.From(userIdGuid);
+
+            var response = await httpClient.GetAsync($"api/v1/user/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 var currentUser = await response.Content.ReadFromJsonAsync<IUser>();

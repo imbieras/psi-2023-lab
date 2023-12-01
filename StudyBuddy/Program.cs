@@ -12,12 +12,17 @@ if (builder.Environment.IsDevelopment())
     mvcBuilder.AddRazorRuntimeCompilation();
 }
 
-builder.Services.AddScoped<IUserSessionService, UserSessionService>();
-
-builder.Services.AddScoped<CustomAuthorizeAttribute>();
+builder.Services.AddHttpClient("StudyBuddy.API", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("http://localhost:5100/");
+});
 
 builder.Services.AddMvc();
 builder.Services.AddSignalR();
+
+builder.Services.AddScoped<CustomAuthorizeAttribute>();
+
+builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 
 // Registering <AuthenticationMiddleware> with its implementation for DI
 builder.Services.AddHttpContextAccessor();
