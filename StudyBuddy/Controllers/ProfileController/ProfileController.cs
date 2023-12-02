@@ -1,10 +1,9 @@
-using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Attributes;
 using StudyBuddy.Models;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.Shared.Abstractions;
-using StudyBuddy.Shared.Exceptions;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
@@ -35,19 +34,18 @@ public class ProfileController : Controller
 
             var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
             var responseUser = await httpClient.GetAsync($"api/v1/user/{parseUserId}");
-            responseUser.EnsureSuccessStatusCode();
 
-            IUser? user = await responseUser.Content.ReadFromJsonAsync<IUser>();
 
-            if (user != null)
+            if (!responseUser.IsSuccessStatusCode)
             {
-                var responseUserHobbies = await httpClient.GetAsync($"api/v1/user/{parseUserId}/hobbies");
-                responseUserHobbies.EnsureSuccessStatusCode();
-
-                user.Hobbies = await responseUserHobbies.Content.ReadFromJsonAsync<List<string>>();
-
-                return View("ViewFullProfile", user);
+                ErrorDto? error = await responseUser.Content.ReadFromJsonAsync<ErrorDto>();
+                TempData["ErrorMessage"] = error?.Message;
+                return RedirectToAction("Index", "Home");
             }
+
+            IUser? user = await responseUser.Content.ReadFromJsonAsync<User>();
+
+            return View("ViewFullProfile", user);
         }
 
         ErrorViewModel errorModel = new() { ErrorMessage = "User not found or invalid ID." };
@@ -70,62 +68,13 @@ public class ProfileController : Controller
     {
         var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
 
-        var responseUser = await httpClient.GetAsync($"api/v1/user/by-username/{profileDto.Username}");
+        var responseRegisterUser = await httpClient.PostAsJsonAsync("api/v1/user/register", profileDto);
 
-        responseUser.EnsureSuccessStatusCode();
-
-        IUser? existingUser = await responseUser.Content.ReadFromJsonAsync<IUser>();
-        if (existingUser != null)
+        if (!responseRegisterUser.IsSuccessStatusCode)
         {
-            TempData["ErrorMessage"] = "Username is already taken..";
-            return View("CreateProfile", profileDto);
-        }
-
-        if (profileDto.Password != profileDto.ConfirmPassword)
-        {
-            TempData["ErrorMessage"] = "The password and confirmation password do not match.";
-            return View("CreateProfile", profileDto);
-        }
-
-        const UserFlags flags = UserFlags.Registered;
-
-        string htmlContent = ConvertMarkdownToHtml(profileDto.MarkdownContent);
-        UserTraits traits = CreateUserTraits(profileDto, htmlContent);
-
-        try
-        {
-            var responseRegisterUser = await httpClient.PostAsJsonAsync("api/v1/user",
-            new
-            {
-                Name = profileDto.Username,
-                profileDto.Password,
-                Flags = flags,
-                Traits = traits,
-                profileDto.Hobbies
-            });
-
-            responseRegisterUser.EnsureSuccessStatusCode();
-            _logger.LogInformation("User registered successfully: {UserName}", profileDto.Username);
-        }
-        catch (InvalidPasswordException)
-        {
-            // ("{8,}")
-            _logger.LogWarning("Invalid password format for user: {UserName}", profileDto.Username);
-            TempData["ErrorMessage"] = "Invalid password format. Password must be at least 8 characters long.";
-            return View("CreateProfile", profileDto);
-        }
-        catch (InvalidUsernameException)
-        {
-            // ("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")
-            _logger.LogWarning("Invalid username format for user: {UserName}", profileDto.Username);
-            TempData["ErrorMessage"] = "Invalid username format. Username must be alphanumeric and can contain . _ -";
-            return View("CreateProfile", profileDto);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error saving profile for user: {UserName}", profileDto.Username);
-            TempData["ErrorMessage"] = "Error saving profile: " + ex.Message;
-            return View("CreateProfile", profileDto);
+            var error = await responseRegisterUser.Content.ReadFromJsonAsync<ErrorDto>();
+            TempData["ErrorMessage"] = error?.Message;
+            return RedirectToAction("CreateProfile");
         }
 
         _logger.LogInformation("Profile created successfully for user: {UserName}", profileDto.Username);
@@ -133,24 +82,6 @@ public class ProfileController : Controller
         return RedirectToAction("CreateProfile");
     }
 
-    private static string ConvertMarkdownToHtml(string? markdownContent) =>
-        markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
-
-    private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
-    {
-        UserTraits traits = new() { Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(), Subject = profileDto.Subject, Description = htmlContent };
-
-        if (!double.TryParse(profileDto.Longitude, out double longitude) ||
-            !double.TryParse(profileDto.Latitude, out double latitude))
-        {
-            return traits;
-        }
-
-        traits.Longitude = longitude;
-        traits.Latitude = latitude;
-
-        return traits;
-    }
 
     public async Task<IActionResult> Login(string? username, string? password)
     {
@@ -197,30 +128,29 @@ public class ProfileController : Controller
         var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
         responseCurrentUser.EnsureSuccessStatusCode();
 
-        var user = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
+        var user = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         return View(user);
     }
 
     [CustomAuthorize]
-    public async Task<IActionResult> UpdateProfile(ProfileDto profileDto)
+    public async Task<IActionResult> UpdateProfile(UpdateUserDto updateUserDto)
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
         var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
-        var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
-        responseCurrentUser.EnsureSuccessStatusCode();
 
-        var user = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
+        var responseUpdateUser = await httpClient.PostAsJsonAsync($"api/v1/user/{currentUserId}/update", updateUserDto);
 
-        user.Traits.Subject = profileDto.Subject;
-        user.Hobbies = profileDto.Hobbies;
-        user.Traits.Description = ConvertMarkdownToHtml(profileDto.MarkdownContent);
-
-        var responseUpdateUser = await httpClient.PutAsJsonAsync($"api/v1/user/{currentUserId}", user);
-        responseUpdateUser.EnsureSuccessStatusCode();
+        if (!responseUpdateUser.IsSuccessStatusCode)
+        {
+            var error = await responseUpdateUser.Content.ReadFromJsonAsync<ErrorDto>();
+            TempData["ErrorMessage"] = error?.Message;
+            return RedirectToAction("EditProfile");
+        }
 
         TempData["SuccessMessage"] = "Profile updated successfully";
         return RedirectToAction("EditProfile");
     }
 }
+

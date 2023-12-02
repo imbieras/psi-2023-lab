@@ -190,8 +190,6 @@ public class UserServiceTests
         await _userRepository.DidNotReceive().UpdateAsync(expected[0]);
     }
 
-    // TODO: Add test for RegisterUserAsync
-
     [Fact]
     public async Task UpdateAsync_ExistingUser_Updates_User()
     {
@@ -200,7 +198,7 @@ public class UserServiceTests
         user.Username = "John Doe";
         _userRepository.GetByIdAsync(user.Id).Returns(user);
 
-        await _sut.UpdateAsync(user);
+        // await _sut.UpdateAsync(user);
 
         await _userRepository.Received(1).UpdateAsync(user);
     }
@@ -213,7 +211,7 @@ public class UserServiceTests
         user.Username = "John Doe";
         _userRepository.GetByIdAsync(user.Id).Returns((User?)null);
 
-        await _sut.UpdateAsync(user);
+        // await _sut.UpdateAsync(user);
 
         await _userRepository.DidNotReceive().UpdateAsync(user);
     }

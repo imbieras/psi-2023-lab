@@ -1,4 +1,5 @@
 using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Services.UserSessionService;
@@ -23,8 +24,12 @@ public class UserSessionService : IUserSessionService
         var httpClient = _httpClientFactory.CreateClient("StudyBuddy.API");
         var response = await httpClient.GetAsync($"api/v1/user/by-username/{username}");
 
-        response.EnsureSuccessStatusCode();
-        IUser? user = await response.Content.ReadFromJsonAsync<IUser>();
+        if (!response.IsSuccessStatusCode)
+        {
+            return false;
+        }
+
+        IUser? user = await response.Content.ReadFromJsonAsync<User>();
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
         {
             return false;

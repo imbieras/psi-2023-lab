@@ -1,6 +1,7 @@
 using System.Text.Json;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Middlewares;
@@ -38,7 +39,7 @@ public class AuthenticationMiddleware
             {
                 try
                 {
-                    IUser? currentUser = await response.Content.ReadFromJsonAsync<IUser>();
+                    IUser? currentUser = await response.Content.ReadFromJsonAsync<User>();
                     if (currentUser != null)
                     {
                         userSessionService.SetCurrentUser(currentUser.Id);

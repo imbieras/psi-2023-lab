@@ -2,6 +2,7 @@
 using StudyBuddy.API.Services.UserService;
 using StudyBuddy.Shared.Abstractions;
 using StudyBuddy.Shared.DTOs;
+using StudyBuddy.Shared.Exceptions;
 using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.API.Controllers.UserController;
@@ -56,41 +57,45 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto registerUserDto)
+    public async Task<IActionResult> RegisterUser([FromBody] ProfileDto profileDto)
     {
-        var userId = await _userService.RegisterUserAsync(
-            registerUserDto.Username,
-            registerUserDto.Password,
-            registerUserDto.Flags,
-            registerUserDto.Traits,
-            registerUserDto.Hobbies
-        );
-
-        return CreatedAtAction(nameof(GetUserById), new { userId }, null);
-    }
-
-    [HttpPut("{userId:guid}")]
-    public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto updateUserDto)
-    {
-        if (userId != updateUserDto.Id)
+        try
         {
-            return BadRequest("Mismatched user IDs");
+            await _userService.RegisterUserAsync(profileDto);
+            return Ok();
+        }
+        catch (UsernameAlreadyTakenException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (InvalidUsernameException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (InvalidPasswordException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return Ok(e.Message);
         }
 
-        IUser? existingUser = await _userService.GetUserByIdAsync(UserId.From(userId));
+    }
+
+    [HttpPut("{userId:guid}/update")]
+    public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto updateUserDto)
+    {
+        UserId parseUserId = UserId.From(userId);
+
+        IUser? existingUser = await _userService.GetUserByIdAsync(parseUserId);
 
         if (existingUser == null)
         {
             return NotFound("User not found");
         }
 
-        // Update the user
-        existingUser.Username = updateUserDto.Username;
-        existingUser.Flags = updateUserDto.Flags;
-        existingUser.Traits = updateUserDto.Traits;
-        existingUser.Hobbies = updateUserDto.Hobbies;
-
-        await _userService.UpdateAsync(existingUser);
+        await _userService.UpdateAsync(parseUserId, updateUserDto);
 
         return NoContent();
     }

@@ -1,4 +1,5 @@
 using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
@@ -11,12 +12,12 @@ public interface IUserService
     Task<List<string>?> GetHobbiesById(UserId userId);
     Task<IUser?> GetUserByUsernameAsync(string username);
     Task BanUserAsync(UserId userId);
-    Task<UserId> RegisterUserAsync(string username, string password, UserFlags flags, UserTraits traits, List<string> hobbies);
+    Task<UserId> RegisterUserAsync(ProfileDto profileDto);
     Task<IUser?> GetRandomUserAsync();
     Task<IUser?> GetUltimateSeenUserAsync(UserId userId);
     Task<IUser?> GetPenultimateSeenUserAsync(UserId userId);
     Task<bool> IsUserNotSeenAnyUserAsync(UserId userId);
     Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId);
     Task UserSeenAsync(UserId userId, UserId otherUserId);
-    Task UpdateAsync(IUser user);
+    Task UpdateAsync(UserId userId, UpdateUserDto updateUserDto);
 }

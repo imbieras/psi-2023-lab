@@ -6,7 +6,6 @@ namespace StudyBuddy.Shared.DTOs;
 
 public class UpdateUserDto
 {
-    public UserId Id { get; set; }
     public string Username { get; set; } = string.Empty;
     public UserFlags Flags { get; set; }
     public UserTraits Traits { get; set; } = new();

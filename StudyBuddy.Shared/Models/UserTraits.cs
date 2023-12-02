@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Shared.Models;
@@ -22,15 +23,18 @@ public class UserTraits
         Longitude = location.Value.Item2;
     }
 
+    [Required]
     public DateTime Birthdate { get; set; } = DateTime.UtcNow;
 
+    [Required]
     public string Subject { get; set; } = string.Empty;
 
+    [Required]
     public string AvatarPath { get; set; } = string.Empty;
 
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; } = string.Empty;
 
-    public double Latitude { get; set; }
+    public double? Latitude { get; set; }
 
-    public double Longitude { get; set; }
+    public double? Longitude { get; set; }
 }

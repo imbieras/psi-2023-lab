@@ -33,7 +33,7 @@ public class ChatController : Controller
         var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
         responseCurrentUser.EnsureSuccessStatusCode();
 
-        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
+        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         //Show list of matched users
         var responseMatchHistory = await httpClient.GetAsync($"api/v1/matching/match-history/{currentUserId}");
@@ -49,13 +49,13 @@ public class ChatController : Controller
             {
                 var responseMatchUser2 = await httpClient.GetAsync($"api/v1/user/{match.User2Id}");
                 responseMatchUser2.EnsureSuccessStatusCode();
-                userList.Add(await responseMatchUser2.Content.ReadFromJsonAsync<IUser>());
+                userList.Add(await responseMatchUser2.Content.ReadFromJsonAsync<User>());
             }
             else
             {
                 var responseMatchUser1 = await httpClient.GetAsync($"api/v1/user/{match.User1Id}");
                 responseMatchUser1.EnsureSuccessStatusCode();
-                userList.Add(await responseMatchUser1.Content.ReadFromJsonAsync<IUser>());
+                userList.Add(await responseMatchUser1.Content.ReadFromJsonAsync<User>());
             }
         }
 
@@ -74,7 +74,7 @@ public class ChatController : Controller
         var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
         responseCurrentUser.EnsureSuccessStatusCode();
 
-        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
+        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         // Retrieve the other user
         if (!Guid.TryParse(otherUserId, out Guid otherUserIdGuid))
@@ -87,7 +87,7 @@ public class ChatController : Controller
 
         var responseOtherUser = await httpClient.GetAsync($"api/v1/user/{parseOtherUserId}");
         responseOtherUser.EnsureSuccessStatusCode();
-        var otherUser = await responseOtherUser.Content.ReadFromJsonAsync<IUser>();
+        var otherUser = await responseOtherUser.Content.ReadFromJsonAsync<User>();
 
         var responseMatchingIsMatched = await httpClient.GetAsync($"api/v1/matching/is-matched/{currentUserId}/{parseOtherUserId}");
         responseMatchingIsMatched.EnsureSuccessStatusCode();
@@ -124,13 +124,13 @@ public class ChatController : Controller
             {
                 var responseMatchUser2 = await httpClient.GetAsync($"api/v1/user/{match.User2Id}");
                 responseMatchUser2.EnsureSuccessStatusCode();
-                matchList.Add(await responseMatchUser2.Content.ReadFromJsonAsync<IUser>());
+                matchList.Add(await responseMatchUser2.Content.ReadFromJsonAsync<User>());
             }
             else
             {
                 var responseMatchUser1 = await httpClient.GetAsync($"api/v1/user/{match.User1Id}");
                 responseMatchUser1.EnsureSuccessStatusCode();
-                matchList.Add(await responseMatchUser1.Content.ReadFromJsonAsync<IUser>());
+                matchList.Add(await responseMatchUser1.Content.ReadFromJsonAsync<User>());
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿@using StudyBuddy.Services.UserSessionService
 @using StudyBuddy.Shared.Abstractions
+@using StudyBuddy.Shared.Models
 @inject IUserSessionService UserSessionService
 @inject IHttpClientFactory HttpClientFactory
 
@@ -16,7 +17,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            user = await response.Content.ReadFromJsonAsync<IUser>();
+            user = await response.Content.ReadFromJsonAsync<User>();
         }
     }
 }

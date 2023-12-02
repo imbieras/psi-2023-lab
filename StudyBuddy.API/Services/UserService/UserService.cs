@@ -1,7 +1,9 @@
 using System.Text.RegularExpressions;
+using Markdig;
 using StudyBuddy.API.Data.Repositories.UserRepository;
 using StudyBuddy.API.Models;
 using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Exceptions;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
@@ -40,21 +42,28 @@ public partial class UserService : IUserService
         }
     }
 
-    public async Task<UserId> RegisterUserAsync(
-        string username,
-        string password,
-        UserFlags flags,
-        UserTraits traits,
-        List<string> hobbies
-    )
+    public async Task<UserId> RegisterUserAsync(ProfileDto profileDto)
     {
-        if (!UsernameRegex().IsMatch(username))
+        IUser? user = await GetUserByUsernameAsync(profileDto.Username);
+        if (user != null)
         {
-            _logger.LogWarning("Invalid username format: {username}", username);
+            _logger.LogWarning("Username already taken: {username}", profileDto.Username);
+            throw new UsernameAlreadyTakenException("Username already taken");
+        }
+
+        if (!UsernameRegex().IsMatch(profileDto.Username))
+        {
+            _logger.LogWarning("Invalid username format: {username}", profileDto.Username);
             throw new InvalidUsernameException("Invalid username format");
         }
 
-        if (!PasswordRegex().IsMatch(password))
+        if (profileDto.Password != profileDto.ConfirmPassword)
+        {
+            _logger.LogWarning("Passwords do not match");
+            throw new InvalidPasswordException("Passwords do not match");
+        }
+
+        if (!PasswordRegex().IsMatch(profileDto.Password))
         {
             _logger.LogWarning("Invalid password format");
             throw new InvalidPasswordException("Invalid password format");
@@ -62,11 +71,12 @@ public partial class UserService : IUserService
 
         UserId userId = UserId.From(Guid.NewGuid());
 
+        UserTraits traits = CreateUserTraits(profileDto, ConvertMarkdownToHtml(profileDto.MarkdownContent));
         traits.AvatarPath = User.GenerateGravatarUrl(userId);
 
-        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(profileDto.Password);
 
-        User newUser = new(userId, username, hashedPassword, flags, traits, hobbies);
+        User newUser = new(userId, profileDto.Username, hashedPassword, UserFlags.Registered, traits, profileDto.Hobbies);
         await _userRepository.AddAsync(newUser);
 
         UserCounter.AddUser(newUser.Id);
@@ -74,11 +84,35 @@ public partial class UserService : IUserService
         return userId;
     }
 
-    public async Task UpdateAsync(IUser user)
+
+    private static string ConvertMarkdownToHtml(string? markdownContent) =>
+        markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
+
+    private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
     {
-        User? userToUpdate = await _userRepository.GetByIdAsync(user.Id);
+        UserTraits traits = new() { Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(), Subject = profileDto.Subject, Description = htmlContent };
+
+        if (!double.TryParse(profileDto.Longitude, out double longitude) ||
+            !double.TryParse(profileDto.Latitude, out double latitude))
+        {
+            return traits;
+        }
+
+        traits.Longitude = longitude;
+        traits.Latitude = latitude;
+
+        return traits;
+    }
+
+    public async Task UpdateAsync(UserId userId, UpdateUserDto updateUserDto)
+    {
+        User? userToUpdate = await _userRepository.GetByIdAsync(userId);
         if (userToUpdate != null)
         {
+            userToUpdate.Username = updateUserDto.Username;
+            userToUpdate.Flags = updateUserDto.Flags;
+            userToUpdate.Traits = updateUserDto.Traits;
+            userToUpdate.Hobbies = updateUserDto.Hobbies;
             await _userRepository.UpdateAsync(userToUpdate);
         }
     }

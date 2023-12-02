@@ -2,6 +2,7 @@
 using StudyBuddy.Attributes;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Controllers;
@@ -31,12 +32,12 @@ public class MatchingController : Controller
         var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
         responseCurrentUser.EnsureSuccessStatusCode();
 
-        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
+        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         var responseUltimateUser = await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/ultimate-seen-user");
         responseUltimateUser.EnsureSuccessStatusCode();
 
-        var currentRandomUser = await responseUltimateUser.Content.ReadFromJsonAsync<IUser>();
+        var currentRandomUser = await responseUltimateUser.Content.ReadFromJsonAsync<User>();
 
         ViewBag.ShowMatchRequestMessage = true;
 
@@ -54,7 +55,7 @@ public class MatchingController : Controller
 
         var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
         responseCurrentUser.EnsureSuccessStatusCode();
-        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
+        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         // Prepare ViewBag for 'Go back!' button
         var responseViewedFirstProfile = await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/not-seen-any-user");
@@ -64,7 +65,7 @@ public class MatchingController : Controller
 
         var responseUnseenUsers = await httpClient.GetAsync($"api/v1/user");
         responseUnseenUsers.EnsureSuccessStatusCode();
-        var allUsers = await responseUnseenUsers.Content.ReadFromJsonAsync<List<IUser>>();
+        var allUsers = await responseUnseenUsers.Content.ReadFromJsonAsync<List<User>>();
 
         var responseSeenUsers = await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/has-seen-user");
         responseSeenUsers.EnsureSuccessStatusCode();
@@ -106,12 +107,12 @@ public class MatchingController : Controller
         var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
         responseCurrentUser.EnsureSuccessStatusCode();
 
-        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
+        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         var responsePenultimateUser = await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/penultimate-seen-user");
         responsePenultimateUser.EnsureSuccessStatusCode();
 
-        var penultimateUser = await responsePenultimateUser.Content.ReadFromJsonAsync<IUser>();
+        var penultimateUser = await responsePenultimateUser.Content.ReadFromJsonAsync<User>();
 
         TempData["HideGoBackButton"] = true;
 
@@ -131,12 +132,12 @@ public class MatchingController : Controller
         var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
         responseCurrentUser.EnsureSuccessStatusCode();
 
-        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
+        var currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         var responseUltimateUser = await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/ultimate-seen-user");
         responseUltimateUser.EnsureSuccessStatusCode();
 
-        var previousUser = await responseUltimateUser.Content.ReadFromJsonAsync<IUser>();
+        var previousUser = await responseUltimateUser.Content.ReadFromJsonAsync<User>();
 
         TempData["HideGoBackButton"] = true;
 
