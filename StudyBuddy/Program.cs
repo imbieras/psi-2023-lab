@@ -12,9 +12,9 @@ if (builder.Environment.IsDevelopment())
     mvcBuilder.AddRazorRuntimeCompilation();
 }
 
-builder.Services.AddHttpClient("StudyBuddy.API", httpClient =>
+builder.Services.AddHttpClient("StudyBuddy.API", client =>
 {
-    httpClient.BaseAddress = new Uri("http://localhost:5100/");
+    client.BaseAddress = new Uri("http://localhost:5100/");
 });
 
 builder.Services.AddMvc();

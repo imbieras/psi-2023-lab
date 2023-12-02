@@ -1,3 +1,4 @@
+using System.Text.Json;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.Shared.Abstractions;
 using StudyBuddy.Shared.ValueObjects;
@@ -35,8 +36,18 @@ public class AuthenticationMiddleware
             var response = await httpClient.GetAsync($"api/v1/user/{userId}");
             if (response.IsSuccessStatusCode)
             {
-                var currentUser = await response.Content.ReadFromJsonAsync<IUser>();
-                userSessionService.SetCurrentUser(currentUser.Id);
+                try
+                {
+                    IUser? currentUser = await response.Content.ReadFromJsonAsync<IUser>();
+                    if (currentUser != null)
+                    {
+                        userSessionService.SetCurrentUser(currentUser.Id);
+                    }
+                }
+                catch (JsonException)
+                {
+                    context.Response.Cookies.Delete("UserId");
+                }
             }
             else
             {

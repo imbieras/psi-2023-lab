@@ -1,6 +1,7 @@
 ﻿@using StudyBuddy.Services.UserSessionService
 @using StudyBuddy.Shared.Abstractions
 @inject IUserSessionService UserSessionService
+@inject IHttpClientFactory HttpClientFactory
 
 @{
     ViewData["Title"] = "Home Page";
@@ -9,13 +10,14 @@
 
     if (currentUserId != null)
     {
-         var httpClient = new HttpClient();
-         var response = await httpClient.GetAsync($"api/v1/user/{currentUserId.Value}");
+        var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
 
-         if (response.IsSuccessStatusCode)
-         {
-             user = await response.Content.ReadFromJsonAsync<IUser>();
-         }
+        var response = await httpClient.GetAsync($"api/v1/user/{currentUserId.Value}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            user = await response.Content.ReadFromJsonAsync<IUser>();
+        }
     }
 }
 

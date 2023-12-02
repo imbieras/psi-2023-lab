@@ -16,8 +16,11 @@ public class ProfileController : Controller
     private readonly IUserSessionService _userSessionService;
     private readonly IHttpClientFactory _clientFactory;
 
-    public ProfileController(ILogger<ProfileController> logger, IUserSessionService userSessionService,
-        IHttpClientFactory clientFactory)
+    public ProfileController(
+        ILogger<ProfileController> logger,
+        IUserSessionService userSessionService,
+        IHttpClientFactory clientFactory
+    )
     {
         _logger = logger;
         _userSessionService = userSessionService;
@@ -34,7 +37,7 @@ public class ProfileController : Controller
             var responseUser = await httpClient.GetAsync($"api/v1/user/{parseUserId}");
             responseUser.EnsureSuccessStatusCode();
 
-            var user = await responseUser.Content.ReadFromJsonAsync<IUser>();
+            IUser? user = await responseUser.Content.ReadFromJsonAsync<IUser>();
 
             if (user != null)
             {
@@ -66,10 +69,12 @@ public class ProfileController : Controller
     public async Task<IActionResult> SaveProfile(ProfileDto profileDto)
     {
         var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
-        var responseUser = await httpClient.GetAsync($"api/v1/user/{profileDto.Name}");
+
+        var responseUser = await httpClient.GetAsync($"api/v1/user/by-username/{profileDto.Username}");
+
         responseUser.EnsureSuccessStatusCode();
 
-        var existingUser = await responseUser.Content.ReadFromJsonAsync<IUser>();
+        IUser? existingUser = await responseUser.Content.ReadFromJsonAsync<IUser>();
         if (existingUser != null)
         {
             TempData["ErrorMessage"] = "Username is already taken..";
@@ -90,40 +95,40 @@ public class ProfileController : Controller
         try
         {
             var responseRegisterUser = await httpClient.PostAsJsonAsync("api/v1/user",
-                new
-                {
-                    profileDto.Name,
-                    profileDto.Password,
-                    Flags = flags,
-                    Traits = traits,
-                    profileDto.Hobbies
-                });
+            new
+            {
+                Name = profileDto.Username,
+                profileDto.Password,
+                Flags = flags,
+                Traits = traits,
+                profileDto.Hobbies
+            });
 
             responseRegisterUser.EnsureSuccessStatusCode();
-            _logger.LogInformation("User registered successfully: {UserName}", profileDto.Name);
+            _logger.LogInformation("User registered successfully: {UserName}", profileDto.Username);
         }
         catch (InvalidPasswordException)
         {
             // ("{8,}")
-            _logger.LogWarning("Invalid password format for user: {UserName}", profileDto.Name);
+            _logger.LogWarning("Invalid password format for user: {UserName}", profileDto.Username);
             TempData["ErrorMessage"] = "Invalid password format. Password must be at least 8 characters long.";
             return View("CreateProfile", profileDto);
         }
         catch (InvalidUsernameException)
         {
             // ("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")
-            _logger.LogWarning("Invalid username format for user: {UserName}", profileDto.Name);
+            _logger.LogWarning("Invalid username format for user: {UserName}", profileDto.Username);
             TempData["ErrorMessage"] = "Invalid username format. Username must be alphanumeric and can contain . _ -";
             return View("CreateProfile", profileDto);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving profile for user: {UserName}", profileDto.Name);
+            _logger.LogError(ex, "Error saving profile for user: {UserName}", profileDto.Username);
             TempData["ErrorMessage"] = "Error saving profile: " + ex.Message;
             return View("CreateProfile", profileDto);
         }
 
-        _logger.LogInformation("Profile created successfully for user: {UserName}", profileDto.Name);
+        _logger.LogInformation("Profile created successfully for user: {UserName}", profileDto.Username);
         TempData["SuccessMessage"] = "Profile created successfully";
         return RedirectToAction("CreateProfile");
     }
@@ -133,12 +138,7 @@ public class ProfileController : Controller
 
     private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
     {
-        UserTraits traits = new()
-        {
-            Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
-            Subject = profileDto.Subject,
-            Description = htmlContent
-        };
+        UserTraits traits = new() { Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(), Subject = profileDto.Subject, Description = htmlContent };
 
         if (!double.TryParse(profileDto.Longitude, out double longitude) ||
             !double.TryParse(profileDto.Latitude, out double latitude))
@@ -154,28 +154,12 @@ public class ProfileController : Controller
 
     public async Task<IActionResult> Login(string? username, string? password)
     {
-        // Check if the user is already logged in
-        UserId? currentUserId = _userSessionService.GetCurrentUserId();
-
-        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
-
-        var responseUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
-        responseUser.EnsureSuccessStatusCode();
-
-        var user = await responseUser.Content.ReadFromJsonAsync<IUser>();
-
-        if (currentUserId != null && user != null)
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
-        // Show the login view if the credentials are not provided
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        // Authenticate the user
+        if (username == null || password == null)
         {
             return View();
         }
 
-        // Authenticate the user
         if (!await _userSessionService.AuthenticateUser(username, password))
         {
             TempData["ErrorMessage"] = "Invalid username or password";
@@ -227,7 +211,7 @@ public class ProfileController : Controller
         var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
         responseCurrentUser.EnsureSuccessStatusCode();
 
-        var user = await responseCurrentUser.Content.ReadFromJsonAsync<IUser>();
+        var user = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         user.Traits.Subject = profileDto.Subject;
         user.Hobbies = profileDto.Hobbies;
