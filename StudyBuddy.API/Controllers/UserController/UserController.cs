@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.API.Services.UserService;
 using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.API.Controllers.UserController;

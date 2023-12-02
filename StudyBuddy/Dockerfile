@@ -10,13 +10,6 @@ COPY ["StudyBuddy.Shared/StudyBuddy.Shared.csproj", "StudyBuddy.Shared/"]
 RUN dotnet restore "StudyBuddy/StudyBuddy.csproj"
 COPY . .
 WORKDIR "/src/StudyBuddy"
-
-# Add libman part
-COPY ["StudyBuddy/libman.json", "StudyBuddy/"]
-RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli
-ENV PATH="${PATH}:/root/.dotnet/tools"
-RUN libman restore
-
 RUN dotnet build "StudyBuddy.csproj" -c Release -o /app/build
 
 FROM build AS publish

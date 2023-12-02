@@ -14,7 +14,7 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddHttpClient("StudyBuddy.API", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5100/");
+    client.BaseAddress = new Uri("http://localhost:8100/");
 });
 
 builder.Services.AddMvc();

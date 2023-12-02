@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.API.Data;
 using StudyBuddy.API.Data.Repositories;
-using StudyBuddy.API.Managers.FileManager;
 using StudyBuddy.API.Models;
 using StudyBuddy.API.Services;
 using StudyBuddy.API.Services.UserService;
@@ -15,7 +14,6 @@ builder.Services.AddRepositories();
 builder.Services.AddServices();
 
 // Registering implementations for DI
-builder.Services.AddScoped<FileManager>();
 builder.Services.AddDbContext<StudyBuddyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -42,9 +40,5 @@ app.MapControllers();
 using IServiceScope scope = app.Services.CreateScope();
 IUserService userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 await UserCounter.InitializeAsync(userService);
-
-// Retrieve the FileManager singleton and execute LoadUsersFromCsv
-FileManager fileManager = app.Services.GetRequiredService<FileManager>();
-fileManager.LoadUsersFromCsv("test.csv");
 
 await app.RunAsync();

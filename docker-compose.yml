@@ -1,27 +1,27 @@
-version: '3'
-
-services:
-  web:
-    build: .
+﻿services:
+  studybuddy:
+    image: studybuddy
+    build:
+      context: .
+      dockerfile: StudyBuddy/Dockerfile
     ports:
       - "8000:80"
     depends_on:
-      - api
+      - studybuddy.api
+
+  studybuddy.api:
+    image: studybuddy.api
+    build:
+      context: .
+      dockerfile: StudyBuddy.API/Dockerfile
+    ports:
+      - "8100:80"
     env_file:
       - .env
-    environment:
-      ASPNETCORE_URLS: "http://*:80"
-
-  api:
-    build: ./StudyBuddy.API
-    ports:
-      - "8001:80"
     depends_on:
       - db
-    env_file:
-      - .env
     environment:
-      ASPNETCORE_URLS: "http://*:80"
+        ASPNETCORE_URLS: "http://*:80"
 
   db:
     image: postgres

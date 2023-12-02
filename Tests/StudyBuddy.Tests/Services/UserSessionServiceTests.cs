@@ -11,8 +11,8 @@ public class UserSessionServiceTests
 
     public UserSessionServiceTests()
     {
-        var httpClient = Substitute.For<HttpClient>();
-        _sut = new UserSessionService(httpClient);
+        var httpClientFactory = Substitute.For<IHttpClientFactory>();
+        _sut = new UserSessionService(httpClientFactory);
     }
 
     [Fact]
