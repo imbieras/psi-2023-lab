@@ -109,9 +109,8 @@ public partial class UserService : IUserService
         User? userToUpdate = await _userRepository.GetByIdAsync(userId);
         if (userToUpdate != null)
         {
-            userToUpdate.Username = updateUserDto.Username;
-            userToUpdate.Flags = updateUserDto.Flags;
-            userToUpdate.Traits = updateUserDto.Traits;
+            userToUpdate.Traits.Subject = updateUserDto.Subject;
+            userToUpdate.Traits.Description = ConvertMarkdownToHtml(updateUserDto.MarkdownContent ?? string.Empty);
             userToUpdate.Hobbies = updateUserDto.Hobbies;
             await _userRepository.UpdateAsync(userToUpdate);
         }

@@ -34,7 +34,7 @@ public class UserTraits
 
     public string? Description { get; set; } = string.Empty;
 
-    public double? Latitude { get; set; }
+    public double? Latitude { get; set; } = 0;
 
-    public double? Longitude { get; set; }
+    public double? Longitude { get; set; } = 0;
 }

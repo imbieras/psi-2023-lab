@@ -1,13 +1,13 @@
-﻿using StudyBuddy.Shared.Abstractions;
-using StudyBuddy.Shared.Models;
-using StudyBuddy.Shared.ValueObjects;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace StudyBuddy.Shared.DTOs;
 
 public class UpdateUserDto
 {
-    public string Username { get; set; } = string.Empty;
-    public UserFlags Flags { get; set; }
-    public UserTraits Traits { get; set; } = new();
+
+    [Required]
+    public string Subject { get; set; } = string.Empty;
+
+    public string? MarkdownContent { get; set; } = string.Empty;
     public List<string>? Hobbies { get; set; } = new();
 }

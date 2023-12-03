@@ -140,7 +140,7 @@ public class ProfileController : Controller
 
         var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
 
-        var responseUpdateUser = await httpClient.PostAsJsonAsync($"api/v1/user/{currentUserId}/update", updateUserDto);
+        var responseUpdateUser = await httpClient.PutAsJsonAsync($"api/v1/user/{currentUserId}/update", updateUserDto);
 
         if (!responseUpdateUser.IsSuccessStatusCode)
         {
