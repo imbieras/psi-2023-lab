@@ -1,3 +1,4 @@
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
@@ -17,4 +18,5 @@ public interface IUserRepository
     Task<UserId> GetUltimateSeenUserAsync(UserId userId);
     Task<UserId> GetPenultimateSeenUserAsync(UserId userId);
     Task UpdateAsync(User user);
+    Task UpdateAsync(UserId userId, UpdateUserDto updateUserDto);
 }

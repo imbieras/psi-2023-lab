@@ -109,10 +109,7 @@ public partial class UserService : IUserService
         User? userToUpdate = await _userRepository.GetByIdAsync(userId);
         if (userToUpdate != null)
         {
-            userToUpdate.Traits.Subject = updateUserDto.Subject;
-            userToUpdate.Traits.Description = ConvertMarkdownToHtml(updateUserDto.MarkdownContent ?? string.Empty);
-            userToUpdate.Hobbies = updateUserDto.Hobbies;
-            await _userRepository.UpdateAsync(userToUpdate);
+            await _userRepository.UpdateAsync(userId, updateUserDto);
         }
     }
 
