@@ -4,6 +4,7 @@ using NSubstitute;
 using StudyBuddy.API.Data.Repositories.UserRepository;
 using StudyBuddy.API.Services.UserService;
 using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
@@ -195,12 +196,19 @@ public class UserServiceTests
     {
         List<User> users = GenerateUsers();
         User user = users[0];
-        user.Username = "John Doe";
+
+        UpdateUserDto updateUserDto = new()
+        {
+            Subject = "Social Sciences",
+            Hobbies = new List<string> { "Playing an instrument", "Painting" },
+            MarkdownContent = "Hello"
+        };
+
         _userRepository.GetByIdAsync(user.Id).Returns(user);
 
-        // await _sut.UpdateAsync(user);
+        await _sut.UpdateAsync(user.Id, updateUserDto);
 
-        await _userRepository.Received(1).UpdateAsync(user);
+        await _userRepository.Received(1).UpdateAsync(user.Id, updateUserDto);
     }
 
     [Fact]
@@ -208,12 +216,18 @@ public class UserServiceTests
     {
         List<User> users = GenerateUsers();
         User user = users[0];
-        user.Username = "John Doe";
+
+        UpdateUserDto updateUserDto = new()
+        {
+            Subject = "Social Sciences",
+            Hobbies = new List<string> { "Playing an instrument", "Painting" },
+            MarkdownContent = "Hello"
+        };
+
+
         _userRepository.GetByIdAsync(user.Id).Returns((User?)null);
 
-        // await _sut.UpdateAsync(user);
-
-        await _userRepository.DidNotReceive().UpdateAsync(user);
+        await _userRepository.DidNotReceive().UpdateAsync(user.Id, updateUserDto);
     }
 
     [Fact]

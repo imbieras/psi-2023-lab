@@ -1,6 +1,7 @@
 using NSubstitute;
 using StudyBuddy.API.Data.Repositories.MatchRepository;
 using StudyBuddy.API.Services.MatchingService;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
@@ -26,7 +27,9 @@ public class MatchingServiceTests
         var requestedId = UserId.From(Guid.NewGuid());
         _matchRequestRepository.IsMatchRequestExistsAsync(requestedId, requesterId).Returns(true);
 
-        await _sut.MatchUsersAsync(requesterId, requestedId);
+        MatchDto matchDto = new() { currentUserId = requesterId, otherUserId = requestedId };
+
+        await _sut.MatchUsersAsync(matchDto);
 
         await _matchRepository.Received(1).AddAsync(requesterId, requestedId);
         await _matchRequestRepository.Received(1).RemoveAsync(requestedId, requesterId);
@@ -39,7 +42,9 @@ public class MatchingServiceTests
         var requestedId = UserId.From(Guid.NewGuid());
         _matchRequestRepository.IsMatchRequestExistsAsync(requestedId, requesterId).Returns(false);
 
-        await _sut.MatchUsersAsync(requesterId, requestedId);
+        MatchDto matchDto = new() { currentUserId = requesterId, otherUserId = requestedId };
+
+        await _sut.MatchUsersAsync(matchDto);
 
         await _matchRequestRepository.Received(1).AddAsync(requesterId, requestedId);
     }
@@ -80,7 +85,10 @@ public class MatchingServiceTests
         UserId user2Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-222222222222"));
         UserId user3Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-333333333333"));
 
-        List<Match> expected = new() { new Match(user1Id, user2Id), new Match(user1Id, user3Id), new Match(user2Id, user3Id) };
+        List<Match> expected = new()
+        {
+            new Match(user1Id, user2Id), new Match(user1Id, user3Id), new Match(user2Id, user3Id)
+        };
 
         _matchRepository.GetMatchHistoryByUserIdAsync(userId).Returns(expected);
 
