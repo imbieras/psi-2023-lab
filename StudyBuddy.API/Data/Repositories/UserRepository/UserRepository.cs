@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
@@ -61,6 +62,17 @@ public class UserRepository : IUserRepository
             .Skip(1)
             .FirstOrDefaultAsync();
 
+    public async Task UpdateAsync(UserId userId, UpdateUserDto updateUserDto)
+    {
+        User? userToUpdate = await _context.Users.FindAsync(userId);
+        if (userToUpdate != null)
+        {
+            userToUpdate.Traits.Subject = updateUserDto.Subject;
+            userToUpdate.Traits.Description = (updateUserDto.MarkdownContent ?? string.Empty);
+            userToUpdate.Hobbies = updateUserDto.Hobbies;
+            await _context.SaveChangesAsync();
+        }
+    }
     public async Task UpdateAsync(User user)
     {
         var local = _context.Set<User>()
