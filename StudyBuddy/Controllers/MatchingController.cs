@@ -1,41 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudyBuddy.Abstractions;
 using StudyBuddy.Attributes;
-using StudyBuddy.Services.MatchingService;
-using StudyBuddy.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.DTOs;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Controllers;
 
 [CustomAuthorize]
 public class MatchingController : Controller
 {
-    private readonly IMatchingService _matchingService;
-    private readonly IUserService _userService;
-    private readonly IUserSessionService _userSessionService;
     private readonly ILogger<MatchingController> _logger;
+    private readonly IUserSessionService _userSessionService;
+    private readonly IHttpClientFactory _clientFactory;
 
     public MatchingController(
-        IUserService userService,
-        IMatchingService matchingService,
+        ILogger<MatchingController> logger,
         IUserSessionService userSessionService,
-        ILogger<MatchingController> logger
-    )
+        IHttpClientFactory clientFactory)
     {
-        _userService = userService;
-        _matchingService = matchingService;
-        _userSessionService = userSessionService;
         _logger = logger;
+        _userSessionService = userSessionService;
+        _clientFactory = clientFactory;
     }
 
     public async Task<IActionResult> CurrentRandomUserProfile()
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseCurrentUser.EnsureSuccessStatusCode();
 
-        IUser? currentRandomUser = await _userService.GetUltimateSeenUserAsync(currentUser.Id);
+        User? currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
+
+        HttpResponseMessage responseUltimateUser =
+            await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/ultimate-seen-user");
+        responseUltimateUser.EnsureSuccessStatusCode();
+
+        User? currentRandomUser = await responseUltimateUser.Content.ReadFromJsonAsync<User>();
+
         ViewBag.ShowMatchRequestMessage = true;
 
         return View("RandomProfile", currentRandomUser);
@@ -48,14 +53,39 @@ public class MatchingController : Controller
         ViewBag.CurrentUserId = currentUserId;
         ViewBag.ShowMatchRequestMessage = false;
 
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+
+        HttpResponseMessage responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseCurrentUser.EnsureSuccessStatusCode();
+        User? currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         // Prepare ViewBag for 'Go back!' button
-        ViewBag.ViewedFirstProfile = await _userService.IsUserNotSeenAnyUserAsync(currentUser.Id);
+        HttpResponseMessage responseViewedFirstProfile =
+            await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/not-seen-any-user");
+        responseViewedFirstProfile.EnsureSuccessStatusCode();
+        bool viewedFirstProfile = await responseViewedFirstProfile.Content.ReadFromJsonAsync<bool>();
+        ViewBag.ViewedFirstProfile = viewedFirstProfile;
 
-        List<IUser> allUsers = (await _userService.GetAllUsersAsync()).Where(u => u.Id != currentUser.Id).ToList();
+        HttpResponseMessage responseUsers = await httpClient.GetAsync("api/v1/user");
+        responseUsers.EnsureSuccessStatusCode();
+        List<User>? users = await responseUsers.Content.ReadFromJsonAsync<List<User>>();
 
-        List<IUser> unseenUsers = allUsers.Where(u => !_userService.IsUserSeenAsync(currentUser.Id, u.Id).Result).ToList();
+        List<User> allUsers = users.Where(u => u.Id != currentUser.Id).ToList();
+
+        List<IUser> unseenUsers = new();
+
+        foreach (User user in allUsers)
+        {
+            HttpResponseMessage responseIsUserSeen =
+                await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/has-seen-user/{user.Id}");
+            responseIsUserSeen.EnsureSuccessStatusCode();
+            bool isUserSeen = await responseIsUserSeen.Content.ReadFromJsonAsync<bool>();
+
+            if (!isUserSeen)
+            {
+                unseenUsers.Add(user);
+            }
+        }
 
         IUser? randomUser = null;
 
@@ -63,7 +93,10 @@ public class MatchingController : Controller
         {
             Random rnd = new();
             randomUser = unseenUsers[rnd.Next(unseenUsers.Count)];
-            await _userService.UserSeenAsync(currentUser.Id, randomUser.Id);
+
+            HttpResponseMessage responseUserSeen =
+                await httpClient.PostAsync($"api/v1/user/{currentUser.Id}/user-seen/{randomUser.Id}", null);
+            responseUserSeen.EnsureSuccessStatusCode();
         }
 
         TempData.Remove("HideGoBackButton");
@@ -84,13 +117,21 @@ public class MatchingController : Controller
         ViewBag.CurrentUserId = currentUserId;
         ViewBag.ShowMatchRequestMessage = false;
 
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseCurrentUser.EnsureSuccessStatusCode();
 
-        IUser? previousUser = await _userService.GetPenultimateSeenUserAsync(currentUser.Id);
+        User? currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
+
+        HttpResponseMessage responsePenultimateUser =
+            await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/penultimate-seen-user");
+        responsePenultimateUser.EnsureSuccessStatusCode();
+
+        User? penultimateUser = await responsePenultimateUser.Content.ReadFromJsonAsync<User>();
 
         TempData["HideGoBackButton"] = true;
 
-        return View("RandomProfile", previousUser);
+        return View("RandomProfile", penultimateUser);
     }
 
 
@@ -102,9 +143,17 @@ public class MatchingController : Controller
         ViewBag.CurrentUserId = currentUserId;
         ViewBag.ShowMatchRequestMessage = false;
 
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseCurrentUser.EnsureSuccessStatusCode();
 
-        IUser? previousUser = await _userService.GetUltimateSeenUserAsync(currentUser.Id);
+        User? currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
+
+        HttpResponseMessage responseUltimateUser =
+            await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/ultimate-seen-user");
+        responseUltimateUser.EnsureSuccessStatusCode();
+
+        User? previousUser = await responseUltimateUser.Content.ReadFromJsonAsync<User>();
 
         TempData["HideGoBackButton"] = true;
 
@@ -121,10 +170,20 @@ public class MatchingController : Controller
             UserId currentUserId = UserId.From(Guid.Parse(currentUser));
             UserId otherUserId = UserId.From(Guid.Parse(otherUser));
 
-            // Call UserManager.MatchUsers with the user IDs
-            await _matchingService.MatchUsersAsync(currentUserId, otherUserId);
+            MatchDto matchDto = new() { currentUserId = currentUserId, otherUserId = otherUserId };
 
-            if (await _matchingService.IsMatchedAsync(currentUserId, otherUserId))
+            HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+            HttpResponseMessage responseMatching =
+                await httpClient.PostAsJsonAsync("api/v1/matching/match-users", matchDto);
+            responseMatching.EnsureSuccessStatusCode();
+
+            HttpResponseMessage responseIsMatched =
+                await httpClient.GetAsync($"api/v1/matching/is-matched/{currentUserId}/{otherUserId}");
+            responseIsMatched.EnsureSuccessStatusCode();
+
+            bool isMatched = await responseIsMatched.Content.ReadFromJsonAsync<bool>();
+
+            if (isMatched)
             {
                 TempData["SuccessMessage"] = "Users matched successfully";
                 ViewBag.ShowMatchRequestMessage = false;
@@ -138,7 +197,8 @@ public class MatchingController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError("An error occurred while matching user {currentUser} to {otherUser}", currentUser, otherUser);
+            _logger.LogError("An error occurred while matching user {currentUser} to {otherUser}", currentUser,
+                otherUser);
             TempData["ErrorMessage"] = "An error occurred while matching users. " + ex.Message;
         }
 

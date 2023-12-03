@@ -1,13 +1,7 @@
-using StudyBuddy.Data;
-using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Attributes;
-using StudyBuddy.Data.Repositories;
-using StudyBuddy.Managers.FileManager;
 using StudyBuddy.Middlewares;
 using StudyBuddy.Hubs;
-using StudyBuddy.Models;
-using StudyBuddy.Services;
-using StudyBuddy.Services.UserService;
+using StudyBuddy.Services.UserSessionService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -18,19 +12,18 @@ if (builder.Environment.IsDevelopment())
     mvcBuilder.AddRazorRuntimeCompilation();
 }
 
-// Register repositories
-builder.Services.AddRepositories();
+builder.Services.AddHttpClient("StudyBuddy.API", client =>
+{
+    client.BaseAddress = new Uri("http://studybuddy.api:80/");
+    // client.BaseAddress = new Uri("http://localhost:5100");
+});
 
-// Register services
-builder.Services.AddServices();
-
-// Registering implementations for DI
-builder.Services.AddScoped<FileManager>();
-builder.Services.AddScoped<CustomAuthorizeAttribute>();
-builder.Services.AddDbContext<StudyBuddyDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddMvc();
 builder.Services.AddSignalR();
+
+builder.Services.AddScoped<CustomAuthorizeAttribute>();
+
+builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 
 // Registering <AuthenticationMiddleware> with its implementation for DI
 builder.Services.AddHttpContextAccessor();
@@ -39,10 +32,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 
 WebApplication app = builder.Build();
-
-using IServiceScope scope = app.Services.CreateScope();
-IUserService userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-await UserCounter.InitializeAsync(userService);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -55,7 +44,7 @@ if (!app.Environment.IsDevelopment())
 // Add middleware to the HTTP request pipeline.
 app.UseMiddleware<AuthenticationMiddleware>();
 
-app.UseWebSockets();// for SignalR
+app.UseWebSockets(); // for SignalR
 
 app.UseHttpsRedirection();
 
@@ -67,11 +56,7 @@ app.UseAuthorization();
 app.MapHub<ChatHub>("/chat");
 
 app.MapControllerRoute(
-"default",
-"{controller=Home}/{action=Index}/{id?}");
-
-// Retrieve the FileManager singleton and execute LoadUsersFromCsv
-// FileManager fileManager = app.Services.GetRequiredService<FileManager>();
-// fileManager.LoadUsersFromCsv("test.csv");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
 await app.RunAsync();

@@ -1,17 +1,15 @@
 using Microsoft.AspNetCore.SignalR;
-using StudyBuddy.Data.Repositories.ChatRepository;
-using StudyBuddy.Models;
-using StudyBuddy.Services.ChatService;
-using StudyBuddy.Utilities;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.Utilities;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Hubs;
 
 public class ChatHub : Hub
 {
-    private readonly IChatService _chatService;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public ChatHub(IChatService chatService) => _chatService = chatService;
+    public ChatHub(IHttpClientFactory clientFactory) => _clientFactory = clientFactory;
 
     public override async Task OnConnectedAsync()
     {
@@ -59,7 +57,11 @@ public class ChatHub : Hub
 
         ChatMessage chatMessage = new(message, DateTime.UtcNow, senderId, groupName);
 
-        await _chatService.AddMessageAsync(chatMessage);
+        HttpClient? httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage? responseAddMessage =
+            await httpClient.PostAsJsonAsync("api/v1/chat/messages/add", chatMessage);
+
+        responseAddMessage.EnsureSuccessStatusCode();
 
         // Broadcast the message to the conversation group
         await Clients.Group(groupName.ToString()).SendAsync("ReceiveMessage", sender, message);

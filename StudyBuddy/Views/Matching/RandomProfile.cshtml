@@ -1,6 +1,5 @@
-﻿@using StudyBuddy.Services.MatchingService
-@model StudyBuddy.Abstractions.IUser?
-@inject IMatchingService MatchingService
+﻿@model StudyBuddy.Shared.Abstractions.IUser?
+@inject IHttpClientFactory HttpClientFactory
 
 @{
     ViewBag.Title = "Find a friend!";
@@ -12,6 +11,8 @@
 
     @if (Model != null)
     {
+        var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
+
         var avatarUrl = Model.Traits.AvatarPath.Contains("://")
             ? Model.Traits.AvatarPath
             : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
@@ -21,15 +22,26 @@
 
         if (ViewBag.CurrentUserId != null)
         {
-            isRequestedMatch = await MatchingService.IsRequestedMatchAsync(ViewBag.CurrentUserId, Model.Id);
-            isMatched = await MatchingService.IsMatchedAsync(ViewBag.CurrentUserId, Model.Id);
+            var responseIsRequestedMatch = await httpClient.GetAsync($"api/v1/matching/is-requested-match/{ViewBag.CurrentUserId.Value}/{Model.Id}");
+
+            if (responseIsRequestedMatch.IsSuccessStatusCode)
+            {
+                isRequestedMatch = await responseIsRequestedMatch.Content.ReadFromJsonAsync<bool>();
+            }
+
+            var responseIsMatched = await httpClient.GetAsync($"api/v1/matching/is-matched/{ViewBag.CurrentUserId.Value}/{Model.Id}");
+
+            if (responseIsMatched.IsSuccessStatusCode)
+            {
+                isMatched = await responseIsMatched.Content.ReadFromJsonAsync<bool>();
+            }
         }
 
         <div class="row justify-content-center mt-4">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="mb-0">@Model.Name</h2>
+                        <h2 class="mb-0">@Model.Username</h2>
                     </div>
                     <div class="card-body d-flex flex-column align-items-center">
                         <div class="avatar-container" style="background-image: url('@avatarUrl');"></div>

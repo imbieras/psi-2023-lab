@@ -1,0 +1,33 @@
+name: StudyBuddy API Build & Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'StudyBuddy.API/**'
+      - '*.sln'
+  pull_request:
+    paths:
+      - 'StudyBuddy.API/**'
+      - '*.sln'
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Restore API
+        run: dotnet restore ./StudyBuddy.API/
+
+      - name: Build API
+        run: dotnet build -c Release --no-restore ./StudyBuddy.API/
+
+      - name: Test API
+        run: dotnet test ./Tests/StudyBuddy.Tests/

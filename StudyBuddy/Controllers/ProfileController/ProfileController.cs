@@ -1,26 +1,29 @@
-using Markdig;
 using Microsoft.AspNetCore.Mvc;
-using StudyBuddy.Abstractions;
 using StudyBuddy.Attributes;
-using StudyBuddy.Exceptions;
 using StudyBuddy.Models;
-using StudyBuddy.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.DTOs;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Controllers.ProfileController;
 
 public class ProfileController : Controller
 {
-    private readonly IUserSessionService _userSessionService;
-    private readonly IUserService _userService;
     private readonly ILogger<ProfileController> _logger;
+    private readonly IUserSessionService _userSessionService;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public ProfileController(IUserService userService, IUserSessionService userSessionService, ILogger<ProfileController> logger)
+    public ProfileController(
+        ILogger<ProfileController> logger,
+        IUserSessionService userSessionService,
+        IHttpClientFactory clientFactory
+    )
     {
-        _userService = userService;
-        _userSessionService = userSessionService;
         _logger = logger;
+        _userSessionService = userSessionService;
+        _clientFactory = clientFactory;
     }
 
     public async Task<IActionResult> UserProfile(string id)
@@ -29,13 +32,20 @@ public class ProfileController : Controller
         {
             UserId parseUserId = UserId.From(parsedGuid);
 
-            IUser? user = await _userService.GetUserByIdAsync(parseUserId);
-            if (user != null)
-            {
-                user.Hobbies = await _userService.GetHobbiesById(parseUserId);
+            HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+            HttpResponseMessage responseUser = await httpClient.GetAsync($"api/v1/user/{parseUserId}");
 
-                return View("ViewFullProfile", user);
+
+            if (!responseUser.IsSuccessStatusCode)
+            {
+                ErrorDto? error = await responseUser.Content.ReadFromJsonAsync<ErrorDto>();
+                TempData["ErrorMessage"] = error?.Message;
+                return RedirectToAction("Index", "Home");
             }
+
+            IUser? user = await responseUser.Content.ReadFromJsonAsync<User>();
+
+            return View("ViewFullProfile", user);
         }
 
         ErrorViewModel errorModel = new() { ErrorMessage = "User not found or invalid ID." };
@@ -56,89 +66,31 @@ public class ProfileController : Controller
     [HttpPost]
     public async Task<IActionResult> SaveProfile(ProfileDto profileDto)
     {
-        IUser? existingUser = await _userService.GetUserByUsernameAsync(profileDto.Name);
-        if (existingUser != null)
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+
+        HttpResponseMessage responseRegisterUser = await httpClient.PostAsJsonAsync("api/v1/user/register", profileDto);
+
+        if (!responseRegisterUser.IsSuccessStatusCode)
         {
-            TempData["ErrorMessage"] = "Username is already taken..";
-            return View("CreateProfile", profileDto);
+            ErrorDto? error = await responseRegisterUser.Content.ReadFromJsonAsync<ErrorDto>();
+            TempData["ErrorMessage"] = error?.Message;
+            return RedirectToAction("CreateProfile");
         }
 
-        if (profileDto.Password != profileDto.ConfirmPassword)
-        {
-            TempData["ErrorMessage"] = "The password and confirmation password do not match.";
-            return View("CreateProfile", profileDto);
-        }
-
-        const UserFlags flags = UserFlags.Registered;
-
-        string htmlContent = ConvertMarkdownToHtml(profileDto.MarkdownContent);
-        UserTraits traits = CreateUserTraits(profileDto, htmlContent);
-
-        try
-        {
-            await _userService.RegisterUserAsync(profileDto.Name, profileDto.Password, flags, traits, profileDto.Hobbies);
-            _logger.LogInformation("User registered successfully: {UserName}", profileDto.Name);
-        }
-        catch (InvalidPasswordException)
-        {
-            // ("{8,}")
-            _logger.LogWarning("Invalid password format for user: {UserName}", profileDto.Name);
-            TempData["ErrorMessage"] = "Invalid password format. Password must be at least 8 characters long.";
-            return View("CreateProfile", profileDto);
-        }
-        catch (InvalidUsernameException)
-        {
-            // ("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")
-            _logger.LogWarning("Invalid username format for user: {UserName}", profileDto.Name);
-            TempData["ErrorMessage"] = "Invalid username format. Username must be alphanumeric and can contain . _ -";
-            return View("CreateProfile", profileDto);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error saving profile for user: {UserName}", profileDto.Name);
-            TempData["ErrorMessage"] = "Error saving profile: " + ex.Message;
-            return View("CreateProfile", profileDto);
-        }
-
-        _logger.LogInformation("Profile created successfully for user: {UserName}", profileDto.Name);
+        _logger.LogInformation("Profile created successfully for user: {UserName}", profileDto.Username);
         TempData["SuccessMessage"] = "Profile created successfully";
         return RedirectToAction("CreateProfile");
     }
 
-    private static string ConvertMarkdownToHtml(string? markdownContent) => markdownContent != null ? Markdown.ToHtml(markdownContent) : string.Empty;
-
-    private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
-    {
-        UserTraits traits = new() { Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(), Subject = profileDto.Subject, Description = htmlContent };
-
-        if (!double.TryParse(profileDto.Longitude, out double longitude) ||
-            !double.TryParse(profileDto.Latitude, out double latitude))
-        {
-            return traits;
-        }
-
-        traits.Longitude = longitude;
-        traits.Latitude = latitude;
-
-        return traits;
-    }
 
     public async Task<IActionResult> Login(string? username, string? password)
     {
-        // Check if the user is already logged in
-        UserId? currentUserId = _userSessionService.GetCurrentUserId();
-        if (currentUserId != null && await _userService.GetUserByIdAsync(currentUserId.Value) != null)
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
-        // Show the login view if the credentials are not provided
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        // Authenticate the user
+        if (username == null || password == null)
         {
             return View();
         }
 
-        // Authenticate the user
         if (!await _userSessionService.AuthenticateUser(username, password))
         {
             TempData["ErrorMessage"] = "Invalid username or password";
@@ -172,23 +124,31 @@ public class ProfileController : Controller
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        IUser user = (await _userService.GetUserByIdAsync(currentUserId))!;
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseCurrentUser.EnsureSuccessStatusCode();
+
+        User? user = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         return View(user);
     }
 
     [CustomAuthorize]
-    public async Task<IActionResult> UpdateProfile(ProfileDto profileDto)
+    public async Task<IActionResult> UpdateProfile(UpdateUserDto updateUserDto)
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        IUser user = (await _userService.GetUserByIdAsync(currentUserId))!;
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
 
-        user.Traits.Subject = profileDto.Subject;
-        user.Hobbies = profileDto.Hobbies;
-        user.Traits.Description = ConvertMarkdownToHtml(profileDto.MarkdownContent);
+        HttpResponseMessage responseUpdateUser =
+            await httpClient.PutAsJsonAsync($"api/v1/user/{currentUserId}/update", updateUserDto);
 
-        await _userService.UpdateAsync(user);
+        if (!responseUpdateUser.IsSuccessStatusCode)
+        {
+            ErrorDto? error = await responseUpdateUser.Content.ReadFromJsonAsync<ErrorDto>();
+            TempData["ErrorMessage"] = error?.Message;
+            return RedirectToAction("EditProfile");
+        }
 
         TempData["SuccessMessage"] = "Profile updated successfully";
         return RedirectToAction("EditProfile");

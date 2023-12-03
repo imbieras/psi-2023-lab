@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using StudyBuddy.Abstractions;
 using StudyBuddy.Attributes;
-using StudyBuddy.Services.UserService;
-using StudyBuddy.ValueObjects;
 using StudyBuddy.Hubs;
-using StudyBuddy.Models;
-using StudyBuddy.Services.ChatService;
 using StudyBuddy.Services.UserSessionService;
-using StudyBuddy.Services.MatchingService;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.Utilities;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Controllers.ChatController;
 
@@ -16,34 +14,33 @@ namespace StudyBuddy.Controllers.ChatController;
 public class ChatController : Controller
 {
     private readonly IHubContext<ChatHub> _hubContext;
-    private readonly IUserService _userService;
     private readonly IUserSessionService _userSessionService;
-    private readonly IMatchingService _matchingService;
-    private readonly IChatService _chatService;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public ChatController(
-        IHubContext<ChatHub> hubContext,
-        IUserService userService,
-        IUserSessionService userSessionService,
-        IMatchingService matchingService,
-        IChatService chatService
-    )
+    public ChatController(IHubContext<ChatHub> hubContext, IUserSessionService userSessionService,
+        IHttpClientFactory clientFactory)
     {
         _hubContext = hubContext;
-        _userService = userService;
         _userSessionService = userSessionService;
-        _matchingService = matchingService;
-        _chatService = chatService;
+        _clientFactory = clientFactory;
     }
 
     public async Task<IActionResult> ChatAsync()
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
+        HttpClient? httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage? responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseCurrentUser.EnsureSuccessStatusCode();
+
+        User? currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         //Show list of matched users
-        List<Match> matches = (List<Match>)await _matchingService.GetMatchHistoryAsync(currentUserId);
+        HttpResponseMessage? responseMatchHistory =
+            await httpClient.GetAsync($"api/v1/matching/match-history/{currentUserId}");
+        responseMatchHistory.EnsureSuccessStatusCode();
+
+        List<Match>? matches = await responseMatchHistory.Content.ReadFromJsonAsync<List<Match>>();
 
         List<IUser?> userList = new();
 
@@ -51,11 +48,15 @@ public class ChatController : Controller
         {
             if (match.User1Id == currentUserId)
             {
-                userList.Add(await _userService.GetUserByIdAsync(match.User2Id));
+                HttpResponseMessage? responseMatchUser2 = await httpClient.GetAsync($"api/v1/user/{match.User2Id}");
+                responseMatchUser2.EnsureSuccessStatusCode();
+                userList.Add(await responseMatchUser2.Content.ReadFromJsonAsync<User>());
             }
             else
             {
-                userList.Add(await _userService.GetUserByIdAsync(match.User1Id));
+                HttpResponseMessage? responseMatchUser1 = await httpClient.GetAsync($"api/v1/user/{match.User1Id}");
+                responseMatchUser1.EnsureSuccessStatusCode();
+                userList.Add(await responseMatchUser1.Content.ReadFromJsonAsync<User>());
             }
         }
 
@@ -70,7 +71,11 @@ public class ChatController : Controller
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        IUser currentUser = (await _userService.GetUserByIdAsync(currentUserId))!;
+        HttpClient? httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage? responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        responseCurrentUser.EnsureSuccessStatusCode();
+
+        User? currentUser = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         // Retrieve the other user
         if (!Guid.TryParse(otherUserId, out Guid otherUserIdGuid))
@@ -80,23 +85,27 @@ public class ChatController : Controller
         }
 
         UserId parseOtherUserId = UserId.From(otherUserIdGuid);
-        IUser? otherUser = await _userService.GetUserByIdAsync(parseOtherUserId);
 
-        if (otherUser == null || !await _matchingService.IsMatchedAsync(currentUser.Id, otherUser.Id))
+        HttpResponseMessage? responseOtherUser = await httpClient.GetAsync($"api/v1/user/{parseOtherUserId}");
+        responseOtherUser.EnsureSuccessStatusCode();
+        User? otherUser = await responseOtherUser.Content.ReadFromJsonAsync<User>();
+
+        HttpResponseMessage? responseMatchingIsMatched =
+            await httpClient.GetAsync($"api/v1/matching/is-matched/{currentUserId}/{parseOtherUserId}");
+        responseMatchingIsMatched.EnsureSuccessStatusCode();
+
+        bool isMatched = await responseMatchingIsMatched.Content.ReadFromJsonAsync<bool>();
+
+        if (otherUser == null || !isMatched)
         {
             ViewBag.ErrorMessage = "Trying to chat with unmatched user.";
             return View("ChatError");
         }
 
-        byte[] bytes1 = Guid.Parse(currentUser.Id.ToString()!).ToByteArray();
-        byte[] bytes2 = otherUserIdGuid.ToByteArray();
+        // Generate a unique group name for the two users
+        Guid currentUserIdGuid = Guid.Parse(currentUserId.ToString() ?? string.Empty);
 
-        for (int i = 0; i < bytes1.Length; i++)
-        {
-            bytes1[i] = (byte)(bytes1[i] ^ bytes2[i]);
-        }
-
-        Guid groupName = new(bytes1);
+        Guid groupName = ConversationIdHelper.GetGroupId(currentUserIdGuid, otherUserIdGuid);
 
         // Add both users to the same SignalR group
         await _hubContext.Groups.AddToGroupAsync(currentUser.Id.ToString() ?? string.Empty, groupName.ToString());
@@ -104,7 +113,11 @@ public class ChatController : Controller
 
 
         //Show list of matched users
-        List<Match> matches = (List<Match>)await _matchingService.GetMatchHistoryAsync(currentUser.Id);
+        HttpResponseMessage? responseMatchHistory =
+            await httpClient.GetAsync($"api/v1/matching/match-history/{currentUser.Id}");
+        responseMatchHistory.EnsureSuccessStatusCode();
+
+        List<Match>? matches = await responseMatchHistory.Content.ReadFromJsonAsync<List<Match>>();
 
         List<IUser?> matchList = new();
 
@@ -112,15 +125,25 @@ public class ChatController : Controller
         {
             if (match.User1Id == currentUser.Id)
             {
-                matchList.Add(await _userService.GetUserByIdAsync(match.User2Id));
+                HttpResponseMessage? responseMatchUser2 = await httpClient.GetAsync($"api/v1/user/{match.User2Id}");
+                responseMatchUser2.EnsureSuccessStatusCode();
+                matchList.Add(await responseMatchUser2.Content.ReadFromJsonAsync<User>());
             }
             else
             {
-                matchList.Add(await _userService.GetUserByIdAsync(match.User1Id));
+                HttpResponseMessage? responseMatchUser1 = await httpClient.GetAsync($"api/v1/user/{match.User1Id}");
+                responseMatchUser1.EnsureSuccessStatusCode();
+                matchList.Add(await responseMatchUser1.Content.ReadFromJsonAsync<User>());
             }
         }
 
-        List<ChatMessage> messageList = (List<ChatMessage>)await _chatService.GetMessagesByConversationAsync(groupName);
+        // Retrieve the messages for the conversation
+        HttpResponseMessage? responseConversationMessages =
+            await httpClient.GetAsync($"api/v1/chat/conversations/{groupName}/messages");
+        responseConversationMessages.EnsureSuccessStatusCode();
+
+        List<ChatMessage>? messageList =
+            await responseConversationMessages.Content.ReadFromJsonAsync<List<ChatMessage>>();
 
         TimeZoneInfo userTimeZone = TimeZoneInfo.Local;
 

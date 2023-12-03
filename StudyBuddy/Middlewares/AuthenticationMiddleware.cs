@@ -1,16 +1,23 @@
-using StudyBuddy.Services.UserService;
+using System.Text.Json;
 using StudyBuddy.Services.UserSessionService;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Middlewares;
 
 public class AuthenticationMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public AuthenticationMiddleware(RequestDelegate next) => _next = next;
+    public AuthenticationMiddleware(RequestDelegate next, IHttpClientFactory clientFactory)
+    {
+        _next = next;
+        _clientFactory = clientFactory;
+    }
 
-    public async Task Invoke(HttpContext context, IUserSessionService userSessionService, IUserService userService)
+    public async Task Invoke(HttpContext context, IUserSessionService userSessionService)
     {
         Guid userIdGuid = default;
         if (!context.Request.Cookies.TryGetValue("UserId", out string? userIdString) ||
@@ -20,16 +27,34 @@ public class AuthenticationMiddleware
             context.Response.Cookies.Delete("UserId");
         }
 
-        if (userSessionService.GetCurrentUserId() == null &&
-            await userService.GetUserByIdAsync(UserId.From(userIdGuid)) != null)
+        HttpClient? httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+
+        if (userSessionService.GetCurrentUserId() == null)
         {
-            // Set the current user if it's not already set and the user exists
-            userSessionService.SetCurrentUser(UserId.From(userIdGuid));
-        }
-        else
-        {
-            // Clear the "UserId" cookie if the user doesn't exist
-            context.Response.Cookies.Delete("UserId");
+            // Make a request to the API to get user details
+            UserId userId = UserId.From(userIdGuid);
+
+            HttpResponseMessage? response = await httpClient.GetAsync($"api/v1/user/{userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    IUser? currentUser = await response.Content.ReadFromJsonAsync<User>();
+                    if (currentUser != null)
+                    {
+                        userSessionService.SetCurrentUser(currentUser.Id);
+                    }
+                }
+                catch (JsonException)
+                {
+                    context.Response.Cookies.Delete("UserId");
+                }
+            }
+            else
+            {
+                // Clear the "UserId" cookie if the user doesn't exist or there's an issue with the API call
+                context.Response.Cookies.Delete("UserId");
+            }
         }
 
         await _next(context);

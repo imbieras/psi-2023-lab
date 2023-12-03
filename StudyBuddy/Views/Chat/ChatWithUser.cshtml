@@ -6,9 +6,9 @@
 }
 
 <input type="hidden" id="userId" value="@Model.CurrentUser.Id"/>
-<input type="hidden" id="userName" value="@Model.CurrentUser.Name"/>
+<input type="hidden" id="userName" value="@Model.CurrentUser.Username"/>
 <input type="hidden" id="receiverId" value="@Model.OtherUser.Id"/>
-<input type="hidden" id="receiverName" value="@Model.OtherUser.Name"/>
+<input type="hidden" id="receiverName" value="@Model.OtherUser.Username"/>
 <input type="hidden" id="senderAvatar" value="@Model.CurrentUser.Traits.AvatarPath"/>
 <input type="hidden" id="receiverAvatar" value="@Model.OtherUser.Traits.AvatarPath"/>
 <input type="hidden" id="groupName" value="@Model.GroupName"/>
@@ -32,10 +32,10 @@
                             <li class="list-group-item border border-0 user-list-item">
                                 <div class="d-flex align-items-start">
                                     <a href="@Url.Action("ChatWithUser", "Chat", new { otherUserId = user!.Id })">
-                                        <img src="@user.Traits.AvatarPath" class="rounded-circle me-1" alt="@user.Name" width="40" height="40">
+                                        <img src="@user.Traits.AvatarPath" class="rounded-circle me-1" alt="@user.Username" width="40" height="40">
                                     </a>
                                     <div class="fw-bold flex-grow-1 ms-3 user-name">
-                                        @user.Name
+                                        @user.Username
                                     </div>
                                 </div>
                             </li>
@@ -56,10 +56,10 @@
                     <div class="d-flex align-items-center py-1">
                         <div class="position-relative">
                             <!-- Display the receiver's avatar and name -->
-                            <img src="@Model.OtherUser.Traits.AvatarPath" class="rounded-circle me-1" alt="@Model.OtherUser.Name" width="40" height="40">
+                            <img src="@Model.OtherUser.Traits.AvatarPath" class="rounded-circle me-1" alt="@Model.OtherUser.Username" width="40" height="40">
                         </div>
                         <div class="flex-grow-1 px-3">
-                            <strong>@Model.OtherUser.Name</strong>
+                            <strong>@Model.OtherUser.Username</strong>
                         </div>
                     </div>
                 </div>
@@ -72,11 +72,11 @@
                             <div class="@(isCurrentUser ? "chat-message-right" : "chat-message-left") pb-4">
                                 <div>
                                     <img src="@(isCurrentUser ? Model.CurrentUser.Traits.AvatarPath : Model.OtherUser.Traits.AvatarPath)"
-                                         class="rounded-circle me-1" alt="@(isCurrentUser ? Model.CurrentUser.Name : Model.OtherUser.Name)" width="40" height="40">
+                                         class="rounded-circle me-1" alt="@(isCurrentUser ? Model.CurrentUser.Username : Model.OtherUser.Username)" width="40" height="40">
                                     <div class="text-muted small text-nowrap mt-2">@message.Timestamp.ToString("HH:mm")</div>
                                 </div>
                                 <div class="flex-shrink-1 bg-light rounded py-2 px-3 @(isCurrentUser ? "me-3" : "ms-3")">
-                                    <div class="fw-bold mb-1">@(isCurrentUser ? "You" : Model.OtherUser.Name)</div>
+                                    <div class="fw-bold mb-1">@(isCurrentUser ? "You" : Model.OtherUser.Username)</div>
                                     <div class="text-break">
                                         @message.Content
                                     </div>

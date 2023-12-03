@@ -1,4 +1,4 @@
-@model StudyBuddy.Abstractions.IUser
+@model StudyBuddy.Shared.Abstractions.IUser
 @using StudyBuddy.Extensions
 
 @{
@@ -12,7 +12,7 @@
 }
 
 @{
-    var possessiveName = Model.Name.AddPossessiveSuffix();
+    var possessiveName = Model.Username.AddPossessiveSuffix();
 
     var avatarUrl = Model.Traits.AvatarPath.Contains("://")
         ? Model.Traits.AvatarPath

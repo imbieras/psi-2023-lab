@@ -1,10 +1,10 @@
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using StudyBuddy.Data.Repositories.ChatRepository;
-using StudyBuddy.Models;
-using StudyBuddy.Services.ChatService;
-using StudyBuddy.Utilities;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.API.Data.Repositories.ChatRepository;
+using StudyBuddy.API.Services.ChatService;
+using StudyBuddy.Shared.Models;
+using StudyBuddy.Shared.Utilities;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddyTests.Services;
 
@@ -32,14 +32,14 @@ public class ChatServiceTests
         List<ChatMessage> expected = new()
         {
             new ChatMessage(
-            "Hello",
-            DateTime.Now, user1Id,
-            ConversationIdHelper.GetGroupId(user1Guid, user2Guid)
+                "Hello",
+                DateTime.Now, user1Id,
+                ConversationIdHelper.GetGroupId(user1Guid, user2Guid)
             ),
             new ChatMessage(
-            "Hi",
-            DateTime.Now, user2Id,
-            ConversationIdHelper.GetGroupId(user2Guid, user1Guid)
+                "Hi",
+                DateTime.Now, user2Id,
+                ConversationIdHelper.GetGroupId(user2Guid, user1Guid)
             )
         };
 
@@ -109,5 +109,4 @@ public class ChatServiceTests
 
         await _chatRepository.Received().DeleteMessageAsync(messageId);
     }
-
 }

@@ -7,14 +7,26 @@ namespace StudyBuddy.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public HomeController(ILogger<HomeController> logger) => _logger = logger;
 
-    public IActionResult Index()
+    public HomeController(ILogger<HomeController> logger, IHttpClientFactory clientFactory)
     {
-        int totalUsers = UserCounter.TotalUsers;
+        _logger = logger;
+        _clientFactory = clientFactory;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        HttpClient? httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage? responseTotalUsers = await httpClient.GetAsync("api/v1/utility/total-users");
+        responseTotalUsers.EnsureSuccessStatusCode();
+
+        int totalUsers = await responseTotalUsers.Content.ReadFromJsonAsync<int>();
+
         return View("Index", totalUsers);
     }
+
     public IActionResult Privacy() => View();
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

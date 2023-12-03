@@ -1,8 +1,8 @@
-@using StudyBuddy.Abstractions
-@using StudyBuddy.Services.UserService
 @using StudyBuddy.Services.UserSessionService
-@inject IUserService UserService
+@using StudyBuddy.Shared.Abstractions
+@using StudyBuddy.Shared.Models
 @inject IUserSessionService UserSessionService
+@inject IHttpClientFactory HttpClientFactory
 
 @{
     var currentUserId = UserSessionService.GetCurrentUserId();
@@ -10,7 +10,14 @@
 
     if (currentUserId != null)
     {
-        user = await UserService.GetUserByIdAsync(currentUserId.Value);
+        var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
+
+        var response = await httpClient.GetAsync($"api/v1/user/{currentUserId.Value}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            user = await response.Content.ReadFromJsonAsync<User>();
+        }
     }
 }
 
@@ -18,7 +25,7 @@
     <li class="nav-item">
         @if (user != null)
         {
-            <a class="nav-link text-dark">Logged in as: <b>@user.Name</b></a>
+            <a class="nav-link text-dark">Logged in as: <b>@user.Username</b></a>
         }
         else
         {

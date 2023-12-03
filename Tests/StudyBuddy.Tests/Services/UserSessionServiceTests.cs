@@ -1,7 +1,7 @@
 using NSubstitute;
-using StudyBuddy.Services.UserService;
+using StudyBuddy.API.Services.UserService;
 using StudyBuddy.Services.UserSessionService;
-using StudyBuddy.ValueObjects;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddyTests.Services;
 
@@ -11,8 +11,8 @@ public class UserSessionServiceTests
 
     public UserSessionServiceTests()
     {
-        IUserService userService = Substitute.For<IUserService>();
-        _sut = new UserSessionService(userService);
+        IHttpClientFactory? httpClientFactory = Substitute.For<IHttpClientFactory>();
+        _sut = new UserSessionService(httpClientFactory);
     }
 
     [Fact]
