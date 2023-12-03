@@ -6,9 +6,12 @@ namespace StudyBuddy.Shared.Models;
 
 public class User : IUser, IEquatable<User>, IValidatableObject
 {
-    private User() {}
+    private User()
+    {
+    }
 
-    public User(UserId id, string username, string passwordHash, UserFlags flags, UserTraits traits, List<string>? hobbies)
+    public User(UserId id, string username, string passwordHash, UserFlags flags, UserTraits traits,
+        List<string>? hobbies)
     {
         Id = id;
         Username = username;

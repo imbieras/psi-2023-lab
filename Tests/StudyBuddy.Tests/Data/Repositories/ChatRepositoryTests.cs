@@ -18,7 +18,7 @@ public class ChatRepositoryTests
     public ChatRepositoryTests()
     {
         DbContextOptions<StudyBuddyDbContext> options = new DbContextOptionsBuilder<StudyBuddyDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
         _dbContext = new StudyBuddyDbContext(options);
@@ -44,19 +44,19 @@ public class ChatRepositoryTests
         List<ChatMessage> messages = new()
         {
             new ChatMessage(
-            "Hello",
-            DateTime.Now, user1Id,
-            ConversationIdHelper.GetGroupId(user1Guid, user2Guid)
+                "Hello",
+                DateTime.Now, user1Id,
+                ConversationIdHelper.GetGroupId(user1Guid, user2Guid)
             ),
             new ChatMessage(
-            "Hi",
-            DateTime.Now, user2Id,
-            ConversationIdHelper.GetGroupId(user2Guid, user1Guid)
+                "Hi",
+                DateTime.Now, user2Id,
+                ConversationIdHelper.GetGroupId(user2Guid, user1Guid)
             ),
             new ChatMessage(
-            "What's up?",
-            DateTime.Now, user1Id,
-            ConversationIdHelper.GetGroupId(user1Guid, user3Guid)
+                "What's up?",
+                DateTime.Now, user1Id,
+                ConversationIdHelper.GetGroupId(user1Guid, user3Guid)
             )
         };
 
@@ -76,14 +76,14 @@ public class ChatRepositoryTests
         List<ChatMessage> expected = new()
         {
             new ChatMessage(
-            "Hello",
-            DateTime.Now, user1Id,
-            conversationId
+                "Hello",
+                DateTime.Now, user1Id,
+                conversationId
             ),
             new ChatMessage(
-            "Hi",
-            DateTime.Now, user2Id,
-            conversationId
+                "Hi",
+                DateTime.Now, user2Id,
+                conversationId
             )
         };
 
@@ -107,9 +107,9 @@ public class ChatRepositoryTests
         Guid user2Guid = Guid.Parse("00000000-0000-0000-0000-222222222222");
 
         ChatMessage expected = new(
-        "Hello",
-        DateTime.Now, user1Id,
-        ConversationIdHelper.GetGroupId(user1Guid, user2Guid)
+            "Hello",
+            DateTime.Now, user1Id,
+            ConversationIdHelper.GetGroupId(user1Guid, user2Guid)
         );
 
         await _sut.AddMessageAsync(expected);
@@ -129,12 +129,13 @@ public class ChatRepositoryTests
         Guid user2Guid = Guid.Parse("00000000-0000-0000-0000-222222222222");
 
         ChatMessage message = new(
-        "Hello",
-        DateTime.Now, user1Id,
-        ConversationIdHelper.GetGroupId(user1Guid, user2Guid)
+            "Hello",
+            DateTime.Now, user1Id,
+            ConversationIdHelper.GetGroupId(user1Guid, user2Guid)
         );
 
-        await _sut.Invoking(sut => sut.GetMessageByIdAsync(message.Id)).Should().ThrowAsync<InvalidOperationException>();
+        await _sut.Invoking(sut => sut.GetMessageByIdAsync(message.Id)).Should()
+            .ThrowAsync<InvalidOperationException>();
     }
 
     [Fact]
@@ -193,9 +194,9 @@ public class ChatRepositoryTests
     public async Task DeleteMessageAsync_NonExistingMessageId_Throws_InvalidOperationException()
     {
         ChatMessage message = new(
-        "Hello",
-        DateTime.Now, UserId.From(Guid.NewGuid()),
-        ConversationIdHelper.GetGroupId(Guid.NewGuid(), Guid.NewGuid())
+            "Hello",
+            DateTime.Now, UserId.From(Guid.NewGuid()),
+            ConversationIdHelper.GetGroupId(Guid.NewGuid(), Guid.NewGuid())
         );
 
         await _sut.Invoking(sut => sut.DeleteMessageAsync(message.Id)).Should().ThrowAsync<InvalidOperationException>();

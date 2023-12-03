@@ -40,7 +40,8 @@ public class MatchRequestRepository : IMatchRequestRepository
         }
         else
         {
-            _logger.LogWarning("Match request does not exist from {requesterId} to {requestedId}, cannot remove", requesterId, requestedId);
+            _logger.LogWarning("Match request does not exist from {requesterId} to {requestedId}, cannot remove",
+                requesterId, requestedId);
             throw new ArgumentException("Match request does not exist");
         }
     }

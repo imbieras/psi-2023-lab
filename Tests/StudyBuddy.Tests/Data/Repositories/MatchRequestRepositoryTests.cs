@@ -17,7 +17,7 @@ public class MatchRequestRepositoryTests
     public MatchRequestRepositoryTests()
     {
         DbContextOptions<StudyBuddyDbContext> options = new DbContextOptionsBuilder<StudyBuddyDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
         _dbContext = new StudyBuddyDbContext(options);
@@ -38,13 +38,19 @@ public class MatchRequestRepositoryTests
         UserId user2Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-222222222222"));
         UserId user3Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-333333333333"));
 
-        List<MatchRequest> matches = new() { new MatchRequest(user1Id, user2Id), new MatchRequest(user1Id, user3Id), new MatchRequest(user2Id, user3Id) };
+        List<MatchRequest> matches = new()
+        {
+            new MatchRequest(user1Id, user2Id),
+            new MatchRequest(user1Id, user3Id),
+            new MatchRequest(user2Id, user3Id)
+        };
 
         return matches;
     }
 
     [Fact]
-    public async Task GetAllAsync_Returns_AllMatchRequests() => GenerateMatchRequests().Should().BeEquivalentTo(await _sut.GetAllAsync());
+    public async Task GetAllAsync_Returns_AllMatchRequests() =>
+        GenerateMatchRequests().Should().BeEquivalentTo(await _sut.GetAllAsync());
 
     [Fact]
     public async Task AddAsync_Adds_MatchRequest()

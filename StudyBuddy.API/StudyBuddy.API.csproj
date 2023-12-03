@@ -25,21 +25,21 @@
         <PackageReference Include="Vogen" Version="3.0.21"/>
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Data\Migrations\" />
-        <Folder Include="Data\Repositories\ChatRepository\" />
-        <Folder Include="Data\Repositories\MatchRepository\" />
-        <Folder Include="Data\Repositories\UserRepository\" />
-        <Folder Include="Services\ChatService\" />
-        <Folder Include="Services\MatchingService\" />
-        <Folder Include="Services\UserService\" />
+        <Folder Include="Data\Migrations\"/>
+        <Folder Include="Data\Repositories\ChatRepository\"/>
+        <Folder Include="Data\Repositories\MatchRepository\"/>
+        <Folder Include="Data\Repositories\UserRepository\"/>
+        <Folder Include="Services\ChatService\"/>
+        <Folder Include="Services\MatchingService\"/>
+        <Folder Include="Services\UserService\"/>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\StudyBuddy.Shared\StudyBuddy.Shared.csproj" />
+        <ProjectReference Include="..\StudyBuddy.Shared\StudyBuddy.Shared.csproj"/>
     </ItemGroup>
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
 </Project>

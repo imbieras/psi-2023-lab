@@ -4,7 +4,9 @@ namespace StudyBuddy.Shared.Models;
 
 public class MatchRequest
 {
-    public MatchRequest() {}
+    public MatchRequest()
+    {
+    }
 
     public MatchRequest(UserId currentUser, UserId otherUser)
     {

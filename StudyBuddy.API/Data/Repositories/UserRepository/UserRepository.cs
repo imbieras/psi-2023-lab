@@ -42,10 +42,8 @@ public class UserRepository : IUserRepository
     public Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId) =>
         _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId && u.SeenUserId == otherUserId);
 
-    public async Task<bool> IsUserNotSeenAnyUserAsync(UserId userId)
-    {
-        return !await _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
-    }
+    public async Task<bool> IsUserNotSeenAnyUserAsync(UserId userId) =>
+        !await _context.UserSeenProfiles.AnyAsync(u => u.UserId == userId);
 
     public Task<UserId> GetUltimateSeenUserAsync(UserId userId) =>
         _context.UserSeenProfiles
@@ -68,14 +66,15 @@ public class UserRepository : IUserRepository
         if (userToUpdate != null)
         {
             userToUpdate.Traits.Subject = updateUserDto.Subject;
-            userToUpdate.Traits.Description = (updateUserDto.MarkdownContent ?? string.Empty);
+            userToUpdate.Traits.Description = updateUserDto.MarkdownContent ?? string.Empty;
             userToUpdate.Hobbies = updateUserDto.Hobbies;
             await _context.SaveChangesAsync();
         }
     }
+
     public async Task UpdateAsync(User user)
     {
-        var local = _context.Set<User>()
+        User? local = _context.Set<User>()
             .Local
             .FirstOrDefault(entry => entry.Id.Equals(user.Id));
 

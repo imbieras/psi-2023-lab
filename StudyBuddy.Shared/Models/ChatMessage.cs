@@ -4,7 +4,9 @@ namespace StudyBuddy.Shared.Models;
 
 public class ChatMessage
 {
-    public ChatMessage() {}
+    public ChatMessage()
+    {
+    }
 
     public ChatMessage(string content, DateTime timestamp, UserId senderUserId, Guid conversationId)
     {

@@ -33,60 +33,63 @@ public class UserServiceTests
         List<User> users = new()
         {
             new User(
-            user1Id,
-            "John",
-            "$2y$10$MEGlkKcLY0nUK3XKZo05nuokVQJsmaxmC9wOlgpMgybAYzZgLUlvu",
-            UserFlags.Registered,
-            new UserTraits(DateTime.Today, "Natural Sciences", User.GenerateGravatarUrl(user1Id), "Hello", Coordinates.From((0, 0))),
-            new List<string>()
+                user1Id,
+                "John",
+                "$2y$10$MEGlkKcLY0nUK3XKZo05nuokVQJsmaxmC9wOlgpMgybAYzZgLUlvu",
+                UserFlags.Registered,
+                new UserTraits(DateTime.Today, "Natural Sciences", User.GenerateGravatarUrl(user1Id), "Hello",
+                    Coordinates.From((0, 0))),
+                new List<string>()
             ),
             new User(
-            user2Id,
-            "Steve",
-            "$2y$10$jEk3cJTygnRbTLeDr3bYQes32f.Y81sO4VRBDZUPLfuOPz9DDXoxu",
-            UserFlags.Registered,
-            new UserTraits(DateTime.Today.AddDays(-1), "Natural Sciences", User.GenerateGravatarUrl(user2Id), "Hello", Coordinates.From((0, 0))),
-            new List<string> { "Playing an instrument", "Painting" }
+                user2Id,
+                "Steve",
+                "$2y$10$jEk3cJTygnRbTLeDr3bYQes32f.Y81sO4VRBDZUPLfuOPz9DDXoxu",
+                UserFlags.Registered,
+                new UserTraits(DateTime.Today.AddDays(-1), "Natural Sciences", User.GenerateGravatarUrl(user2Id),
+                    "Hello", Coordinates.From((0, 0))),
+                new List<string> { "Playing an instrument", "Painting" }
             ),
             new User(
-            user3Id,
-            "Peter",
-            "$2y$10$olmb4AU5bN0fSt75mWTw9OwTDvrtpj5fNSI01zsYHSGjQEy1QVZT6",
-            UserFlags.Registered,
-            new UserTraits(DateTime.Today.AddDays(-2), "Natural Sciences", User.GenerateGravatarUrl(user3Id), "Hello", Coordinates.From((0, 0))),
-            new List<string>
-            {
-                "Reading",
-                "Drawing",
-                "Playing an instrument",
-                "Painting",
-                "Cooking",
-                "Gardening",
-                "Photography",
-                "Writing",
-                "Hiking",
-                "Cycling",
-                "Singing",
-                "Dancing",
-                "Yoga",
-                "Meditation",
-                "Chess",
-                "Video gaming",
-                "Binge-watching",
-                "Crafting",
-                "Collecting",
-                "Baking",
-                "Fitness",
-                "Rock climbing",
-                "Skiing or snowboarding",
-                "Surfing",
-                "Scuba diving",
-                "Tabletop gaming",
-                "Birdwatching",
-                "Volunteering",
-                "Traveling",
-                "Auto mechanics"
-            }
+                user3Id,
+                "Peter",
+                "$2y$10$olmb4AU5bN0fSt75mWTw9OwTDvrtpj5fNSI01zsYHSGjQEy1QVZT6",
+                UserFlags.Registered,
+                new UserTraits(DateTime.Today.AddDays(-2), "Natural Sciences", User.GenerateGravatarUrl(user3Id),
+                    "Hello", Coordinates.From((0, 0))),
+                new List<string>
+                {
+                    "Reading",
+                    "Drawing",
+                    "Playing an instrument",
+                    "Painting",
+                    "Cooking",
+                    "Gardening",
+                    "Photography",
+                    "Writing",
+                    "Hiking",
+                    "Cycling",
+                    "Singing",
+                    "Dancing",
+                    "Yoga",
+                    "Meditation",
+                    "Chess",
+                    "Video gaming",
+                    "Binge-watching",
+                    "Crafting",
+                    "Collecting",
+                    "Baking",
+                    "Fitness",
+                    "Rock climbing",
+                    "Skiing or snowboarding",
+                    "Surfing",
+                    "Scuba diving",
+                    "Tabletop gaming",
+                    "Birdwatching",
+                    "Volunteering",
+                    "Traveling",
+                    "Auto mechanics"
+                }
             )
         };
         return users;
@@ -98,7 +101,7 @@ public class UserServiceTests
         List<User> expected = GenerateUsers();
         _userRepository.GetAllAsync().Returns(expected);
 
-        var actual = await _sut.GetAllUsersAsync();
+        IEnumerable<IUser> actual = await _sut.GetAllUsersAsync();
 
         Assert.Equal(expected, actual);
     }
@@ -109,7 +112,7 @@ public class UserServiceTests
         List<User> expected = GenerateUsers();
         _userRepository.GetByIdAsync(expected[0].Id).Returns(expected[0]);
 
-        var actual = await _sut.GetUserByIdAsync(expected[0].Id);
+        IUser? actual = await _sut.GetUserByIdAsync(expected[0].Id);
 
         Assert.Equal(expected[0], actual);
     }
@@ -120,7 +123,7 @@ public class UserServiceTests
         List<User> expected = GenerateUsers();
         _userRepository.GetByIdAsync(expected[0].Id).Returns((User?)null);
 
-        var actual = await _sut.GetUserByIdAsync(expected[0].Id);
+        IUser? actual = await _sut.GetUserByIdAsync(expected[0].Id);
 
         actual.Should().BeNull();
     }
@@ -131,7 +134,7 @@ public class UserServiceTests
         List<User> expected = GenerateUsers();
         _userRepository.GetHobbiesByIdAsync(expected[0].Id).Returns(expected[0].Hobbies);
 
-        var actual = await _sut.GetHobbiesById(expected[0].Id);
+        List<string>? actual = await _sut.GetHobbiesById(expected[0].Id);
 
         Assert.Equal(expected[0].Hobbies, actual);
     }
@@ -142,7 +145,7 @@ public class UserServiceTests
         List<User> expected = GenerateUsers();
         _userRepository.GetHobbiesByIdAsync(expected[0].Id).Returns((List<string>?)null);
 
-        var actual = await _sut.GetHobbiesById(expected[0].Id);
+        List<string>? actual = await _sut.GetHobbiesById(expected[0].Id);
 
         actual.Should().BeNull();
     }
@@ -153,7 +156,7 @@ public class UserServiceTests
         List<User> expected = GenerateUsers();
         _userRepository.GetAllAsync().Returns(expected);
 
-        var actual = await _sut.GetUserByUsernameAsync(expected[0].Username);
+        IUser? actual = await _sut.GetUserByUsernameAsync(expected[0].Username);
 
         Assert.Equal(expected[0], actual);
     }
@@ -164,7 +167,7 @@ public class UserServiceTests
         List<User> expected = GenerateUsers();
         _userRepository.GetAllAsync().Returns(expected);
 
-        var actual = await _sut.GetUserByUsernameAsync("NonExistingUser");
+        IUser? actual = await _sut.GetUserByUsernameAsync("NonExistingUser");
 
         actual.Should().BeNull();
     }
@@ -236,7 +239,7 @@ public class UserServiceTests
         List<User> users = GenerateUsers();
         _userRepository.GetAllAsync().Returns(users);
 
-        var actual = await _sut.GetRandomUserAsync();
+        IUser? actual = await _sut.GetRandomUserAsync();
 
         Assert.Contains(actual, users);
     }
@@ -247,7 +250,7 @@ public class UserServiceTests
         List<User> users = new();
         _userRepository.GetAllAsync().Returns(users);
 
-        var actual = await _sut.GetRandomUserAsync();
+        IUser? actual = await _sut.GetRandomUserAsync();
 
         actual.Should().BeNull();
     }
@@ -259,18 +262,19 @@ public class UserServiceTests
         UserId latestSeenUserId = UserId.From(Guid.NewGuid());
         UserId user1Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-111111111111"));
         User expected = new(
-        user1Id,
-        "John",
-        "$2y$10$MEGlkKcLY0nUK3XKZo05nuokVQJsmaxmC9wOlgpMgybAYzZgLUlvu",
-        UserFlags.Registered,
-        new UserTraits(DateTime.Today, "Natural Sciences", User.GenerateGravatarUrl(user1Id), "Hello", Coordinates.From((0, 0))),
-        new List<string>()
+            user1Id,
+            "John",
+            "$2y$10$MEGlkKcLY0nUK3XKZo05nuokVQJsmaxmC9wOlgpMgybAYzZgLUlvu",
+            UserFlags.Registered,
+            new UserTraits(DateTime.Today, "Natural Sciences", User.GenerateGravatarUrl(user1Id), "Hello",
+                Coordinates.From((0, 0))),
+            new List<string>()
         );
 
         _userRepository.GetUltimateSeenUserAsync(userId).Returns(latestSeenUserId);
         _userRepository.GetByIdAsync(latestSeenUserId).Returns(expected);
 
-        var actual = await _sut.GetUltimateSeenUserAsync(userId);
+        IUser? actual = await _sut.GetUltimateSeenUserAsync(userId);
 
         Assert.Equal(expected, actual);
     }
@@ -281,7 +285,7 @@ public class UserServiceTests
         List<User> users = GenerateUsers();
         _userRepository.GetUltimateSeenUserAsync(users[0].Id).Returns(UserId.From(Guid.NewGuid()));
 
-        var actual = await _sut.GetUltimateSeenUserAsync(users[0].Id);
+        IUser? actual = await _sut.GetUltimateSeenUserAsync(users[0].Id);
 
         actual.Should().BeNull();
     }
@@ -293,18 +297,19 @@ public class UserServiceTests
         UserId penultimateSeenUserId = UserId.From(Guid.NewGuid());
         UserId user1Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-111111111111"));
         User expected = new(
-        user1Id,
-        "John",
-        "$2y$10$MEGlkKcLY0nUK3XKZo05nuokVQJsmaxmC9wOlgpMgybAYzZgLUlvu",
-        UserFlags.Registered,
-        new UserTraits(DateTime.Today, "Natural Sciences", User.GenerateGravatarUrl(user1Id), "Hello", Coordinates.From((0, 0))),
-        new List<string>()
+            user1Id,
+            "John",
+            "$2y$10$MEGlkKcLY0nUK3XKZo05nuokVQJsmaxmC9wOlgpMgybAYzZgLUlvu",
+            UserFlags.Registered,
+            new UserTraits(DateTime.Today, "Natural Sciences", User.GenerateGravatarUrl(user1Id), "Hello",
+                Coordinates.From((0, 0))),
+            new List<string>()
         );
 
         _userRepository.GetPenultimateSeenUserAsync(userId).Returns(penultimateSeenUserId);
         _userRepository.GetByIdAsync(penultimateSeenUserId).Returns(expected);
 
-        var actual = await _sut.GetPenultimateSeenUserAsync(userId);
+        IUser? actual = await _sut.GetPenultimateSeenUserAsync(userId);
 
         Assert.Equal(expected, actual);
     }
@@ -315,7 +320,7 @@ public class UserServiceTests
         List<User> users = GenerateUsers();
         _userRepository.GetPenultimateSeenUserAsync(users[0].Id).Returns(UserId.From(Guid.NewGuid()));
 
-        var actual = await _sut.GetPenultimateSeenUserAsync(users[0].Id);
+        IUser? actual = await _sut.GetPenultimateSeenUserAsync(users[0].Id);
 
         actual.Should().BeNull();
     }

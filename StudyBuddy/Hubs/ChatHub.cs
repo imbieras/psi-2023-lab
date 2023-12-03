@@ -9,10 +9,7 @@ public class ChatHub : Hub
 {
     private readonly IHttpClientFactory _clientFactory;
 
-    public ChatHub(IHttpClientFactory clientFactory)
-    {
-        _clientFactory = clientFactory;
-    }
+    public ChatHub(IHttpClientFactory clientFactory) => _clientFactory = clientFactory;
 
     public override async Task OnConnectedAsync()
     {
@@ -60,8 +57,9 @@ public class ChatHub : Hub
 
         ChatMessage chatMessage = new(message, DateTime.UtcNow, senderId, groupName);
 
-        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
-        var responseAddMessage = await httpClient.PostAsJsonAsync("api/v1/chat/messages/add", chatMessage);
+        HttpClient? httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage? responseAddMessage =
+            await httpClient.PostAsJsonAsync("api/v1/chat/messages/add", chatMessage);
 
         responseAddMessage.EnsureSuccessStatusCode();
 

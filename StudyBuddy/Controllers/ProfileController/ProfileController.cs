@@ -32,8 +32,8 @@ public class ProfileController : Controller
         {
             UserId parseUserId = UserId.From(parsedGuid);
 
-            var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
-            var responseUser = await httpClient.GetAsync($"api/v1/user/{parseUserId}");
+            HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+            HttpResponseMessage responseUser = await httpClient.GetAsync($"api/v1/user/{parseUserId}");
 
 
             if (!responseUser.IsSuccessStatusCode)
@@ -66,13 +66,13 @@ public class ProfileController : Controller
     [HttpPost]
     public async Task<IActionResult> SaveProfile(ProfileDto profileDto)
     {
-        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
 
-        var responseRegisterUser = await httpClient.PostAsJsonAsync("api/v1/user/register", profileDto);
+        HttpResponseMessage responseRegisterUser = await httpClient.PostAsJsonAsync("api/v1/user/register", profileDto);
 
         if (!responseRegisterUser.IsSuccessStatusCode)
         {
-            var error = await responseRegisterUser.Content.ReadFromJsonAsync<ErrorDto>();
+            ErrorDto? error = await responseRegisterUser.Content.ReadFromJsonAsync<ErrorDto>();
             TempData["ErrorMessage"] = error?.Message;
             return RedirectToAction("CreateProfile");
         }
@@ -124,11 +124,11 @@ public class ProfileController : Controller
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
-        var responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage responseCurrentUser = await httpClient.GetAsync($"api/v1/user/{currentUserId}");
         responseCurrentUser.EnsureSuccessStatusCode();
 
-        var user = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
+        User? user = await responseCurrentUser.Content.ReadFromJsonAsync<User>();
 
         return View(user);
     }
@@ -138,13 +138,14 @@ public class ProfileController : Controller
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
 
-        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
 
-        var responseUpdateUser = await httpClient.PutAsJsonAsync($"api/v1/user/{currentUserId}/update", updateUserDto);
+        HttpResponseMessage responseUpdateUser =
+            await httpClient.PutAsJsonAsync($"api/v1/user/{currentUserId}/update", updateUserDto);
 
         if (!responseUpdateUser.IsSuccessStatusCode)
         {
-            var error = await responseUpdateUser.Content.ReadFromJsonAsync<ErrorDto>();
+            ErrorDto? error = await responseUpdateUser.Content.ReadFromJsonAsync<ErrorDto>();
             TempData["ErrorMessage"] = error?.Message;
             return RedirectToAction("EditProfile");
         }
@@ -153,4 +154,3 @@ public class ProfileController : Controller
         return RedirectToAction("EditProfile");
     }
 }
-

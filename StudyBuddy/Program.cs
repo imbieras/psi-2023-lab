@@ -14,8 +14,8 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddHttpClient("StudyBuddy.API", client =>
 {
-    // client.BaseAddress = new Uri("http://studybuddy.api:80/");
-    client.BaseAddress = new Uri("http://localhost:5100");
+    client.BaseAddress = new Uri("http://studybuddy.api:80/");
+    // client.BaseAddress = new Uri("http://localhost:5100");
 });
 
 builder.Services.AddMvc();
@@ -44,7 +44,7 @@ if (!app.Environment.IsDevelopment())
 // Add middleware to the HTTP request pipeline.
 app.UseMiddleware<AuthenticationMiddleware>();
 
-app.UseWebSockets();// for SignalR
+app.UseWebSockets(); // for SignalR
 
 app.UseHttpsRedirection();
 
@@ -56,7 +56,7 @@ app.UseAuthorization();
 app.MapHub<ChatHub>("/chat");
 
 app.MapControllerRoute(
-"default",
-"{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
 await app.RunAsync();

@@ -21,7 +21,7 @@ public class UserController : ControllerBase
     [HttpGet("{userId:guid}")]
     public async Task<IActionResult> GetUserById(Guid userId)
     {
-        var user = await _userService.GetUserByIdAsync(UserId.From(userId));
+        IUser? user = await _userService.GetUserByIdAsync(UserId.From(userId));
         if (user == null)
         {
             return NotFound();
@@ -33,14 +33,14 @@ public class UserController : ControllerBase
     [HttpGet("{userId:guid}/hobbies")]
     public async Task<IActionResult> GetUserHobbies(Guid userId)
     {
-        var hobbies = await _userService.GetHobbiesById(UserId.From(userId));
+        List<string>? hobbies = await _userService.GetHobbiesById(UserId.From(userId));
         return Ok(hobbies);
     }
 
     [HttpGet("by-username/{username}")]
     public async Task<IActionResult> GetUserByUsername(string username)
     {
-        var user = await _userService.GetUserByUsernameAsync(username);
+        IUser? user = await _userService.GetUserByUsernameAsync(username);
         if (user == null)
         {
             return NotFound();
@@ -80,7 +80,6 @@ public class UserController : ControllerBase
         {
             return Ok(e.Message);
         }
-
     }
 
     [HttpPut("{userId:guid}/update")]
@@ -104,7 +103,7 @@ public class UserController : ControllerBase
     [HttpGet("random")]
     public async Task<IActionResult> GetRandomUser()
     {
-        var randomUser = await _userService.GetRandomUserAsync();
+        IUser? randomUser = await _userService.GetRandomUserAsync();
         if (randomUser == null)
         {
             return NotFound();
@@ -116,7 +115,7 @@ public class UserController : ControllerBase
     [HttpGet("{userId:guid}/ultimate-seen-user")]
     public async Task<IActionResult> GetUltimateSeenUser(Guid userId)
     {
-        var user = await _userService.GetUltimateSeenUserAsync(UserId.From(userId));
+        IUser? user = await _userService.GetUltimateSeenUserAsync(UserId.From(userId));
         if (user == null)
         {
             return NotFound();
@@ -128,7 +127,7 @@ public class UserController : ControllerBase
     [HttpGet("{userId:guid}/penultimate-seen-user")]
     public async Task<IActionResult> GetPenultimateSeenUser(Guid userId)
     {
-        var user = await _userService.GetPenultimateSeenUserAsync(UserId.From(userId));
+        IUser? user = await _userService.GetPenultimateSeenUserAsync(UserId.From(userId));
         if (user == null)
         {
             return NotFound();

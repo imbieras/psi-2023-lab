@@ -21,7 +21,7 @@
     depends_on:
       - db
     environment:
-        ASPNETCORE_URLS: "http://*:80"
+      ASPNETCORE_URLS: "http://*:80"
 
   db:
     image: postgres

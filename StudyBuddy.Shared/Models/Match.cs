@@ -5,7 +5,9 @@ namespace StudyBuddy.Shared.Models;
 
 public class Match
 {
-    public Match() {}
+    public Match()
+    {
+    }
 
     public Match(UserId user1Id, UserId user2Id)
     {

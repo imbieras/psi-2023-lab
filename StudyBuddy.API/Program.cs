@@ -5,7 +5,7 @@ using StudyBuddy.API.Models;
 using StudyBuddy.API.Services;
 using StudyBuddy.API.Services.UserService;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
 // Register repositories
 builder.Services.AddRepositories();
@@ -22,7 +22,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+WebApplication? app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

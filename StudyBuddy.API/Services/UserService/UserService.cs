@@ -76,7 +76,8 @@ public partial class UserService : IUserService
 
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(profileDto.Password);
 
-        User newUser = new(userId, profileDto.Username, hashedPassword, UserFlags.Registered, traits, profileDto.Hobbies);
+        User newUser = new(userId, profileDto.Username, hashedPassword, UserFlags.Registered, traits,
+            profileDto.Hobbies);
         await _userRepository.AddAsync(newUser);
 
         UserCounter.AddUser(newUser.Id);
@@ -90,7 +91,12 @@ public partial class UserService : IUserService
 
     private static UserTraits CreateUserTraits(ProfileDto profileDto, string htmlContent)
     {
-        UserTraits traits = new() { Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(), Subject = profileDto.Subject, Description = htmlContent };
+        UserTraits traits = new()
+        {
+            Birthdate = DateTime.Parse(profileDto.Birthdate).ToUniversalTime(),
+            Subject = profileDto.Subject,
+            Description = htmlContent
+        };
 
         if (!double.TryParse(profileDto.Longitude, out double longitude) ||
             !double.TryParse(profileDto.Latitude, out double latitude))

@@ -23,8 +23,8 @@ public class MatchingServiceTests
     [Fact]
     public async Task MatchUsersAsync_WhenMatchRequestExists_Adds_Match_And_Removes_MatchRequest()
     {
-        var requesterId = UserId.From(Guid.NewGuid());
-        var requestedId = UserId.From(Guid.NewGuid());
+        UserId requesterId = UserId.From(Guid.NewGuid());
+        UserId requestedId = UserId.From(Guid.NewGuid());
         _matchRequestRepository.IsMatchRequestExistsAsync(requestedId, requesterId).Returns(true);
 
         MatchDto matchDto = new() { currentUserId = requesterId, otherUserId = requestedId };
@@ -38,8 +38,8 @@ public class MatchingServiceTests
     [Fact]
     public async Task MatchUsersAsync_WhenMatchRequestDoesNotExist_Adds_MatchRequest()
     {
-        var requesterId = UserId.From(Guid.NewGuid());
-        var requestedId = UserId.From(Guid.NewGuid());
+        UserId requesterId = UserId.From(Guid.NewGuid());
+        UserId requestedId = UserId.From(Guid.NewGuid());
         _matchRequestRepository.IsMatchRequestExistsAsync(requestedId, requesterId).Returns(false);
 
         MatchDto matchDto = new() { currentUserId = requesterId, otherUserId = requestedId };
@@ -54,8 +54,8 @@ public class MatchingServiceTests
     [Theory]
     public async Task IsRequestedMatchAsync_Returns_Expected(bool expected)
     {
-        var requesterId = UserId.From(Guid.NewGuid());
-        var requestedId = UserId.From(Guid.NewGuid());
+        UserId requesterId = UserId.From(Guid.NewGuid());
+        UserId requestedId = UserId.From(Guid.NewGuid());
         _matchRequestRepository.IsMatchRequestExistsAsync(requesterId, requestedId).Returns(expected);
 
         bool result = await _sut.IsRequestedMatchAsync(requesterId, requestedId);
@@ -68,8 +68,8 @@ public class MatchingServiceTests
     [Theory]
     public async Task IsMatchedAsync_Returns_Expected(bool expected)
     {
-        var requesterId = UserId.From(Guid.NewGuid());
-        var requestedId = UserId.From(Guid.NewGuid());
+        UserId requesterId = UserId.From(Guid.NewGuid());
+        UserId requestedId = UserId.From(Guid.NewGuid());
         _matchRepository.IsMatchAsync(requesterId, requestedId).Returns(expected);
 
         bool result = await _sut.IsMatchedAsync(requesterId, requestedId);
@@ -80,7 +80,7 @@ public class MatchingServiceTests
     [Fact]
     public async Task GetMatchHistoryAsync_Returns_MatchHistory()
     {
-        var userId = UserId.From(Guid.NewGuid());
+        UserId userId = UserId.From(Guid.NewGuid());
         UserId user1Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-111111111111"));
         UserId user2Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-222222222222"));
         UserId user3Id = UserId.From(Guid.Parse("00000000-0000-0000-0000-333333333333"));
@@ -92,7 +92,7 @@ public class MatchingServiceTests
 
         _matchRepository.GetMatchHistoryByUserIdAsync(userId).Returns(expected);
 
-        var result = await _sut.GetMatchHistoryAsync(userId);
+        IEnumerable<Match> result = await _sut.GetMatchHistoryAsync(userId);
 
         Assert.Equal(expected, result);
     }

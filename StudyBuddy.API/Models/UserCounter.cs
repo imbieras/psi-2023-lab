@@ -23,7 +23,7 @@ public static class UserCounter
         UserPredicate isActiveUserDelegate = user =>
             (user.Flags & UserFlags.Banned) == 0 && (user.Flags & UserFlags.Admin) == 0;
 
-        var activeUsers = GenericFilterService<IUser>.FilterByPredicate(allUsers, isActiveUserDelegate);
+        List<IUser>? activeUsers = GenericFilterService<IUser>.FilterByPredicate(allUsers, isActiveUserDelegate);
 
         foreach (IUser user in activeUsers)
         {

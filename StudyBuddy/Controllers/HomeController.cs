@@ -18,8 +18,8 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
-        var responseTotalUsers = await httpClient.GetAsync("api/v1/utility/total-users");
+        HttpClient? httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpResponseMessage? responseTotalUsers = await httpClient.GetAsync("api/v1/utility/total-users");
         responseTotalUsers.EnsureSuccessStatusCode();
 
         int totalUsers = await responseTotalUsers.Content.ReadFromJsonAsync<int>();
