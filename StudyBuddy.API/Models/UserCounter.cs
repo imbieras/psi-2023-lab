@@ -20,12 +20,12 @@ public static class UserCounter
     {
         IEnumerable<IUser> allUsers = await userService.GetAllUsersAsync();
 
-        Func<IUser, bool> isActiveUserDelegate = user =>
+        UserPredicate isActiveUserDelegate = user =>
             (user.Flags & UserFlags.Banned) == 0 && (user.Flags & UserFlags.Admin) == 0;
 
         var activeUsers = GenericFilterService<IUser>.FilterByPredicate(allUsers, isActiveUserDelegate);
 
-        foreach (IUser? user in activeUsers)
+        foreach (IUser user in activeUsers)
         {
             s_activeUsers.Add(user.Id);
         }
