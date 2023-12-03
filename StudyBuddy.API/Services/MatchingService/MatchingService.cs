@@ -1,4 +1,5 @@
 using StudyBuddy.API.Data.Repositories.MatchRepository;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
@@ -15,16 +16,16 @@ public class MatchingService : IMatchingService
         _matchRequestRepository = matchRequestRepository;
     }
 
-    public async Task MatchUsersAsync(UserId requesterId, UserId requestedId)
+    public async Task MatchUsersAsync(MatchDto matchDto)
     {
-        if (await IsRequestedMatchAsync(requestedId, requesterId))
+        if (await IsRequestedMatchAsync(matchDto.otherUserId, matchDto.currentUserId))
         {
-            await _matchRepository.AddAsync(requesterId, requestedId);
-            await _matchRequestRepository.RemoveAsync(requestedId, requesterId);
+            await _matchRepository.AddAsync(matchDto.currentUserId, matchDto.otherUserId);
+            await _matchRequestRepository.RemoveAsync(matchDto.otherUserId, matchDto.currentUserId);
         }
         else
         {
-            await _matchRequestRepository.AddAsync(requesterId, requestedId);
+            await _matchRequestRepository.AddAsync(matchDto.currentUserId, matchDto.otherUserId);
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.API.Services.MatchingService;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.API.Controllers.MatchingController;
@@ -15,10 +16,10 @@ public class MatchingController : ControllerBase
         _matchingService = matchingService;
     }
 
-    [HttpPost("match/{currentUser:guid}/{otherUser:guid}")]
-    public async Task<IActionResult> MatchUsers(Guid currentUser, Guid otherUser)
+    [HttpPost("match-users")]
+    public async Task<IActionResult> MatchUsers([FromBody] MatchDto matchDto)
     {
-        await _matchingService.MatchUsersAsync(UserId.From(currentUser), UserId.From(otherUser));
+        await _matchingService.MatchUsersAsync(matchDto);
         return NoContent();
     }
 

@@ -2,6 +2,7 @@
 using StudyBuddy.Attributes;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.Shared.Abstractions;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
@@ -63,15 +64,25 @@ public class MatchingController : Controller
         bool viewedFirstProfile = await responseViewedFirstProfile.Content.ReadFromJsonAsync<bool>();
         ViewBag.ViewedFirstProfile = viewedFirstProfile;
 
-        var responseUnseenUsers = await httpClient.GetAsync($"api/v1/user");
-        responseUnseenUsers.EnsureSuccessStatusCode();
-        var allUsers = await responseUnseenUsers.Content.ReadFromJsonAsync<List<User>>();
+        var responseUsers = await httpClient.GetAsync("api/v1/user");
+        responseUsers.EnsureSuccessStatusCode();
+        var users = await responseUsers.Content.ReadFromJsonAsync<List<User>>();
 
-        var responseSeenUsers = await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/has-seen-user");
-        responseSeenUsers.EnsureSuccessStatusCode();
-        var seenUsers = await responseSeenUsers.Content.ReadFromJsonAsync<List<UserId>>();
+        var allUsers = users.Where(u => u.Id != currentUser.Id).ToList();
 
-        var unseenUsers = allUsers.Where(u => !seenUsers.Contains(u.Id) && u.Id != currentUser.Id).ToList();
+        List<IUser> unseenUsers = new();
+
+        foreach (var user in allUsers)
+        {
+            var responseIsUserSeen = await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/has-seen-user/{user.Id}");
+            responseIsUserSeen.EnsureSuccessStatusCode();
+            bool isUserSeen = await responseIsUserSeen.Content.ReadFromJsonAsync<bool>();
+
+            if (!isUserSeen)
+            {
+                unseenUsers.Add(user);
+            }
+        }
 
         IUser? randomUser = null;
 
@@ -81,7 +92,7 @@ public class MatchingController : Controller
             randomUser = unseenUsers[rnd.Next(unseenUsers.Count)];
 
             var responseUserSeen =
-                await httpClient.PostAsync($"api/v1/user/{currentUser.Id}/has-seen-user/{randomUser.Id}", null);
+                await httpClient.PostAsync($"api/v1/user/{currentUser.Id}/user-seen/{randomUser.Id}", null);
             responseUserSeen.EnsureSuccessStatusCode();
         }
 
@@ -154,10 +165,14 @@ public class MatchingController : Controller
             UserId currentUserId = UserId.From(Guid.Parse(currentUser));
             UserId otherUserId = UserId.From(Guid.Parse(otherUser));
 
-            // Call UserManager.MatchUsers with the user IDs
+            MatchDto matchDto = new()
+            {
+                currentUserId = currentUserId,
+                otherUserId = otherUserId
+            };
 
             var httpClient = _clientFactory.CreateClient("StudyBuddy.API");
-            var responseMatching = await httpClient.GetAsync($"api/v1/matching/match/{currentUserId}/{otherUserId}");
+            var responseMatching = await httpClient.PostAsJsonAsync("api/v1/matching/match-users", matchDto);
             responseMatching.EnsureSuccessStatusCode();
 
             var responseIsMatched = await httpClient.GetAsync($"api/v1/matching/is-matched/{currentUserId}/{otherUserId}");
