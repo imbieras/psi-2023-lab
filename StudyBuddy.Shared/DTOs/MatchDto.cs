@@ -4,6 +4,6 @@ namespace StudyBuddy.Shared.DTOs;
 
 public class MatchDto
 {
-    public UserId currentUserId { get; set; }
-    public UserId otherUserId { get; set; }
+    public UserId CurrentUserId { get; set; }
+    public UserId OtherUserId { get; set; }
 }
