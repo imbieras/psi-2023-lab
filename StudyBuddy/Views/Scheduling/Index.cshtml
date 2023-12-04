@@ -1,0 +1,109 @@
+@page
+@{
+    ViewBag.Title = "Scheduling";
+    Guid userId = ViewBag.UserId;
+}
+
+<script src="~/lib/daypilot/daypilot-all.min.js" asp-append-version="true"></script>
+
+<div class="wrap">
+    <div class="left">
+        <div id="nav"></div>
+    </div>
+    <div class="right">
+        <div id="dp"></div>
+    </div>
+</div>
+
+<script>
+
+    const BASE_URL = "http://localhost:5100"
+
+    const nav = new DayPilot.Navigator("nav", {
+        showMonths: 0,
+        skipMonths: 0,
+        selectMode: "Week",
+        onTimeRangeSelected: args => {
+            dp.startDate = args.day;
+            dp.update();
+            dp.events.load(`${BASE_URL}/api/v1/scheduling?userid=@userId`);
+        }
+    });
+    nav.init();
+
+
+    const dp = new DayPilot.Calendar("dp", {
+        viewType: "Week",
+        contextMenu: new DayPilot.Menu({
+            items: [
+                {
+                    text: "Delete",
+                    onClick: async (args) => {
+                        const e = args.source;
+                        const {data} = await DayPilot.Http.delete(`${BASE_URL}/api/v1/scheduling/${e.id()}`);
+                        dp.events.remove(e.id());
+                    }
+                },
+            ]
+        }),
+        onTimeRangeSelected: async (args) => {
+            dp.clearSelection();
+            const params = {
+                userid: "@userId",
+                start: args.start,
+                end: args.end,
+                text: "Open"
+            };
+            const { data } = await DayPilot.Http.post(`${BASE_URL}/api/v1/scheduling`, params);
+            dp.events.add(data);
+        },
+        onEventMove: async (args) => {
+            const params = {
+                id: args.e.id(),
+                start: args.newStart,
+                end: args.newEnd
+            };
+            const {data} = await DayPilot.Http.put(`${BASE_URL}/api/v1/scheduling/${args.e.id()}/move`, params);
+        },
+        onEventResize: async (args) => {
+            const params = {
+                id: args.e.id(),
+                start: args.newStart,
+                end: args.newEnd
+            };
+            const {data} = await DayPilot.Http.put(`${BASE_URL}/api/v1/scheduling/${args.e.id()}/move`, params);
+        },
+        onBeforeEventRender: (args) => {
+            args.data.barColor = args.data.color;
+            args.data.areas = [
+                {
+                    top: 4,
+                    right: 4,
+                    width: 16,
+                    height: 16,
+                    visibility: "Hover",
+                    action: "ContextMenu",
+                    style: "background-color: #f9f9f9; border: 1px solid #ccc; padding: 2px; border-radius: 15px; cursor:pointer;"
+                }
+            ];
+        }
+    });
+    dp.init();
+
+    const app = {
+        async updateColor(e, color) {
+            const params = {
+                color: color
+            };
+            const {data} = await DayPilot.Http.put(`${BASE_URL}/api/v1/scheduling/${e.id()}/color`, params);
+            e.data.color = color;
+            dp.events.update(e);
+        },
+        init() {
+            dp.events.load(`${BASE_URL}/api/v1/scheduling?userid=@userId`);
+        }
+    };
+    app.init();
+
+</script>
+

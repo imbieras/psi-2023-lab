@@ -20,7 +20,7 @@ public class SchedulingController : ControllerBase
     [HttpGet]
     public async Task<List<Event>> GetEvents([FromQuery] DateTime start, [FromQuery] DateTime end, [FromQuery] Guid userId)
     {
-        return await _schedulingService.GetEventsByUserIdAsync(userId, start, end);
+        return await _schedulingService.GetEventsByUserIdAsync(userId, start.ToUniversalTime(), end.ToUniversalTime());
     }
 
     [HttpGet("{id}")]
@@ -64,10 +64,8 @@ public class SchedulingController : ControllerBase
             {
                 return NotFound();
             }
-            else
-            {
-                throw;
-            }
+
+            throw;
         }
 
         return NoContent();
@@ -167,7 +165,7 @@ public class SchedulingController : ControllerBase
 
         await _schedulingService.DeleteEventAsync(id);
 
-        if (!await EventExists(id))
+        if (await EventExists(id))
         {
             return NotFound();
         }

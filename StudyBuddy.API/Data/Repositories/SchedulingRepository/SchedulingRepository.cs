@@ -18,13 +18,14 @@ public class SchedulingRepository : ISchedulingRepository
     public async Task<List<Event>> GetEventsAsync(DateTime start, DateTime end)
     {
         // TODO: Not too sure what to do with the null situation here
-        return await _context.Schedules.ToListAsync();
-        // return await _context.Schedules.Where(e => (e.Start >= start && e.End <= end)).ToListAsync();
+        // return await _context.Schedules.ToListAsync();
+        return await _context.Schedules.Where(e => (e.Start >= start && e.End <= end)).ToListAsync();
     }
 
     public async Task<List<Event>> GetEventsByUserIdAsync(Guid userId, DateTime start, DateTime end)
     {
-        return await _context.Schedules.Where(e => e.UserId == userId).ToListAsync();
+        // return await _context.Schedules.Where(e => e.UserId == userId).ToListAsync();
+        return await _context.Schedules.Where(e => (e.UserId == userId && e.Start >= start && e.End <= end)).ToListAsync();
     }
 
     public async Task<Event?> GetEventByIdAsync(int id)
@@ -48,7 +49,7 @@ public class SchedulingRepository : ISchedulingRepository
 
     public async Task<Event> DeleteEventAsync(int id)
     {
-        var @event = await _context.Schedules.SingleOrDefaultAsync(e => e != null && e.Id == id);
+        var @event = await _context.Schedules.SingleOrDefaultAsync(e => e.Id == id);
         if (@event == null)
         {
             throw new ArgumentException("Event not found");
