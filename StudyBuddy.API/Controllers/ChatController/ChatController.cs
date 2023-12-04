@@ -15,14 +15,14 @@ public class ChatController : ControllerBase
     [HttpGet("conversations/{conversationId:guid}/messages")]
     public async Task<IActionResult> GetMessagesByConversation(Guid conversationId)
     {
-        IEnumerable<ChatMessage>? messages = await _chatService.GetMessagesByConversationAsync(conversationId);
+        IEnumerable<ChatMessage> messages = await _chatService.GetMessagesByConversationAsync(conversationId);
         return Ok(messages);
     }
 
     [HttpGet("messages/{messageId:guid}")]
     public async Task<IActionResult> GetMessageById(Guid messageId)
     {
-        ChatMessage? message = await _chatService.GetMessageByIdAsync(messageId);
+        ChatMessage message = await _chatService.GetMessageByIdAsync(messageId);
 
         return Ok(message);
     }
