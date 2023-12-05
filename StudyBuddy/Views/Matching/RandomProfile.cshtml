@@ -63,7 +63,7 @@
 
         <div class="text-center mt-4">
             <!-- Button to view the previous profile -->
-            @if (!TempData.ContainsKey("HideGoBackButton") && ViewBag.ViewedFirstProfile == true)
+            @if (!TempData.ContainsKey("HideGoBackButton"))
             {
                 <a href="@Url.Action("PenultimateProfile", "Matching")" class="btn btn-secondary">Go back!</a>
             }

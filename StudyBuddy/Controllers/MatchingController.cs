@@ -129,13 +129,19 @@ public class MatchingController : Controller
 
         User? penultimateUser = await responsePenultimateUser.Content.ReadFromJsonAsync<User>();
 
+        if (penultimateUser == null)
+        {
+
+            RedirectToAction("RandomProfile", "Matching");
+        }
+
         TempData["HideGoBackButton"] = true;
 
         return View("RandomProfile", penultimateUser);
     }
 
 
-    public async Task<IActionResult> UltimateProfile()
+    public async Task<IActionResult> UltimateProfile(bool disableGoBackButton = true)
     {
         // Pass the current user's ID to the view
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
@@ -155,8 +161,14 @@ public class MatchingController : Controller
 
         User? previousUser = await responseUltimateUser.Content.ReadFromJsonAsync<User>();
 
-        TempData["HideGoBackButton"] = true;
-
+        if (disableGoBackButton)
+        {
+            TempData["HideGoBackButton"] = true;
+        }
+        else
+        {
+            TempData["HideGoBackButton"] = false;
+        }
         return View("RandomProfile", previousUser);
     }
 
