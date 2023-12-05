@@ -27,7 +27,7 @@ public class MatchingServiceTests
         UserId requestedId = UserId.From(Guid.NewGuid());
         _matchRequestRepository.IsMatchRequestExistsAsync(requestedId, requesterId).Returns(true);
 
-        MatchDto matchDto = new() { currentUserId = requesterId, otherUserId = requestedId };
+        MatchDto matchDto = new() { CurrentUserId = requesterId, OtherUserId = requestedId };
 
         await _sut.MatchUsersAsync(matchDto);
 
@@ -42,7 +42,7 @@ public class MatchingServiceTests
         UserId requestedId = UserId.From(Guid.NewGuid());
         _matchRequestRepository.IsMatchRequestExistsAsync(requestedId, requesterId).Returns(false);
 
-        MatchDto matchDto = new() { currentUserId = requesterId, otherUserId = requestedId };
+        MatchDto matchDto = new() { CurrentUserId = requesterId, OtherUserId = requestedId };
 
         await _sut.MatchUsersAsync(matchDto);
 

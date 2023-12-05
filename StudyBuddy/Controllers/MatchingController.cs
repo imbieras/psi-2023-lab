@@ -170,7 +170,7 @@ public class MatchingController : Controller
             UserId currentUserId = UserId.From(Guid.Parse(currentUser));
             UserId otherUserId = UserId.From(Guid.Parse(otherUser));
 
-            MatchDto matchDto = new() { currentUserId = currentUserId, otherUserId = otherUserId };
+            MatchDto matchDto = new() { CurrentUserId = currentUserId, OtherUserId = otherUserId };
 
             HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
             HttpResponseMessage responseMatching =
