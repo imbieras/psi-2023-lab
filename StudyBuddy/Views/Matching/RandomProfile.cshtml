@@ -63,10 +63,12 @@
 
         <div class="text-center mt-4">
             <!-- Button to view the previous profile -->
-            @if (!TempData.ContainsKey("HideGoBackButton"))
+            @if (!TempData.ContainsKey("HideGoBackButton") && ViewBag.ViewedFirstProfile == true)
             {
                 <a href="@Url.Action("PenultimateProfile", "Matching")" class="btn btn-secondary">Go back!</a>
+                
             }
+
             else
             {
                 <a class="btn btn-dark btn-secondary">Go back!</a>
@@ -85,7 +87,7 @@
                 <button id="matchButton" type="submit" class="btn btn-success btn-lg mt-2 w-100">Match</button>
             </form>
         }
-        else if (isRequestedMatch || ViewBag.ShowMatchRequestMessage)
+        else if ((isRequestedMatch || ViewBag.ShowMatchRequestMessage) && !isMatched)
         {
             <div class="alert alert-success mt-2 mb-0">
                 Match request sent

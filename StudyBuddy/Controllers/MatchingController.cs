@@ -43,6 +43,7 @@ public class MatchingController : Controller
 
         ViewBag.ShowMatchRequestMessage = true;
 
+
         return View("RandomProfile", currentRandomUser);
     }
 
@@ -129,12 +130,6 @@ public class MatchingController : Controller
 
         User? penultimateUser = await responsePenultimateUser.Content.ReadFromJsonAsync<User>();
 
-        if (penultimateUser == null)
-        {
-
-            RedirectToAction("RandomProfile", "Matching");
-        }
-
         TempData["HideGoBackButton"] = true;
 
         return View("RandomProfile", penultimateUser);
@@ -167,7 +162,7 @@ public class MatchingController : Controller
         }
         else
         {
-            TempData["HideGoBackButton"] = false;
+            TempData.Remove("HideGoBackButton");
         }
         return View("RandomProfile", previousUser);
     }
