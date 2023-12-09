@@ -61,7 +61,7 @@
 
                 <div class="d-flex justify-content-evenly mt-3">
                     <!-- Button to view the previous profile -->
-                    @if (!TempData.ContainsKey("HideGoBackButton"))
+                    @if (!TempData.ContainsKey("HideGoBackButton") && ViewBag.ViewedFirstProfile == true)
                     {
                         <a href="@Url.Action("PenultimateProfile", "Matching")" class="btn btn-secondary btn-lg mb-2 w-25">
 
