@@ -14,8 +14,8 @@
         var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
 
         var avatarUrl = Model.Traits.AvatarPath.Contains("://")
-            ? Model.Traits.AvatarPath
-            : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
+        ? Model.Traits.AvatarPath
+        : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
 
         var isRequestedMatch = false;
         var isMatched = false;
@@ -58,47 +58,78 @@
                         </ul>
                     </div>
                 </div>
+
+                <div class="d-flex justify-content-evenly mt-3">
+                    <!-- Button to view the previous profile -->
+                    @if (!TempData.ContainsKey("HideGoBackButton"))
+                    {
+                        <a href="@Url.Action("PenultimateProfile", "Matching")" class="btn btn-secondary btn-lg mb-2 w-25">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
+                                <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
+                            </svg>
+
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-dark btn-lg mb-2 w-25">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
+                                <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
+                            </svg>
+
+                        </a>
+                    }
+
+                    <!-- Button to view the new random profile -->
+                    <a href="@Url.Action("RandomProfile", "Matching")" class="btn btn-danger btn-lg mb-2 w-25">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                        </svg>
+                    </a>
+
+                    @if (ViewBag.CurrentUserId != null && !isMatched && !isRequestedMatch)
+                    {
+
+                        <form id="matchButton" class="btn btn-success btn-lg mb-2 w-25" onclick="submitForm()" method="post" asp-controller="Matching" asp-action="MatchUsers"
+                              asp-route-redirectAction="CurrentRandomUserProfile">
+                            <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId" />
+                            <input type="hidden" name="otherUser" value="@Model.Id" />
+                            
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                    <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022" />
+                                </svg>
+                        </form>
+
+
+                    }
+                    else if ((isRequestedMatch || ViewBag.ShowMatchRequestMessage) && !isMatched)
+                    {
+                        <div class="alert alert-success mb-2 w-25">
+                            Match request sent
+                        </div>
+                    }
+                    else if (isMatched)
+                    {
+                        <div class="alert alert-success mb-2 w-25">
+                            Matched with this user.
+                        </div>
+                    }
+
+                </div>
+
+
+
+
+
             </div>
         </div>
 
-        <div class="text-center mt-4">
-            <!-- Button to view the previous profile -->
-            @if (!TempData.ContainsKey("HideGoBackButton") && ViewBag.ViewedFirstProfile == true)
-            {
-                <a href="@Url.Action("PenultimateProfile", "Matching")" class="btn btn-secondary">Go back!</a>
-                
-            }
 
-            else
-            {
-                <a class="btn btn-dark btn-secondary">Go back!</a>
-            }
 
-            <!-- Button to view the new random profile -->
-            <a href="@Url.Action("RandomProfile", "Matching")" class="btn btn-primary">Get New Profile</a>
-        </div>
 
-        @if (ViewBag.CurrentUserId != null && !isMatched && !isRequestedMatch)
-        {
-            <form method="post" asp-controller="Matching" asp-action="MatchUsers"
-                  asp-route-redirectAction="CurrentRandomUserProfile">
-                <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId"/>
-                <input type="hidden" name="otherUser" value="@Model.Id"/>
-                <button id="matchButton" type="submit" class="btn btn-success btn-lg mt-2 w-100">Match</button>
-            </form>
-        }
-        else if ((isRequestedMatch || ViewBag.ShowMatchRequestMessage) && !isMatched)
-        {
-            <div class="alert alert-success mt-2 mb-0">
-                Match request sent
-            </div>
-        }
-        else if (isMatched)
-        {
-            <div class="alert alert-success mt-2 mb-0">
-                Matched with this user.
-            </div>
-        }
     }
     else
     {
@@ -106,3 +137,9 @@
         <a href="@Url.Action("UltimateProfile", "Matching")" class="btn btn-secondary">Go back!</a>
     }
 </div>
+
+<script>
+    function submitForm() {
+        document.getElementById("matchButton").submit();
+    }
+</script>
