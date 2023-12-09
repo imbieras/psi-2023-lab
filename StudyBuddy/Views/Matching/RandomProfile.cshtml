@@ -82,19 +82,32 @@
 
                         </a>
                     }
+                    <!-- Button for new profile-->
+                    @if (!isRequestedMatch && !(isMatched || ViewBag.ShowMatchRequestMessage))
+                    {
+                        <a href="@Url.Action("RandomProfile", "Matching")" class="btn btn-danger btn-lg mb-2 w-25">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                            </svg>
+                        </a>
+                    }
+                    else
+                    {
 
-                    <!-- Button to view the new random profile -->
-                    <a href="@Url.Action("RandomProfile", "Matching")" class="btn btn-danger btn-lg mb-2 w-25">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                        </svg>
-                    </a>
+
+                        <!-- Button to view the new random profile -->
+                        <a href="@Url.Action("RandomProfile", "Matching")" class="btn btn-primary btn-lg mb-2 w-25">
+                            New Profile!
+                        </a>
+                    }
 
                     @if (ViewBag.CurrentUserId != null && !isMatched && !isRequestedMatch)
                     {
+                        var redirectAction = !TempData.ContainsKey("HideGoBackButton") ? "CurrentRandomUserProfile" : "PenultimateProfile";
 
+                        
                         <form id="matchButton" class="btn btn-success btn-lg mb-2 w-25" onclick="submitForm()" method="post" asp-controller="Matching" asp-action="MatchUsers"
-                              asp-route-redirectAction="CurrentRandomUserProfile">
+                              asp-route-redirectAction=@redirectAction>
                             <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId" />
                             <input type="hidden" name="otherUser" value="@Model.Id" />
                             
@@ -107,14 +120,14 @@
                     }
                     else if ((isRequestedMatch || ViewBag.ShowMatchRequestMessage) && !isMatched)
                     {
-                        <div class="alert alert-success mb-2 w-25">
-                            Match request sent
+                        <div class="btn alert-success btn-lg mb-2 w-25">
+                            Request sent!
                         </div>
                     }
                     else if (isMatched)
                     {
                         <div class="alert alert-success mb-2 w-25">
-                            Matched with this user.
+                            Matched!
                         </div>
                     }
 

@@ -213,6 +213,7 @@ public class MatchingController : Controller
         {
             "RandomProfile" => RedirectToAction("RandomProfile", "Matching"),
             "CurrentRandomUserProfile" => RedirectToAction("CurrentRandomUserProfile", "Matching"),
+            "PenultimateProfile" => RedirectToAction("PenultimateProfile", "Matching"),
             _ => RedirectToAction("Index", "Home")
         };
     }
