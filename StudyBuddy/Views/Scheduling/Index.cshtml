@@ -4,7 +4,7 @@
     Guid userId = ViewBag.UserId;
 }
 
-<script src="~/lib/daypilot/daypilot-all.min.js" asp-append-version="true"></script>
+<script src="~/lib/daypilot/daypilot-lite-javascript/daypilot-javascript.min.js" asp-append-version="true"></script>
 
 <div class="wrap">
     <div class="left">
@@ -17,6 +17,9 @@
 
 <script>
 
+    // For production
+    // const BASE_URL = "http://localhost:8100"
+    // For local development
     const BASE_URL = "http://localhost:5100"
 
     const nav = new DayPilot.Navigator("nav", {

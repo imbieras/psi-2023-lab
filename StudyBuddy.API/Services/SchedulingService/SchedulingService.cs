@@ -1,4 +1,5 @@
 using StudyBuddy.API.Data.Repositories.SchedulingRepository;
+using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 
 namespace StudyBuddy.API.Services.SchedulingService;
@@ -37,12 +38,12 @@ public class SchedulingService : ISchedulingService
         return await _schedulingRepository.UpdateEventAsync(@event);
     }
 
-    public async Task<List<DateTime>> GetOverlapByUserIds(Guid userId1, Guid userId2, DateTime start, DateTime end)
+    public async Task<List<DateTime>> GetOverlapByUserIds(OverlapDto overlapDto)
     {
-        List<Event> user1Events = await _schedulingRepository.GetEventsByUserIdAsync(userId1, start, end);
-        List<Event> user2Events = await _schedulingRepository.GetEventsByUserIdAsync(userId2, start, end);
+        List<Event> user1Events = await _schedulingRepository.GetEventsByUserIdAsync(overlapDto.CurrentUserId, overlapDto.Start, overlapDto.End);
+        List<Event> user2Events = await _schedulingRepository.GetEventsByUserIdAsync(overlapDto.OtherUserId, overlapDto.Start, overlapDto.End);
 
-        List<DateTime> overlapDates = new List<DateTime>();
+        List<DateTime> overlapDates = new();
 
         foreach (DateTime overlapDate in from event1 in user1Events
                  from event2 in user2Events

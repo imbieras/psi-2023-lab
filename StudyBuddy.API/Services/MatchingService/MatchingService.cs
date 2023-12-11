@@ -18,14 +18,14 @@ public class MatchingService : IMatchingService
 
     public async Task MatchUsersAsync(MatchDto matchDto)
     {
-        if (await IsRequestedMatchAsync(matchDto.otherUserId, matchDto.currentUserId))
+        if (await IsRequestedMatchAsync(matchDto.OtherUserId, matchDto.CurrentUserId))
         {
-            await _matchRepository.AddAsync(matchDto.currentUserId, matchDto.otherUserId);
-            await _matchRequestRepository.RemoveAsync(matchDto.otherUserId, matchDto.currentUserId);
+            await _matchRepository.AddAsync(matchDto.CurrentUserId, matchDto.OtherUserId);
+            await _matchRequestRepository.RemoveAsync(matchDto.OtherUserId, matchDto.CurrentUserId);
         }
         else
         {
-            await _matchRequestRepository.AddAsync(matchDto.currentUserId, matchDto.otherUserId);
+            await _matchRequestRepository.AddAsync(matchDto.CurrentUserId, matchDto.OtherUserId);
         }
     }
 

@@ -1,9 +1,6 @@
-﻿@using StudyBuddy.API.Services.SchedulingService
-@using StudyBuddy.Shared.Models
-@using StudyBuddy.Shared.ValueObjects
+﻿@using StudyBuddy.Shared.DTOs
 @model StudyBuddy.Shared.Abstractions.IUser?
 @inject IHttpClientFactory HttpClientFactory
-@inject ISchedulingService SchedulingService
 
 @{
     ViewBag.Title = "Find a friend!";
@@ -13,19 +10,37 @@
 @{
     var startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
     var endOfWeek = startOfWeek.AddDays(7);
-    List<DateTime> overlapDates = await SchedulingService.GetOverlapByUserIds(ViewBag.CurrentUserId, Model.Id.Value, startOfWeek, endOfWeek);
+
+    var currentUserIdObject = ViewBag.CurrentUserId;
+    var currentUserId = currentUserIdObject != null ? Guid.Parse(currentUserIdObject.ToString()) : Guid.Empty;
+    var otherUserId = Model?.Id != null ? Guid.Parse(Model.Id.Value.ToString()) : Guid.Empty;
+
+    var overlapDto = new OverlapDto
+    {
+        CurrentUserId = currentUserId,
+        OtherUserId = otherUserId,
+        Start = startOfWeek.ToUniversalTime(),
+        End = endOfWeek.ToUniversalTime()
+    };
+
+    var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
+
+    var responseOverlapDates = await httpClient.PostAsJsonAsync("api/v1/scheduling/overlap", overlapDto);
+
+    var overlapDates = new List<DateTime>();
+    if (responseOverlapDates.IsSuccessStatusCode)
+    {
+        overlapDates = await responseOverlapDates.Content.ReadFromJsonAsync<List<DateTime>>();
+    }
 
     var overlapDays = overlapDates.Select(d => d.DayOfWeek.ToString()).ToList();
 }
 
-<!-- Rest of the code remains the same -->
 <div class="text-center">
     <h1 class="display-4">User Profile</h1>
 
     @if (Model != null)
     {
-        var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
-
         var avatarUrl = Model.Traits.AvatarPath.Contains("://")
             ? Model.Traits.AvatarPath
             : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
@@ -68,12 +83,12 @@
                             <li class="list-group-item">
                                 <a href="@Url.Action("UserProfile", "Profile", new { id = Model.Id })" class="btn btn-primary mt-3">View Profile</a>
                             </li>
-                           @if (overlapDays.Any())
-                           {
-                               <div class="alert alert-info mt-2 mb-0">
-                                   @Model.Username and you are both free to study on @string.Join(", ", overlapDays)!
-                               </div>
-                           }
+                            @if (overlapDays.Any())
+                            {
+                                <div class="alert alert-info mt-2 mb-0">
+                                    <b>You</b> and <b>@Model.Username</b> are both free to study on @string.Join(", ", overlapDays)!
+                                </div>
+                            }
                         </ul>
                     </div>
                 </div>
@@ -91,7 +106,6 @@
                 <a class="btn btn-dark btn-secondary">Go back!</a>
             }
 
-            <!-- Button to view the new random profile -->
             <a href="@Url.Action("RandomProfile", "Matching")" class="btn btn-primary">Get New Profile</a>
         </div>
 

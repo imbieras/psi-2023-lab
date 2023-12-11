@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.API.Services.SchedulingService;
 using StudyBuddy.Shared.Models;
-using StudyBuddy.Shared.ValueObjects;
 using StudyBuddy.Shared.DTOs;
+
 namespace StudyBuddy.API.Controllers.SchedulingController;
 
 [ApiController]
@@ -23,7 +23,7 @@ public class SchedulingController : ControllerBase
         return await _schedulingService.GetEventsByUserIdAsync(userId, start.ToUniversalTime(), end.ToUniversalTime());
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetEvent([FromRoute] int id)
     {
         if (!ModelState.IsValid)
@@ -41,7 +41,7 @@ public class SchedulingController : ControllerBase
         return Ok(@event);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> PutEvent([FromRoute] int id, [FromBody] Event @event)
     {
         if (!ModelState.IsValid)
@@ -71,7 +71,7 @@ public class SchedulingController : ControllerBase
         return NoContent();
     }
 
-    [HttpPut("{id}/move")]
+    [HttpPut("{id:int}/move")]
     public async Task<IActionResult> MoveEvent([FromRoute] int id, [FromBody] EventMoveDto param)
     {
         if (!ModelState.IsValid)
@@ -98,16 +98,14 @@ public class SchedulingController : ControllerBase
             {
                 return NotFound();
             }
-            else
-            {
-                throw;
-            }
+
+            throw;
         }
 
         return NoContent();
     }
 
-    [HttpPut("{id}/color")]
+    [HttpPut("{id:int}/color")]
     public async Task<IActionResult> SetEventColor([FromRoute] int id, [FromBody] EventColorDto param)
     {
         if (!ModelState.IsValid)
@@ -133,10 +131,8 @@ public class SchedulingController : ControllerBase
             {
                 return NotFound();
             }
-            else
-            {
-                throw;
-            }
+
+            throw;
         }
 
         return NoContent();
@@ -155,7 +151,7 @@ public class SchedulingController : ControllerBase
         return CreatedAtAction("GetEvent", new { id = @event.Id }, @event);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteEvent([FromRoute] int id)
     {
         if (!ModelState.IsValid)
@@ -176,5 +172,12 @@ public class SchedulingController : ControllerBase
     private async Task<bool> EventExists(int id)
     {
         return await _schedulingService.GetEventByIdAsync(id) != null;
+    }
+
+    [HttpPost("overlap")]
+    public async Task<ActionResult<List<DateTime>>> GetOverlapByUserIds([FromBody] OverlapDto overlapDto)
+    {
+        List<DateTime> overlapDates = await _schedulingService.GetOverlapByUserIds(overlapDto);
+        return Ok(overlapDates);
     }
 }
