@@ -10,7 +10,7 @@ WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        corsBuilder => corsBuilder.WithOrigins("http://localhost:5112")
+        corsBuilder => corsBuilder.WithOrigins("http://localhost:8000")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });

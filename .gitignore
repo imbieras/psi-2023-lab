@@ -35,7 +35,7 @@ bld/
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 /StudyBuddy/wwwroot/js/signalr/
-/StudyBuddy/wwwroot/js/daypilot/
+/StudyBuddy/wwwroot/lib/daypilot/
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
