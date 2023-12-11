@@ -61,38 +61,28 @@
 
                 <div class="d-flex justify-content-evenly mt-3">
                     <!-- Button to view the previous profile -->
-                    @if (!TempData.ContainsKey("HideGoBackButton") && ViewBag.ViewedFirstProfile == true)
+                    @if (!TempData.ContainsKey("HideGoBackButton") && ViewBag.ViewedFirstProfile == false)
                     {
                         <a href="@Url.Action("PenultimateProfile", "Matching")" class="btn btn-secondary btn-lg mb-2 w-25">
-
-                            <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512">
-                                <path fill="#ffffff" d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3s-163.8-62.5-226.3 0L125.7 160z" />
-                            </svg>
+                            <i class="fa-solid fa-arrow-rotate-left fa-lg" style="color: #ffffff;"></i>
 
                         </a>
                     }
                     else
                     {
                         <a class="btn btn-dark btn-lg mb-2 w-25">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512">
-                                <path fill="#ffffff" d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3s-163.8-62.5-226.3 0L125.7 160z" />
-                            </svg>
-
+                            <i class="fa-solid fa-arrow-rotate-left fa-lg" style="color: #ffffff;"></i>
                         </a>
                     }
                     <!-- Button for new profile-->
                     @if (!isRequestedMatch && !(isMatched || ViewBag.ShowMatchRequestMessage))
                     {
                         <a href="@Url.Action("RandomProfile", "Matching")" class="btn btn-danger btn-lg mb-2 w-25">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 384 512">
-                                <path fill="#ffffff" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-                            </svg>
+                            <i class="fa-solid fa-xmark fa-xl" style="color: #ffffff;"></i>
                         </a>
                     }
                     else
                     {
-
-
                         <!-- Button to view the new random profile -->
                         <a href="@Url.Action("RandomProfile", "Matching")" class="btn btn-primary btn-lg mb-2 w-25">
                             New Profile!
@@ -109,9 +99,7 @@
                             <input type="hidden" name="currentUser" value="@ViewBag.CurrentUserId" />
                             <input type="hidden" name="otherUser" value="@Model.Id" />
 
-                            <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 448 512">
-                                <path fill="#ffffff" d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
-                            </svg>
+                            <i class="fa-solid fa-check fa-lg" style="color: #ffffff;"></i>
                         </form>
 
 
