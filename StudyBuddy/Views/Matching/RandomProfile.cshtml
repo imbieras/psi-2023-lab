@@ -1,11 +1,24 @@
-﻿@model StudyBuddy.Shared.Abstractions.IUser?
+﻿@using StudyBuddy.API.Services.SchedulingService
+@using StudyBuddy.Shared.Models
+@using StudyBuddy.Shared.ValueObjects
+@model StudyBuddy.Shared.Abstractions.IUser?
 @inject IHttpClientFactory HttpClientFactory
+@inject ISchedulingService SchedulingService
 
 @{
     ViewBag.Title = "Find a friend!";
     Layout = "_Layout";
 }
 
+@{
+    var startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+    var endOfWeek = startOfWeek.AddDays(7);
+    List<DateTime> overlapDates = await SchedulingService.GetOverlapByUserIds(ViewBag.CurrentUserId, Model.Id.Value, startOfWeek, endOfWeek);
+
+    var overlapDays = overlapDates.Select(d => d.DayOfWeek.ToString()).ToList();
+}
+
+<!-- Rest of the code remains the same -->
 <div class="text-center">
     <h1 class="display-4">User Profile</h1>
 
@@ -55,6 +68,12 @@
                             <li class="list-group-item">
                                 <a href="@Url.Action("UserProfile", "Profile", new { id = Model.Id })" class="btn btn-primary mt-3">View Profile</a>
                             </li>
+                           @if (overlapDays.Any())
+                           {
+                               <div class="alert alert-info mt-2 mb-0">
+                                   @Model.Username and you are both free to study on @string.Join(", ", overlapDays)!
+                               </div>
+                           }
                         </ul>
                     </div>
                 </div>

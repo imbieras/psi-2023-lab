@@ -11,4 +11,5 @@ public interface ISchedulingService
         Task<Event> CreateEventAsync(Event @event);
         Task<Event> UpdateEventAsync(Event @event);
         Task<Event> DeleteEventAsync(int id);
+        Task<List<DateTime>> GetOverlapByUserIds(Guid userId1, Guid userId2, DateTime start, DateTime end);
 }
