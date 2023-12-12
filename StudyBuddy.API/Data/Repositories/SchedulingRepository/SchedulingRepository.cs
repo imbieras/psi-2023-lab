@@ -25,7 +25,8 @@ public class SchedulingRepository : ISchedulingRepository
     public async Task<List<Event>> GetEventsByUserIdAsync(Guid userId, DateTime start, DateTime end)
     {
         // return await _context.Schedules.Where(e => e.UserId == userId).ToListAsync();
-        return await _context.Schedules.Where(e => (e.UserId == userId && e.Start >= start && e.End <= end)).ToListAsync();
+        return await _context.Schedules.Where(e => (e.UserId == userId && e.Start >= start && e.End <= end))
+            .ToListAsync();
     }
 
     public async Task<Event?> GetEventByIdAsync(int id)

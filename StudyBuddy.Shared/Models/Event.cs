@@ -1,14 +1,10 @@
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using StudyBuddy.Shared.ValueObjects;
-
 namespace StudyBuddy.Shared.Models;
 
 public class Event
 {
     public int Id { get; set; }
     public Guid UserId { get; set; }
-    public DateTime _start;
+    private DateTime _start;
     public DateTime Start
     {
         get => _start.ToLocalTime();

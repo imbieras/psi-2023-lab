@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NSubstitute;
 using StudyBuddy.API.Data;
 using StudyBuddy.API.Data.Repositories.MatchRepository;
 using StudyBuddy.Shared.Models;
@@ -21,7 +22,7 @@ public class MatchRepositoryTests
             .Options;
 
         _dbContext = new StudyBuddyDbContext(options);
-        _logger = new Logger<MatchRepository>(new LoggerFactory());
+        _logger = Substitute.For<ILogger<MatchRepository>>();
 
         List<Match> matches = GenerateMatches();
 

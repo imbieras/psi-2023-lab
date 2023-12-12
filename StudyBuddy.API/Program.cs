@@ -52,3 +52,5 @@ IUserService userService = scope.ServiceProvider.GetRequiredService<IUserService
 await UserCounter.InitializeAsync(userService);
 
 await app.RunAsync();
+
+public partial class Program { }
