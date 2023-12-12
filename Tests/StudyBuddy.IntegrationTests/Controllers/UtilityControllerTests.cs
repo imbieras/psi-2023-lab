@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace StudyBuddy.Tests.Controllers;
 

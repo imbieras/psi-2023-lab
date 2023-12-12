@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy", "StudyBuddy\StudyBuddy.csproj", "{7531F30B-A3F2-4CB2-9021-D408173CF665}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy.API.UnitTests", "Tests\StudyBuddy.API.UnitTests\StudyBuddy.API.UnitTests.csproj", "{9E370121-292E-4ACA-B9DC-3174F726E6A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy.API.Tests", "Tests\StudyBuddy.API.Tests\StudyBuddy.API.Tests.csproj", "{9E370121-292E-4ACA-B9DC-3174F726E6A4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy.API", "StudyBuddy.API\StudyBuddy.API.csproj", "{6650B986-DA20-415B-BDC4-E29FC6275A38}"
 EndProject

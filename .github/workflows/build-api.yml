@@ -30,4 +30,4 @@ jobs:
         run: dotnet build -c Release --no-restore ./StudyBuddy.API/
 
       - name: Test API
-        run: dotnet test ./Tests/StudyBuddy.API.UnitTests/
+        run: dotnet test ./Tests/StudyBuddy.API.Tests/

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NSubstitute;
 using StudyBuddy.API.Data;
 using StudyBuddy.API.Data.Repositories.ChatRepository;
 using StudyBuddy.Shared.Models;
@@ -22,7 +23,7 @@ public class ChatRepositoryTests
             .Options;
 
         _dbContext = new StudyBuddyDbContext(options);
-        _logger = new Logger<ChatRepository>(new LoggerFactory());
+        _logger = Substitute.For<ILogger<ChatRepository>>();
 
         IEnumerable<ChatMessage> messages = GenerateChatMessages();
 
