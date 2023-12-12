@@ -1,10 +1,14 @@
 {
-    "version": "1.0",
-    "defaultProvider": "unpkg",
-    "libraries": [
-        {
-            "library": "@microsoft/signalr@latest",
-            "destination": "wwwroot/js/signalr/"
-        }
-    ]
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "@microsoft/signalr@latest",
+      "destination": "wwwroot/js/signalr/"
+    },
+    {
+      "library": "@daypilot/daypilot-lite-javascript@3.19.0",
+      "destination": "wwwroot\\lib\\daypilot/daypilot-lite-javascript"
+    }
+  ]
 }

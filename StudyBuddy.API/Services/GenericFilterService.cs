@@ -7,7 +7,7 @@ public delegate bool UserPredicate(IUser user);
 
 public static class GenericFilterService<T> where T : class, IValidatableObject
 {
-    public static List<T> FilterByPredicate(IEnumerable<T> items, UserPredicate predicate) =>
+    public static List<T> FilterUsersByPredicate(IEnumerable<T> items, UserPredicate predicate) =>
         items.Where(item => predicate((IUser)item)).ToList();
 
     public static IEnumerable<T> FilterInvalidItems(IEnumerable<T> items)

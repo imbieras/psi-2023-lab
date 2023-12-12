@@ -85,7 +85,7 @@ This will automatically update the project when code changes occur.
 In the "StudyBuddy" directory, run the following commands to set up the initial database (while the database container is running):
 
 ```bash
-$ cd StudyBuddy
+$ cd StudyBuddy.API
 $ dotnet ef migrations add <MigrationName>
 $ dotnet ef database update
 ```

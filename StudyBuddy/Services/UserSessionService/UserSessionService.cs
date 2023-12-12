@@ -18,8 +18,8 @@ public class UserSessionService : IUserSessionService
 
     public async Task<bool> AuthenticateUser(string username, string password)
     {
-        HttpClient? httpClient = _httpClientFactory.CreateClient("StudyBuddy.API");
-        HttpResponseMessage? response = await httpClient.GetAsync($"api/v1/user/by-username/{username}");
+        HttpClient httpClient = _httpClientFactory.CreateClient("StudyBuddy.API");
+        var response = await httpClient.GetAsync($"api/v1/user/by-username/{username}");
 
         if (!response.IsSuccessStatusCode)
         {

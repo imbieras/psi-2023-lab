@@ -57,8 +57,8 @@ public class ChatHub : Hub
 
         ChatMessage chatMessage = new(message, DateTime.UtcNow, senderId, groupName);
 
-        HttpClient? httpClient = _clientFactory.CreateClient("StudyBuddy.API");
-        HttpResponseMessage? responseAddMessage =
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        var responseAddMessage =
             await httpClient.PostAsJsonAsync("api/v1/chat/messages/add", chatMessage);
 
         responseAddMessage.EnsureSuccessStatusCode();

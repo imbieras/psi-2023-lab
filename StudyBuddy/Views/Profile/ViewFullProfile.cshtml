@@ -35,10 +35,6 @@
 
 @{
     var possessiveName = Model.Username.AddPossessiveSuffix();
-
-    var avatarUrl = Model.Traits.AvatarPath.Contains("://")
-        ? Model.Traits.AvatarPath
-        : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
 }
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -76,7 +72,7 @@
                 <h2 class="mb-0">@possessiveName Profile</h2>
             </div>
             <div class="card-body d-flex flex-column align-items-center">
-                <div class="avatar-container" style="background-image: url('@avatarUrl');"></div>
+                <div class="avatar-container" style="background-image: url('@Model.Traits.AvatarPath');"></div>
                 <ul class="list-group list-group-flush mt-4">
                     <li class="list-group-item">
                         <strong>Birthday:</strong> @Model.Traits.Birthdate.ToShortDateString()

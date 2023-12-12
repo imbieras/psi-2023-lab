@@ -1,4 +1,5 @@
-﻿@model StudyBuddy.Shared.Abstractions.IUser?
+﻿@using StudyBuddy.Shared.DTOs
+@model StudyBuddy.Shared.Abstractions.IUser?
 @inject IHttpClientFactory HttpClientFactory
 
 @{
@@ -6,13 +7,40 @@
     Layout = "_Layout";
 }
 
+@{
+    var startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+    var endOfWeek = startOfWeek.AddDays(7);
+
+    var currentUserIdObject = ViewBag.CurrentUserId;
+    var currentUserId = currentUserIdObject != null ? Guid.Parse(currentUserIdObject.ToString()) : Guid.Empty;
+    var otherUserId = Model?.Id != null ? Guid.Parse(Model.Id.Value.ToString()) : Guid.Empty;
+
+    var overlapDto = new OverlapDto
+    {
+        CurrentUserId = currentUserId,
+        OtherUserId = otherUserId,
+        Start = startOfWeek.ToUniversalTime(),
+        End = endOfWeek.ToUniversalTime()
+    };
+
+    var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
+
+    var responseOverlapDates = await httpClient.PostAsJsonAsync("api/v1/scheduling/overlap", overlapDto);
+
+    var overlapDates = new List<DateTime>();
+    if (responseOverlapDates.IsSuccessStatusCode)
+    {
+        overlapDates = await responseOverlapDates.Content.ReadFromJsonAsync<List<DateTime>>();
+    }
+
+    var overlapDays = overlapDates.Select(d => d.DayOfWeek.ToString()).ToList();
+}
+
 <div class="text-center">
     <h1 class="display-4">User Profile</h1>
 
     @if (Model != null)
     {
-        var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
-
         var avatarUrl = Model.Traits.AvatarPath.Contains("://")
         ? Model.Traits.AvatarPath
         : Url.Content("~/avatars/" + Model.Traits.AvatarPath);
@@ -55,6 +83,12 @@
                             <li class="list-group-item">
                                 <a href="@Url.Action("UserProfile", "Profile", new { id = Model.Id })" class="btn btn-primary mt-3">View Profile</a>
                             </li>
+                            @if (overlapDays.Any())
+                            {
+                                <div class="alert alert-info mt-2 mb-0">
+                                    <b>You</b> and <b>@Model.Username</b> are both free to study on @string.Join(", ", overlapDays)!
+                                </div>
+                            }
                         </ul>
                     </div>
                 </div>
@@ -125,10 +159,6 @@
 
             </div>
         </div>
-
-
-
-
     }
     else
     {

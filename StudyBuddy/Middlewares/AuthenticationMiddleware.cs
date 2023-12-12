@@ -27,14 +27,14 @@ public class AuthenticationMiddleware
             context.Response.Cookies.Delete("UserId");
         }
 
-        HttpClient? httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
 
         if (userSessionService.GetCurrentUserId() == null)
         {
             // Make a request to the API to get user details
             UserId userId = UserId.From(userIdGuid);
 
-            HttpResponseMessage? response = await httpClient.GetAsync($"api/v1/user/{userId}");
+            var response = await httpClient.GetAsync($"api/v1/user/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 try
