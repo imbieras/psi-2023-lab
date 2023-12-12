@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy", "StudyBuddy\StudyBuddy.csproj", "{7531F30B-A3F2-4CB2-9021-D408173CF665}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy.Tests", "Tests\StudyBuddy.Tests\StudyBuddy.Tests.csproj", "{9E370121-292E-4ACA-B9DC-3174F726E6A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy.API.UnitTests", "Tests\StudyBuddy.API.UnitTests\StudyBuddy.API.UnitTests.csproj", "{9E370121-292E-4ACA-B9DC-3174F726E6A4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy.API", "StudyBuddy.API\StudyBuddy.API.csproj", "{6650B986-DA20-415B-BDC4-E29FC6275A38}"
 EndProject
@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyBuddy.IntegrationTests", "Tests\StudyBuddy.IntegrationTests\StudyBuddy.IntegrationTests.csproj", "{0337A637-2898-4ED6-B490-D3C2555FAB6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,5 +37,9 @@ Global
 		{138996B2-41FE-4248-8AFA-A6CECAA4E757}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{138996B2-41FE-4248-8AFA-A6CECAA4E757}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{138996B2-41FE-4248-8AFA-A6CECAA4E757}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0337A637-2898-4ED6-B490-D3C2555FAB6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0337A637-2898-4ED6-B490-D3C2555FAB6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0337A637-2898-4ED6-B490-D3C2555FAB6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0337A637-2898-4ED6-B490-D3C2555FAB6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
