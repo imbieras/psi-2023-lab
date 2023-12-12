@@ -43,6 +43,7 @@ public class MatchingController : Controller
 
         ViewBag.ShowMatchRequestMessage = true;
 
+
         return View("RandomProfile", currentRandomUser);
     }
 
@@ -135,7 +136,7 @@ public class MatchingController : Controller
     }
 
 
-    public async Task<IActionResult> UltimateProfile()
+    public async Task<IActionResult> UltimateProfile(bool disableGoBackButton = true)
     {
         // Pass the current user's ID to the view
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;
@@ -155,8 +156,14 @@ public class MatchingController : Controller
 
         User? previousUser = await responseUltimateUser.Content.ReadFromJsonAsync<User>();
 
-        TempData["HideGoBackButton"] = true;
-
+        if (disableGoBackButton)
+        {
+            TempData["HideGoBackButton"] = true;
+        }
+        else
+        {
+            TempData.Remove("HideGoBackButton");
+        }
         return View("RandomProfile", previousUser);
     }
 
@@ -206,6 +213,7 @@ public class MatchingController : Controller
         {
             "RandomProfile" => RedirectToAction("RandomProfile", "Matching"),
             "CurrentRandomUserProfile" => RedirectToAction("CurrentRandomUserProfile", "Matching"),
+            "PenultimateProfile" => RedirectToAction("PenultimateProfile", "Matching"),
             _ => RedirectToAction("Index", "Home")
         };
     }
