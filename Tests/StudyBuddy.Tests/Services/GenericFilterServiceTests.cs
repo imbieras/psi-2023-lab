@@ -87,7 +87,7 @@ public class GenericFilterServiceTests
     [Theory]
     public void FilterByPredicate_SpecifiedField_Returns_Users(string trait, int expectedCount)
     {
-        List<User> actual = GenericFilterService<User>.FilterByPredicate(_users, user => user.Traits.Subject == trait);
+        List<User> actual = GenericFilterService<User>.FilterUsersByPredicate(_users, user => user.Traits.Subject == trait);
 
         actual.Count.Should().Be(expectedCount);
     }
@@ -98,7 +98,7 @@ public class GenericFilterServiceTests
     [Theory]
     public void FilterByPredicate_MultipleFields_Returns_Users(string trait, string hobby, int expectedCount)
     {
-        List<User> actual = GenericFilterService<User>.FilterByPredicate(_users,
+        List<User> actual = GenericFilterService<User>.FilterUsersByPredicate(_users,
             user => user.Traits.Subject == trait && user.Hobbies!.Contains(hobby));
 
         actual.Count.Should().Be(expectedCount);

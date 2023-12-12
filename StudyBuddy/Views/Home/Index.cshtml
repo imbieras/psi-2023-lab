@@ -13,11 +13,11 @@
     {
         var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
 
-        var response = await httpClient.GetAsync($"api/v1/user/{currentUserId.Value}");
+        var responseUser = await httpClient.GetAsync($"api/v1/user/{currentUserId.Value}");
 
-        if (response.IsSuccessStatusCode)
+        if (responseUser.IsSuccessStatusCode)
         {
-            user = await response.Content.ReadFromJsonAsync<User>();
+            user = await responseUser.Content.ReadFromJsonAsync<User>();
         }
     }
 }

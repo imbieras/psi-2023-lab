@@ -22,6 +22,8 @@ public class StudyBuddyDbContext : DbContext
 
     public DbSet<UserSeenProfile> UserSeenProfiles { get; set; } = null!;
 
+    public DbSet<Event?> Schedules { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -82,6 +84,9 @@ public class StudyBuddyDbContext : DbContext
 
         modelBuilder.Entity<UserSeenProfile>()
             .Property(usp => usp.Timestamp);
+
+        modelBuilder.Entity<Event>()
+            .HasKey(e => e.Id);
     }
 }
 

@@ -4,7 +4,7 @@ using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Shared.Models;
 
-public class User : IUser, IEquatable<User>, IValidatableObject
+public class User : IUser, IEquatable<User>
 {
     private User()
     {

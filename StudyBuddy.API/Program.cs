@@ -7,6 +7,14 @@ using StudyBuddy.API.Services.UserService;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        corsBuilder => corsBuilder.WithOrigins("http://localhost:8000")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 // Register repositories
 builder.Services.AddRepositories();
 
@@ -32,6 +40,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthorization();
 
