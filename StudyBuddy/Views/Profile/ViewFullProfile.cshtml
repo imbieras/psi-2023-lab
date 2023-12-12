@@ -1,5 +1,27 @@
 @model StudyBuddy.Shared.Abstractions.IUser
+
+@functions {
+    private static JsonElement? LocationNode(JsonElement addressNode)
+    {
+        if (addressNode.TryGetProperty("city", out var cityNode))
+        {
+            return cityNode;
+        }
+        if (addressNode.TryGetProperty("town", out var townNode))
+        {
+            return townNode;
+        }
+        if (addressNode.TryGetProperty("village", out var villageNode))
+        {
+            return villageNode;
+        }
+        return null;
+    }
+}
+
 @using StudyBuddy.Extensions
+@using System.Text.Json
+@inject IHttpClientFactory HttpClientFactory
 
 @{
     ViewBag.Title = "User Profile";
@@ -15,6 +37,34 @@
     var possessiveName = Model.Username.AddPossessiveSuffix();
 }
 
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    async function initializeLeafletMap(cityName) {
+        // Use Nominatim to geocode the city name and get coordinates
+        const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.length > 0) {
+            // Extract coordinates from the first result
+            const cityLatitude = data[0].lat;
+            const cityLongitude = data[0].lon;
+
+            // Initialize Leaflet map
+            let map = L.map('map').setView([cityLatitude, cityLongitude], 13);
+
+            // Add OpenStreetMap tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add marker to the map
+            L.marker([cityLatitude, cityLongitude]).addTo(map);
+        } else {
+            console.error('Unable to geocode city name:', cityName);
+        }
+    }
+</script>
 <div class="row justify-content-center mt-4">
     <div class="col-md-8">
         <div class="card">
@@ -32,9 +82,62 @@
                     </li>
                     <li class="list-group-item">
                         <strong>Hobbies:</strong>
-                        @foreach (var hobby in Model.Hobbies!)
+                        @if (Model.Hobbies != null && Model.Hobbies.Any())
                         {
-                            <span class="badge bg-secondary">@hobby</span>
+                            foreach (var hobby in Model.Hobbies)
+                            {
+                                <span class="badge bg-secondary">@hobby</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>No hobbies available.</span>
+                        }
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Location:</strong>
+                        @if (Model.Traits.Latitude != 0 && Model.Traits.Longitude != 0)
+                        {
+                            var apiUrl = $"https://nominatim.openstreetmap.org/reverse?format=json&lat={Model.Traits.Latitude}&lon={Model.Traits.Longitude}";
+                            var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
+                            httpClient.DefaultRequestHeaders.Add("User-Agent", "StudyBuddy");
+
+                            var responseLocationInfo = await httpClient.GetAsync(apiUrl);
+
+                            if (!responseLocationInfo.IsSuccessStatusCode)
+                            {
+                                <span>Error retrieving location information.</span>
+                                return;
+                            }
+
+                            var locationInfo = await responseLocationInfo.Content.ReadFromJsonAsync<JsonDocument>();
+
+                            if (locationInfo == null)
+                            {
+                                return;
+                            }
+
+                            var addressNode = locationInfo.RootElement.GetProperty("address");
+                            var countryNode = addressNode.GetProperty("country");
+                            var stateDistrictNode = addressNode.GetProperty("state_district");
+
+                            var locationNode = LocationNode(addressNode);
+
+                            if (locationNode == null)
+                            {
+                                <span>Unable to retrieve location information.</span>
+                                return;
+                            }
+
+                            <span>@locationNode.Value.GetString(), @stateDistrictNode.GetString(), @countryNode.GetString()</span>
+                            <div id="map" style="height: 300px;" class="border"></div>
+                            <script>
+                                initializeLeafletMap("@locationNode.Value.GetString()");
+                            </script>
+                        }
+                        else
+                        {
+                            <span>No location available.</span>
                         }
                     </li>
                 </ul>
