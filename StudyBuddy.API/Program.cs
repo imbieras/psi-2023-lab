@@ -4,6 +4,10 @@ using StudyBuddy.API.Data.Repositories;
 using StudyBuddy.API.Models;
 using StudyBuddy.API.Services;
 using StudyBuddy.API.Services.UserService;
+using Castle.DynamicProxy;
+using StudyBuddy.API.Data.Repositories.SchedulingRepository;
+using StudyBuddy.API.Interceptors;
+using StudyBuddy.API.Services.SchedulingService;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +24,17 @@ builder.Services.AddRepositories();
 
 // Register services
 builder.Services.AddServices();
+
+var proxyGenerator = new ProxyGenerator();
+var logFilePath = "/var/log/study_buddy.log";
+
+builder.Services.AddScoped<ISchedulingService>(provider =>
+{
+    var schedulingRepository = provider.GetRequiredService<ISchedulingRepository>();
+    var schedulingService = new SchedulingService(schedulingRepository);
+    var interceptor = new LoggingInterceptor(logFilePath);
+    return proxyGenerator.CreateInterfaceProxyWithTarget<ISchedulingService>(schedulingService, interceptor);
+});
 
 // Registering implementations for DI
 builder.Services.AddDbContext<StudyBuddyDbContext>(options =>

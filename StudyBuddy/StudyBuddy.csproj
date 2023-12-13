@@ -10,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
         <PackageReference Include="BCrypt.Net-Core" Version="1.6.0"/>
+        <PackageReference Include="Castle.Core" Version="5.1.1" />
         <PackageReference Include="DayPilot" Version="5.0.303" />
         <PackageReference Include="Markdig" Version="0.33.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.10" />
