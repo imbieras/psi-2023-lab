@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Castle.Core" Version="5.1.1" />
         <PackageReference Include="DayPilot" Version="5.0.303" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.14"/>

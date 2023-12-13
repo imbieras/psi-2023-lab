@@ -12,7 +12,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserService, UserService.UserService>();
         services.AddScoped<IMatchingService, MatchingService.MatchingService>();
         services.AddScoped<IChatService, ChatService.ChatService>();
-        services.AddScoped<ISchedulingService, SchedulingService.SchedulingService>();
 
         return services;
     }
